@@ -9,8 +9,9 @@ import { Button, Form, Input } from "antd";
 // import styles from "@/styles/page.module.css";
 
 interface FormFieldProps {
-  label: string;
-  value: string;
+  username: string;
+  name: string;
+  password: string;
 }
 
 const Login: React.FC = () => {
@@ -30,7 +31,7 @@ const Login: React.FC = () => {
   const handleLogin = async (values: FormFieldProps) => {
     try {
       // Call the API service and let it handle JSON serialization and error handling
-      const response = await apiService.post<User>("/users", { values });
+      const response = await apiService.post<User>("/users", values );
 
       // Use the useLocalStorage hook that returned a setter function (setToken in line 41) to store the token if available
       if (response.token) {
@@ -38,7 +39,7 @@ const Login: React.FC = () => {
       }
 
       // Navigate to the user overview
-      router.push("/users/dashboard");
+      router.push("/users");
     } catch (error) {
       if (error instanceof Error) {
         alert(`Something went wrong during the login:\n${error.message}`);
@@ -68,9 +69,16 @@ const Login: React.FC = () => {
         <Form.Item
           name="name"
           label="Name"
-          rules={[{ required: true, message: "Please input your name!" }]}
+          rules={[{ required: true, message: "Please input your password!" }]}
         >
-          <Input placeholder="Enter name" />
+          <Input placeholder="Enter password" />
+        </Form.Item>
+        <Form.Item
+          name="password"
+          label="Password"
+          rules={[{ required: true, message: "Please input your password!" }]}
+          >
+          <Input type="password" placeholder="Enter password" />
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" className="login-button">
