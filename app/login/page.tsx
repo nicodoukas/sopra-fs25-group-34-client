@@ -31,7 +31,7 @@ const Login: React.FC = () => {
   const handleLogin = async (values: FormFieldProps) => {
     try {
       // Call the API service and let it handle JSON serialization and error handling
-      const response = await apiService.post<User>("/users", values );
+      const response = await apiService.post<User>("/users", values);
 
       // Use the useLocalStorage hook that returned a setter function (setToken in line 41) to store the token if available
       if (response.token) {
@@ -77,12 +77,22 @@ const Login: React.FC = () => {
           name="password"
           label="Password"
           rules={[{ required: true, message: "Please input your password!" }]}
-          >
+        >
           <Input type="password" placeholder="Enter password" />
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" className="login-button">
             Login
+          </Button>
+        </Form.Item>
+        <Form.Item>
+          <Button
+            type="primary"
+            htmlType="button"
+            className="register-button"
+            onClick={() => router.push("register")}
+          >
+            Register
           </Button>
         </Form.Item>
       </Form>
