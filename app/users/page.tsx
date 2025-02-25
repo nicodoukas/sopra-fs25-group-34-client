@@ -29,6 +29,11 @@ const columns: TableProps<User>["columns"] = [
     dataIndex: "id",
     key: "id",
   },
+  {
+    title: "Status",
+    dataIndex: "status",
+    key: "status",
+    },
 ];
 
 const Dashboard: React.FC = () => {
@@ -44,9 +49,30 @@ const Dashboard: React.FC = () => {
     clear: clearToken, // all we need in this scenario is a method to clear the token
   } = useLocalStorage<string>("token", ""); // if you wanted to select a different token, i.e "lobby", useLocalStorage<string>("lobby", "");
 
-  const handleLogout = (): void => {
+  const handleLogout = async (): Promise<void> => {
+    const requestBody = localStorage.getItem("id")
+
+    if (!requestBody) {
+      console.error("No user ID found (localStorage)");
+      return;
+    }
+    console.log("requestBody:", requestBody);
+    console.log("requestBody:", typeof requestBody);
+
+    try {
+      const response = await apiService.put<{ message: string }>("/logout", requestBody);
+      console.log("response:", response?.message)
+    }
+    catch (error) {
+      console.error("Logout failed:", error);
+    }
+
+
     // Clear token using the returned function 'clear' from the hook
     clearToken();
+
+    localStorage.removeItem("id");
+
     router.push("/login");
   };
 
