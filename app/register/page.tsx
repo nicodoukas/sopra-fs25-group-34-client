@@ -38,6 +38,11 @@ const Register: React.FC = () => {
         setToken(response.token);
       }
 
+      // store user id inside localStorage
+      if (response.id) {
+        localStorage.setItem("id", response.id);
+      }
+
       // Navigate to the user overview
       router.push("/users");
     } catch (error) {
