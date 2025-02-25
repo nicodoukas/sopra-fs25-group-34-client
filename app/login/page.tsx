@@ -38,6 +38,12 @@ const Login: React.FC = () => {
         setToken(response.token);
       }
 
+      // Store UserId inside localStorage
+      if (response.id){
+        localStorage.setItem("id", response.id);
+        console.log("localStorage:", localStorage.getItem("id"));
+      }
+
       // Navigate to the user overview
       router.push("/users");
     } catch (error) {
