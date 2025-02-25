@@ -46,9 +46,11 @@ const UserProfile: React.FC = () => {
 
   return (
     <div className="card-container" style={{ display: "flex", justifyContent: "center", marginTop: 20 }}>
-      <Card title={user.name} variant="outlined" style={{ width: 400 }}>
+      <Card title={user.username} variant="outlined" style={{ width: 400 }}>
         <p><strong>Username:</strong> {user.username}</p>
-        <p><strong>ID:</strong> {user.id}</p>
+        <p><strong>Creationdate:</strong> {user.creationdate}</p>
+        <p><strong>Birthday:</strong> {user.birthday}</p>
+        <p><strong>Status:</strong> {user.status}</p>
       </Card>
     </div>
   );
