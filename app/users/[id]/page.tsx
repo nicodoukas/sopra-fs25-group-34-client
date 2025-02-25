@@ -1,13 +1,57 @@
-// your code here for S2 to display a single user profile after having clicked on it
-// each user has their own slug /[id] (/1, /2, /3, ...) and is displayed using this file
-// try to leverage the component library from antd by utilizing "Card" to display the individual user
-// import { Card } from "antd"; // similar to /app/users/page.tsx
+"use client";
 
-// only placeholder for deployment
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { useApi } from "@/hooks/useApi";
+import useLocalStorage from "@/hooks/useLocalStorage";
+import { User } from "@/types/user";
+import { Button, Card, Table } from "antd";
+import type { TableProps } from "antd";
 
-const UserProfile = () => {
-  return <div>User Profile Page</div>;
+
+const UserProfile: React.FC = () => {
+  const router = useRouter();
+  const apiService = useApi();
+  const params = useParams();
+  const id = params.id;
+  console.log("userid:", id);
+
+
+  const [user, setUser] = useState<User>({} as User);
+  const [loading, setLoading] = useState(true); //for loading display
+
+  useEffect(() => {
+
+    if (!id) return;
+
+
+    const fetchUser = async () => {
+        try {
+          const user: User = await apiService.get<User>(`/users/${id}`);
+          setUser(user);
+          console.log("Fetched user:", user);
+        } catch (error) {
+
+          if (error instanceof Error) {
+            alert(`Something went wrong while fetching the user:\n${error.message}`);
+          } else {
+            console.error("An unknown error occurred while fetching the user.");
+          }
+        }
+    };
+
+    fetchUser();
+
+  }, [apiService,id]);
+
+  return (
+    <div className="card-container" style={{ display: "flex", justifyContent: "center", marginTop: 20 }}>
+      <Card title={user.name} variant="outlined" style={{ width: 400 }}>
+        <p><strong>Username:</strong> {user.username}</p>
+        <p><strong>ID:</strong> {user.id}</p>
+      </Card>
+    </div>
+  );
 };
 
 export default UserProfile;
