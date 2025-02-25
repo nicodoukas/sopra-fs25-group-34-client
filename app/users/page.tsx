@@ -3,7 +3,7 @@
 "use client"; // For components that need React hooks and browser APIs, SSR (server side rendering) has to be disabled. Read more here: https://nextjs.org/docs/pages/building-your-application/rendering/server-side-rendering
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
@@ -74,9 +74,17 @@ const Dashboard: React.FC = () => {
     localStorage.removeItem("id");
 
     router.push("/login");
+
   };
 
   useEffect(() => {
+    const id = localStorage.getItem("id");
+    if (!id) {
+      router.push("/login");
+      return;
+    }
+
+
     const fetchUsers = async () => {
       try {
         // apiService.get<User[]> returns the parsed JSON object directly,

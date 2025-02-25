@@ -22,7 +22,11 @@ const UserProfile: React.FC = () => {
 
   useEffect(() => {
 
-    if (!id) return;
+    const StorageId = localStorage.getItem("id");
+    if (!StorageId) {
+      router.push("/login");
+      return;
+    }
 
 
     const fetchUser = async () => {
