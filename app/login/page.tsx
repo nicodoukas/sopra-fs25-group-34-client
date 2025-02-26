@@ -39,7 +39,7 @@ const Login: React.FC = () => {
       }
 
       // Store UserId inside localStorage
-      if (response.id){
+      if (response.id) {
         localStorage.setItem("id", response.id);
         console.log("localStorage:", localStorage.getItem("id"));
       }
