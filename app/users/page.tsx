@@ -3,7 +3,7 @@
 "use client"; // For components that need React hooks and browser APIs, SSR (server side rendering) has to be disabled. Read more here: https://nextjs.org/docs/pages/building-your-application/rendering/server-side-rendering
 
 import React, { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
@@ -33,7 +33,7 @@ const columns: TableProps<User>["columns"] = [
     title: "Status",
     dataIndex: "status",
     key: "status",
-    },
+  },
 ];
 
 const Dashboard: React.FC = () => {
@@ -50,7 +50,7 @@ const Dashboard: React.FC = () => {
   } = useLocalStorage<string>("token", ""); // if you wanted to select a different token, i.e "lobby", useLocalStorage<string>("lobby", "");
 
   const handleLogout = async (): Promise<void> => {
-    const requestBody = localStorage.getItem("id")
+    const requestBody = localStorage.getItem("id");
 
     if (!requestBody) {
       console.error("No user ID found (localStorage)");
@@ -60,13 +60,11 @@ const Dashboard: React.FC = () => {
     console.log("requestBody:", typeof requestBody);
 
     try {
-      const response = await apiService.put<{ message: string }>("/logout", requestBody);
-      console.log("response:", response?.message)
-    }
-    catch (error) {
+      const response = await apiService.put("/logout", requestBody);
+      console.log("response:", response?.message);
+    } catch (error) {
       console.error("Logout failed:", error);
     }
-
 
     // Clear token using the returned function 'clear' from the hook
     clearToken();
@@ -74,7 +72,6 @@ const Dashboard: React.FC = () => {
     localStorage.removeItem("id");
 
     router.push("/login");
-
   };
 
   useEffect(() => {
@@ -83,7 +80,6 @@ const Dashboard: React.FC = () => {
       router.push("/login");
       return;
     }
-
 
     const fetchUsers = async () => {
       try {
