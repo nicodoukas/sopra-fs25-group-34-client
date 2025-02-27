@@ -50,18 +50,17 @@ const Dashboard: React.FC = () => {
   } = useLocalStorage<string>("token", ""); // if you wanted to select a different token, i.e "lobby", useLocalStorage<string>("lobby", "");
 
   const handleLogout = async (): Promise<void> => {
-    const requestBody = localStorage.getItem("id");
+    const id = localStorage.getItem("id");
 
-    if (!requestBody) {
+    if (!id) {
       console.error("No user ID found (localStorage)");
       return;
     }
-    console.log("requestBody:", requestBody);
-    console.log("requestBody:", typeof requestBody);
+    console.log("user with id ", id, "is about to logout");
 
     try {
-      const response = await apiService.put("/logout", requestBody);
-      console.log("response:", response?.message);
+      await apiService.put("/logout", id);
+      console.log("logout successful for user with id: ", id);
     } catch (error) {
       console.error("Logout failed:", error);
     }
