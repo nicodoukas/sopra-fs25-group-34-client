@@ -50,7 +50,9 @@ export class ApiService {
       error.status = res.status;
       throw error;
     }
-    return res.json() as Promise<T>;
+    return res.headers.get("Content-Type")?.includes("application/json")
+      ? res.json() as Promise<T>
+      : Promise.resolve(res as T);
   }
 
   /**
