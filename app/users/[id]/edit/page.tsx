@@ -29,9 +29,7 @@ const EditUserProfile: React.FC = () => {
     console.log("update requestBody:", values);
 
     try {
-      const user = await apiService.put(`/users/${id}`, values);
-      setUser(user);
-      console.log("updated user:", user);
+      await apiService.put(`/users/${id}`, values);
       console.log("User updated correctly");
       router.push(`/users/${id}`);
     } catch (error) {
