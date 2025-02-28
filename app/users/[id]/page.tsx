@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
-import useLocalStorage from "@/hooks/useLocalStorage";
+//import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
 import { Button, Card } from "antd";
 
@@ -20,7 +20,7 @@ const UserProfile: React.FC = () => {
     router.push("/users"); //navigates to the previous page
   };
 
-  const handleEdit: React.FC = () => {
+  const handleEdit  = () => {
     router.push(`/users/${id}/edit`);
   };
 
@@ -48,7 +48,7 @@ const UserProfile: React.FC = () => {
     };
 
     fetchUser();
-  }, [apiService, id]);
+  }, [apiService, id, router]);
 
   if (localStorage.getItem("id") === id) {
     return (

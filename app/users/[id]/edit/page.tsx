@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
-import useLocalStorage from "@/hooks/useLocalStorage";
+//import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
 import { Button, Card, Form, Input } from "antd";
 
@@ -67,7 +67,7 @@ const EditUserProfile: React.FC = () => {
     };
 
     fetchUser();
-  }, [apiService, id]);
+  }, [apiService, id, router]);
 
   return (
     <div
@@ -86,13 +86,13 @@ const EditUserProfile: React.FC = () => {
             name="username"
             label={<strong>Username:</strong>}
           >
-            <Input placeholder={user.username} />
+            <Input placeholder={user.username ?? ""} />
           </Form.Item>
           <Form.Item
             name="birthday"
             label={<strong>Birthday:</strong>}
           >
-            <Input placeholder="YYYY-MM-DD" />
+            <Input placeholder={user.birthday?.toString() ?? "YYYY-MM-DD"} />
           </Form.Item>
           <Form.Item>
             <p>
