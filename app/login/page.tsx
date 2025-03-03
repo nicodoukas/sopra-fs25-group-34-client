@@ -10,7 +10,6 @@ import { Button, Form, Input } from "antd";
 
 interface FormFieldProps {
   username: string;
-  name: string;
   password: string;
 }
 
@@ -49,6 +48,7 @@ const Login: React.FC = () => {
     } catch (error) {
       if (error instanceof Error) {
         alert(`Something went wrong during the login:\n${error.message}`);
+        console.log(error);
       } else {
         console.error("An unknown error occurred during login.");
       }
@@ -71,13 +71,6 @@ const Login: React.FC = () => {
           rules={[{ required: true, message: "Please input your username!" }]}
         >
           <Input placeholder="Enter username" />
-        </Form.Item>
-        <Form.Item
-          name="name"
-          label="Name"
-          rules={[{ required: true, message: "Please input your password!" }]}
-        >
-          <Input placeholder="Enter password" />
         </Form.Item>
         <Form.Item
           name="password"

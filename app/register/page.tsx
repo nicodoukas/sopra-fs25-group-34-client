@@ -10,7 +10,6 @@ import { Button, Form, Input } from "antd";
 
 interface FormFieldProps {
   username: string;
-  name: string;
   password: string;
 }
 
@@ -70,13 +69,6 @@ const Register: React.FC = () => {
           rules={[{ required: true, message: "Please input your username!" }]}
         >
           <Input placeholder="Enter username" />
-        </Form.Item>
-        <Form.Item
-          name="name"
-          label="Name"
-          rules={[{ required: true, message: "Please input your password!" }]}
-        >
-          <Input placeholder="Enter password" />
         </Form.Item>
         <Form.Item
           name="password"
