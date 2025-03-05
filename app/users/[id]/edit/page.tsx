@@ -60,6 +60,7 @@ const EditUserProfile: React.FC = () => {
           alert(
             `Something went wrong while fetching the user:\n${error.message}`,
           );
+          console.log(error);
         } else {
           console.error("An unknown error occurred while fetching the user.");
         }
@@ -92,11 +93,11 @@ const EditUserProfile: React.FC = () => {
             name="birthday"
             label={<strong>Birthday:</strong>}
           >
-            <Input placeholder={user.birthday?.toString() ?? "YYYY-MM-DD"} />
+            <Input placeholder={user.birthday?.split('T')[0] ?? "YYYY-MM-DD"} />
           </Form.Item>
           <Form.Item>
             <p>
-              <strong>Creationdate:</strong> {user.creationdate}
+              <strong>Creationdate:</strong> {user.creation_date?.split('T')[0]}
             </p>
           </Form.Item>
           <Form.Item>
