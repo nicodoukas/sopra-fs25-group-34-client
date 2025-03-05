@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 //import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
+import "@ant-design/v5-patch-for-react-19";
 import { Button, Card } from "antd";
 
 const UserProfile: React.FC = () => {
