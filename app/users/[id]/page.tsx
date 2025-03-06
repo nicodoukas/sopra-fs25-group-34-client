@@ -95,10 +95,10 @@ const UserProfile: React.FC = () => {
           <strong>Username:</strong> {user.username}
         </p>
         <p>
-          <strong>Birthday:</strong> {user.birthday}
+          <strong>Birthday:</strong> {user.birthday?.split('T')[0]}
         </p>
         <p>
-          <strong>Creationdate:</strong> {user.creation_date}
+          <strong>Creationdate:</strong> {user.creation_date?.split('T')[0]}
         </p>
         <p>
           <strong>Status:</strong> {user.status}
