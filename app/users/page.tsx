@@ -84,7 +84,7 @@ const Dashboard: React.FC = () => {
       } else {
         alert(`No user with username ${searchUsername} exists.`);
       }
-    } catch (error) {
+    } catch {
       alert(`No user with username ${searchUsername} exists.`);
     }
   };
