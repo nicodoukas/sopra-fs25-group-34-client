@@ -68,10 +68,10 @@ const UserProfile: React.FC = () => {
             <strong>Username:</strong> {user.username}
           </p>
           <p>
-            <strong>Birthday:</strong> {user.birthday?.split('T')[0]}
+            <strong>Birthday:</strong> {user.birthday? String(user.birthday).split('T')[0] : "N/A"}
           </p>
           <p>
-            <strong>Creationdate:</strong> {user.creation_date?.split('T')[0]}
+            <strong>Creationdate:</strong> {user.creation_date ? String(user.creation_date).split('T')[0] : "N/A"}
           </p>
           <p>
             <strong>Status:</strong> {user.status}
@@ -100,10 +100,10 @@ const UserProfile: React.FC = () => {
           <strong>Username:</strong> {user.username}
         </p>
         <p>
-          <strong>Birthday:</strong> {user.birthday?.split('T')[0]}
+          <strong>Birthday:</strong> {user.birthday ? String(user.birthday).split('T')[0] : "N/A"}
         </p>
         <p>
-          <strong>Creationdate:</strong> {user.creation_date?.split('T')[0]}
+          <strong>Creationdate:</strong> {user.creation_date ? String(user.creation_date).split('T')[0] : "N/A"}
         </p>
         <p>
           <strong>Status:</strong> {user.status}
