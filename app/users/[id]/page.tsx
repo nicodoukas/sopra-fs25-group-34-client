@@ -27,7 +27,7 @@ const UserProfile: React.FC = () => {
 
   const handleRemoveFriend = async () => {
     const StorageId = localStorage.getItem("id")
-    await apiService.delete(`/users/${StorageId}/friends`, id)
+    await apiService.delete(`/users/${StorageId}/friends/${id}`)
   }
 
   useEffect(() => {
