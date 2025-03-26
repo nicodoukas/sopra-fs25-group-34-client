@@ -112,7 +112,7 @@ const UserProfile: React.FC = () => {
           <Button type="primary" onClick={handleGoBack}>Go Back</Button>
            {
              //Check if the current user's ID is in the friends list of the user of this profile
-             (user.friends?.includes(localStorage.getItem('userId'))) ? (
+             (user.friends?.includes(localStorage.getItem("id"))) ? (
              <Button type="primary" onClick={handleRemoveFriend}>Remove Friend</Button>) : (
              <Button type="primary">Add Friend</Button>)
            }
