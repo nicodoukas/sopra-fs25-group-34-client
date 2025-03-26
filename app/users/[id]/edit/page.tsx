@@ -94,7 +94,7 @@ const EditUserProfile: React.FC = () => {
             name="birthday"
             label={<strong>Birthday:</strong>}
           >
-            <Input placeholder={user.creation_date ? String(user.creation_date).split('T')[0] : "N/A" ?? "YYYY-MM-DD"} />
+            <Input placeholder={user.creation_date ? String(user.creation_date).split('T')[0] : "YYYY-MM-DD"} />
           </Form.Item>
           <Form.Item>
             <p>
