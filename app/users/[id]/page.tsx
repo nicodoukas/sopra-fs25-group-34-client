@@ -30,6 +30,11 @@ const UserProfile: React.FC = () => {
     await apiService.delete(`/users/${StorageId}/friends/${id}`)
   }
 
+  const handleAddFriend = async () => {
+    const loggedInUserId = localStorage.getItem("id");
+    await apiService.post(`users/${loggedInUserId}/friendrequests`,id);
+  }
+
   useEffect(() => {
     const StorageId = localStorage.getItem("id");
     if (!StorageId) {
@@ -114,7 +119,7 @@ const UserProfile: React.FC = () => {
              //Check if the current user's ID is in the friends list of the user of this profile
              (user.friends?.includes(localStorage.getItem("id") ?? "")) ? (
              <Button type="primary" onClick={handleRemoveFriend}>Remove Friend</Button>) : (
-             <Button type="primary">Add Friend</Button>)
+             <Button type="primary" onClick={handleAddFriend}>Add Friend</Button>)
            }
         </div>
       </Card>
