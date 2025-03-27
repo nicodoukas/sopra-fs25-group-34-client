@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
-//import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
 import "@ant-design/v5-patch-for-react-19";
 import { Button, Card } from "antd";
@@ -18,22 +17,24 @@ const UserProfile: React.FC = () => {
   const [user, setUser] = useState<User>({} as User);
 
   const handleGoBack = () => {
-    router.push("/users"); //navigates to the previous page
+    router.back();
   };
 
-  const handleEdit  = () => {
+  const handleEdit = () => {
     router.push(`/users/${id}/edit`);
   };
 
   const handleRemoveFriend = async () => {
-    const StorageId = localStorage.getItem("id")
-    await apiService.delete(`/users/${StorageId}/friends/${id}`)
-  }
+    const StorageId = localStorage.getItem("id");
+    await apiService.delete(`/users/${StorageId}/friends/${id}`);
+    router.back();
+  };
 
   const handleAddFriend = async () => {
     const loggedInUserId = localStorage.getItem("id");
-    await apiService.post(`/users/${loggedInUserId}/friendrequests`,id);
-  }
+    await apiService.post(`/users/${loggedInUserId}/friendrequests`, id);
+    router.back();
+  };
 
   useEffect(() => {
     const StorageId = localStorage.getItem("id");
@@ -113,17 +114,32 @@ const UserProfile: React.FC = () => {
         <p>
           <strong>Status:</strong> {user.status}
         </p>
-        <div style={{ display: "flex", marginTop: 16 , justifyContent: "space-between"}}>
+        <div
+          style={{
+            display: "flex",
+            marginTop: 16,
+            justifyContent: "space-between",
+          }}
+        >
           <Button type="primary" onClick={handleGoBack}>Go Back</Button>
-           {
-             //Check if the current user's ID is in the friends list of the user of this profile
-             (user.friends?.includes(Number(localStorage.getItem("id")))) ? (
-             <Button type="primary" onClick={handleRemoveFriend}>Remove Friend</Button>) :
-             (user.friendrequests?.includes(Number(localStorage.getItem("id")))) ? (
-             <p>pending friendrequest...</p>)
+          {
+            //Check if the current user's ID is in the friends list of the user of this profile
+            (user.friends?.includes(Number(localStorage.getItem("id"))))
+              ? (
+                <Button type="primary" onClick={handleRemoveFriend}>
+                  Remove Friend
+                </Button>
+              )
+              : (user.friendrequests?.includes(
+                  Number(localStorage.getItem("id")),
+                ))
+              ? <p>pending friendrequest...</p>
               : (
-              <Button type="primary" onClick={handleAddFriend}>Add Friend</Button>)
-           }
+                <Button type="primary" onClick={handleAddFriend}>
+                  Add Friend
+                </Button>
+              )
+          }
         </div>
       </Card>
     </div>

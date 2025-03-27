@@ -23,7 +23,7 @@ const EditUserProfile: React.FC = () => {
   const [form] = Form.useForm();
 
   const handleGoBack = () => {
-    router.push(`/users/${id}`); //navigates to the previous page
+    router.back();
   };
 
   const handleSave = async (values: FormFieldProps) => {
