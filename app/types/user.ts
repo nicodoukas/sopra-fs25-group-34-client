@@ -5,5 +5,6 @@ export interface User {
   creation_date: string | null;
   token: string | null;
   status: string | null;
-  friends: string[];
+  friends: Number[];
+  friendrequests: Number[];
 }
