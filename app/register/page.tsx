@@ -56,70 +56,70 @@ const Register: React.FC = () => {
   };
 
   return (
+    <div
+      className="login-container"
+      style={{
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgb(41, 44, 59)",
+        textAlign: "center",
+      }}
+    >
+      <h2 style={{ fontSize: "2.5rem", marginBottom: "30px" }}>
+        Create a new account
+      </h2>
       <div
-          className="login-container"
-          style={{
-            height: "100vh",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "rgb(41, 44, 59)",
-            textAlign: "center",
-          }}
+        style={{
+          width: "100%",
+          maxWidth: "400px",
+          padding: "30px",
+          backgroundColor: "rgb(20, 20, 30)",
+          borderRadius: "10px",
+          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+        }}
       >
-        <h2 style={{ fontSize: "2.5rem", marginBottom: "30px" }}>
-          Create a new account
-        </h2>
-        <div
-            style={{
-              width: "100%",
-              maxWidth: "400px",
-              padding: "30px",
-              backgroundColor: "rgb(20, 20, 30)",
-              borderRadius: "10px",
-              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
-            }}
-        >
-          <Form form={form} name="register" size="large" onFinish={handleRegister} layout="vertical">
-            <Form.Item
-                name="username"
-                label="Username"
-                rules={[{ required: true, message: "Please input your username!" }]}
-            >
-              <Input placeholder="Choose a username" />
-            </Form.Item>
-            <Form.Item
-                name="password"
-                label="Password"
-                rules={[{ required: true, message: "Please input your password!" }]}
-            >
-              <Input type="password" placeholder="Choose a password" />
-            </Form.Item>
-            <Form.Item>
-              <Button type="primary" htmlType="submit" className="register-button" block>
-                Create account
-              </Button>
-            </Form.Item>
-            <Form.Item>
-              <Button type="link" onClick={() => router.push("login")} style={{ color: "#1890ff", display: "flex"}}>
-                Already have an account? -> Sign in
-              </Button>
-            </Form.Item>
-          </Form>
-        </div>
-        <div
-            style={{
-              position: "absolute",
-              bottom: "10px",
-              left: "10px",
-              fontSize: "16px",
-              color: "lightblue",
-            }}
-        >
-          Hitster by Group 24, SoPra FS25
-        </div>
+        <Form form={form} name="register" size="large" onFinish={handleRegister} layout="vertical">
+          <Form.Item
+            name="username"
+            label="Username"
+            rules={[{ required: true, message: "Please input your username!" }]}
+          >
+            <Input placeholder="Choose a username" />
+          </Form.Item>
+          <Form.Item
+            name="password"
+            label="Password"
+            rules={[{ required: true, message: "Please input your password!" }]}
+          >
+            <Input type="password" placeholder="Choose a password" />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" className="register-button" block>
+              Create account
+            </Button>
+          </Form.Item>
+          <Form.Item>
+            <Button type="link" onClick={() => router.push("login")} style={{ color: "#1890ff", display: "flex"}}>
+              Already have an account? -> Sign in
+            </Button>
+          </Form.Item>
+        </Form>
       </div>
+      <div
+        style={{
+          position: "absolute",
+          bottom: "10px",
+          left: "10px",
+          fontSize: "16px",
+          color: "lightblue",
+        }}
+      >
+        Hitster by Group 24, SoPra FS25
+      </div>
+    </div>
   );
 };
 

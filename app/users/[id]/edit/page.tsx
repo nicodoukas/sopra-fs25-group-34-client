@@ -74,9 +74,9 @@ const EditUserProfile: React.FC = () => {
   return (
     <div
       className="card-container"
-      style={{ display: "flex", justifyContent: "center", marginTop: 20 }}
+      style={{ display: "flex", justifyContent: "center"}}
     >
-      <Card title={user.username} variant="outlined" style={{ width: 400 }}>
+      <Card title={user.username} variant="outlined" style={{ width: 350 }}>
         <Form
           form={form}
           size="large"

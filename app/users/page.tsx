@@ -8,6 +8,7 @@ import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
 import "@ant-design/v5-patch-for-react-19";
+import { SearchOutlined } from "@ant-design/icons";
 import { Button, Card, Table, Input, Space } from "antd";
 import type { TableProps } from "antd"; // antd component library allows imports of types
 // Optionally, you can import a CSS module or file for additional styling:
@@ -36,7 +37,8 @@ const Dashboard: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
   const [users, setUsers] = useState<User[] | null>(null);
-  const [searchUsername, setSearchUsername] = useState(""); // variable for saving user input
+  const [username, setUsername] = useState<string | null>(null);
+  const [searchUsername, setSearchUsername] = useState(""); // save input username
   // useLocalStorage hook example use
   // The hook returns an object with the value and two functions
   // Simply choose what you need from the hook:
@@ -102,6 +104,10 @@ const Dashboard: React.FC = () => {
         // thus we can simply assign it to our users variable.
         const users: User[] = await apiService.get<User[]>("/users");
         setUsers(users);
+        const currentUser = users.find((user) => String(user.id) === id);
+        if (currentUser) {
+          setUsername(currentUser.username);
+        }
         console.log("Fetched users:", users);
       } catch (error) {
         if (error instanceof Error) {
@@ -120,21 +126,34 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="card-container">
+      <Space style={{position: "absolute", top: 20, left: 20, zIndex: 10}}>
+        <Input
+          placeholder="Search for a user..."
+          value={searchUsername}
+          onChange={(e) => setSearchUsername(e.target.value)}
+          style={{height: "40px", fontSize: "16px"}}
+        />
+        <Button onClick={handleSearch} icon={<SearchOutlined/>}/>
+      </Space>
+      <Button
+        onClick={() => router.push(`/users/${localStorage.getItem("id")}`)}
+        style={{
+          position: "absolute",
+          top: "20px",
+          right: "20px",
+        }}
+      >
+        {`My Profile (${username})`}
+      </Button>
+      <h2 style={{fontSize: "3rem", marginBottom: "50px", textAlign: "center", color: "lightblue"}}>
+        Welcome to Hitster!
+      </h2>
       <Card
-        title="Welcome to our goofy ass website"
+        title="Overview of registered users"
         loading={!users}
         className="dashboard-container"
+        style={{marginBottom: "20px"}}
       >
-        <Space style={{ marginBottom: 16 }}>
-          <Input
-            placeholder="Enter username"
-            value={searchUsername}
-            onChange={(e) => setSearchUsername(e.target.value)}
-          />
-          <Button type="primary" onClick={handleSearch}>
-            Search
-          </Button>
-        </Space>
         {users && (
           <>
             {/* antd Table: pass the columns and data, plus a rowKey for stable row identity */}
@@ -144,7 +163,7 @@ const Dashboard: React.FC = () => {
               rowKey="id"
               onRow={(row) => ({
                 onClick: () => router.push(`/users/${row.id}`),
-                style: { cursor: "pointer" },
+                style: {cursor: "pointer"},
               })}
             />
             <Button onClick={handleLogout} type="primary">
@@ -153,9 +172,28 @@ const Dashboard: React.FC = () => {
           </>
         )}
       </Card>
-      <Button onClick={() => router.push(`/users/${localStorage.getItem("id")}/friends-lobby-requests`)}>
-        Friends & Lobby requests
-      </Button>
+      <div style={{marginBottom: "20px", display: "flex", justifyContent: "center"}}>
+        <Button style={{marginRight: "10px"}}>
+          My Friend List
+        </Button>
+        <Button style={{marginRight: "10px"}}>
+          Create a new Lobby
+        </Button>
+        <Button onClick={() => router.push(`/users/${localStorage.getItem("id")}/friends-lobby-requests`)}>
+          Friends & Lobby requests
+        </Button>
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          bottom: "10px",
+          left: "10px",
+          fontSize: "16px",
+          color: "lightblue",
+        }}
+      >
+        Hitster by Group 24, SoPra FS25
+      </div>
     </div>
   );
 };

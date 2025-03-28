@@ -6,6 +6,7 @@ import {useApi} from "@/hooks/useApi";
 
 import {User} from "@/types/user";
 import "@ant-design/v5-patch-for-react-19";
+import { SearchOutlined } from "@ant-design/icons";
 import {Button, Space, Input} from "antd";
 
 
@@ -99,25 +100,30 @@ const FriendsLobbyRequest: React.FC = () => {
   return (
     <div>
       <div
-        style={{display: "flex", justifyContent: "space-between", alignItems: "center", margin: 20, marginRight: 50}}>
-        <Space style={{marginBottom: 16}}>
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          margin: 20,
+          marginRight: 50,
+        }}>
+        <Space style={{position: "absolute", top: 20, left: 20, zIndex: 10}}>
           <Input
-            placeholder="Enter username"
+            placeholder="Search for a user..."
             value={searchUsername}
-            onChange={(e) => setSearchUsername(e.target.value)}/>
-          <Button type="primary" onClick={handleSearch}>
-            Search
-          </Button>
+            onChange={(e) => setSearchUsername(e.target.value)}
+            style={{height: "40px", fontSize: "16px"}}
+          />
+          <Button onClick={handleSearch} icon={<SearchOutlined/>}/>
         </Space>
-        <div onClick={() => router.push(`/users/${user.id}`)} style={{cursor: "pointer"}}>
-          {user.username}
+        <div onClick={() => router.push(`/users/${user.id}`)} style={{color: "white", cursor: "pointer"}}>
+          {`${user.username}`}
         </div>
       </div>
       <div style={{
         display: "flex", flexDirection: "column", justifyContent: "space-around", alignItems: "center"
       }}>
         <strong style={{marginBottom: 40}}>Your friend requests and lobby invites</strong>
-
         {friendrequests.length > 0 ? (
           friendrequests.map((friend) => (
             <div key={friend.id}>
@@ -127,18 +133,27 @@ const FriendsLobbyRequest: React.FC = () => {
               <Button onClick={() => handleAcceptFriendRequest(friend.id)}>Accept</Button>
               <Button onClick={() => handleDeclineFriendRequest(friend.id)}>Decline</Button>
             </div>
-
-        ))
-      ) : (
-        <strong>No friend requests</strong>
-      )}
+          ))
+        ) : (
+            <strong>No friend requests</strong>
+        )}
+      </div>
+      <div style={{position: "fixed", bottom: 100, left: 100}}>
+        <Button onClick={() => router.back()}>Go Back</Button>
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          bottom: "10px",
+          left: "10px",
+          fontSize: "16px",
+          color: "lightblue",
+        }}
+      >
+        Hitster by Group 24, SoPra FS25
+      </div>
     </div>
-    <div style={{position:"fixed", bottom: 60, left:20}}>
-      <Button onClick={() => router.back()}>Go Back</Button>
-    </div>
-  </div>
   );
-
 };
 
 export default FriendsLobbyRequest;
