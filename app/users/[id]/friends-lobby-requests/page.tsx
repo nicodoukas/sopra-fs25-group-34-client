@@ -6,7 +6,7 @@ import {useApi} from "@/hooks/useApi";
 
 import {User} from "@/types/user";
 import "@ant-design/v5-patch-for-react-19";
-import {Button, Card, Table, Space, Input, TableProps} from "antd";
+import {Button, Space, Input} from "antd";
 
 
 const FriendsLobbyRequest: React.FC = () => {
