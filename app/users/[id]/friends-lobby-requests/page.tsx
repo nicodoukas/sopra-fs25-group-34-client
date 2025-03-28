@@ -44,13 +44,13 @@ const FriendsLobbyRequest: React.FC = () => {
         "userId2": userId2,
         "accepted": true
       }
-      await apiService.post<User>(`/users/${id}/friends`, ResponseBody);
+      const updatedUser: User = await apiService.post<User>(`/users/${id}/friends`, ResponseBody);
+      setUser(updatedUser);
     }
     catch (error) {
       console.error("Error accepting friend request", error);
     }
-
-  }
+  };
 
   const handleDeclineFriendRequest = async (userId2: string | null): Promise<void> => {
     try {
@@ -58,14 +58,12 @@ const FriendsLobbyRequest: React.FC = () => {
         "userId2": userId2,
         "accepted": false
       }
-      await apiService.post<User>(`/users/${id}/friends`, ResponseBody);
-    }
-    catch (error) {
+      const updatedUser: User = await apiService.post<User>(`/users/${id}/friends`, ResponseBody);
+      setUser(updatedUser);
+    } catch (error) {
       console.error("Error declining friend request", error);
     }
-
-
-  }
+  };
 
   useEffect(() => {
 
@@ -94,7 +92,7 @@ const FriendsLobbyRequest: React.FC = () => {
     };
 
     fetchUser();
-  }, [apiService, id, router]);
+  }, [apiService, id, router, user]);
 
   return (
     <div>
