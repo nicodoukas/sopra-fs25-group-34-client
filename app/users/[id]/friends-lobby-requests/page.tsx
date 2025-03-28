@@ -38,12 +38,33 @@ const FriendsLobbyRequest: React.FC = () => {
     }
   };
 
-  const handleAcceptFriendRequest = async (): Promise<void> => {
-    return;
+  const handleAcceptFriendRequest = async (userId2: string | null): Promise<void> => {
+    try {
+      const ResponseBody = {
+        "userId2": userId2,
+        "accepted": true
+      }
+      await apiService.post<User>(`/users/${id}/friends`, ResponseBody);
+    }
+    catch (error) {
+      console.error("Error accepting friend request", error);
+    }
+
   }
 
-  const handleDeclineFriendRequest = async (): Promise<void> => {
-    return;
+  const handleDeclineFriendRequest = async (userId2: string | null): Promise<void> => {
+    try {
+      const ResponseBody = {
+        "userId2": userId2,
+        "accepted": false
+      }
+      await apiService.post<User>(`/users/${id}/friends`, ResponseBody);
+    }
+    catch (error) {
+      console.error("Error declining friend request", error);
+    }
+
+
   }
 
   useEffect(() => {
@@ -88,7 +109,7 @@ const FriendsLobbyRequest: React.FC = () => {
             Search
           </Button>
         </Space>
-        <div>
+        <div onClick={() => router.push(`/users/${user.id}`)} style={{cursor: "pointer"}}>
           {user.username}
         </div>
       </div>
@@ -96,21 +117,27 @@ const FriendsLobbyRequest: React.FC = () => {
         display: "flex", flexDirection: "column", justifyContent: "space-around", alignItems: "center"
       }}>
         <strong style={{marginBottom: 40}}>Your friend requests and lobby invites</strong>
+
         {friendrequests.length > 0 ? (
           friendrequests.map((friend) => (
-            <strong key={friend.id} onClick={() => router.push(`/users/${friend.id}`)} style={{cursor: "pointer"}}>
-              {friend.username} wants to be your friend
-              <Button onClick={handleAcceptFriendRequest}>Accept</Button>
-              <Button onClick={handleDeclineFriendRequest}>Decline</Button>
-            </strong>
-          ))
-        ) : (
-          <strong>No friend requests</strong>
-        )}
-      </div>
-    </div>
+            <div key={friend.id}>
+              <strong onClick={() => router.push(`/users/${friend.id}`)} style={{cursor: "pointer"}}>
+                {friend.username} wants to be your friend
+              </strong>
+              <Button onClick={() => handleAcceptFriendRequest(friend.id)}>Accept</Button>
+              <Button onClick={() => handleDeclineFriendRequest(friend.id)}>Decline</Button>
+            </div>
 
-  )
+        ))
+      ) : (
+        <strong>No friend requests</strong>
+      )}
+    </div>
+    <div style={{position:"fixed", bottom: 60, left:20}}>
+      <Button onClick={() => router.back()}>Go Back</Button>
+    </div>
+  </div>
+  );
 
 };
 
