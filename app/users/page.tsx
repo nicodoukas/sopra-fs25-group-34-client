@@ -9,7 +9,7 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
 import "@ant-design/v5-patch-for-react-19";
 import { SearchOutlined } from "@ant-design/icons";
-import { Button, Card, Table, Input, Space } from "antd";
+import { Button, Card, Input, Space, Table } from "antd";
 import type { TableProps } from "antd"; // antd component library allows imports of types
 // Optionally, you can import a CSS module or file for additional styling:
 // import "@/styles/views/Dashboard.scss";
@@ -78,9 +78,11 @@ const Dashboard: React.FC = () => {
       return;
     }
     try {
-      const user: User = await apiService.get<User>(`/usersByUsername/${searchUsername}`);
+      const user: User = await apiService.get<User>(
+        `/usersByUsername/${searchUsername}`,
+      );
       console.log("user: ", user);
-      console.log("userId: ", user.id)
+      console.log("userId: ", user.id);
       if (user && user.id) {
         router.push(`/users/${user.id}`);
       } else {
@@ -119,21 +121,21 @@ const Dashboard: React.FC = () => {
     };
 
     fetchUsers();
-  }, [apiService,router]); // dependency apiService does not re-trigger the useEffect on every render because the hook uses memoization (check useApi.tsx in the hooks).
+  }, [apiService, router]); // dependency apiService does not re-trigger the useEffect on every render because the hook uses memoization (check useApi.tsx in the hooks).
   // if the dependency array is left empty, the useEffect will trigger exactly once
   // if the dependency array is left away, the useEffect will run on every state change. Since we do a state change to users in the useEffect, this results in an infinite loop.
   // read more here: https://react.dev/reference/react/useEffect#specifying-reactive-dependencies
 
   return (
     <div className="card-container">
-      <Space style={{position: "absolute", top: 20, left: 20, zIndex: 10}}>
+      <Space style={{ position: "absolute", top: 20, left: 20, zIndex: 10 }}>
         <Input
           placeholder="Search for a user..."
           value={searchUsername}
           onChange={(e) => setSearchUsername(e.target.value)}
-          style={{height: "40px", fontSize: "16px"}}
+          style={{ height: "40px", fontSize: "16px" }}
         />
-        <Button onClick={handleSearch} icon={<SearchOutlined/>}/>
+        <Button onClick={handleSearch} icon={<SearchOutlined />} />
       </Space>
       <Button
         onClick={() => router.push(`/users/${localStorage.getItem("id")}`)}
@@ -145,14 +147,21 @@ const Dashboard: React.FC = () => {
       >
         {`My Profile (${username})`}
       </Button>
-      <h2 style={{fontSize: "3rem", marginBottom: "50px", textAlign: "center", color: "lightblue"}}>
+      <h2
+        style={{
+          fontSize: "3rem",
+          marginBottom: "50px",
+          textAlign: "center",
+          color: "lightblue",
+        }}
+      >
         Welcome to Hitster!
       </h2>
       <Card
         title="Overview of registered users"
         loading={!users}
         className="dashboard-container"
-        style={{marginBottom: "20px"}}
+        style={{ marginBottom: "20px" }}
       >
         {users && (
           <>
@@ -163,7 +172,7 @@ const Dashboard: React.FC = () => {
               rowKey="id"
               onRow={(row) => ({
                 onClick: () => router.push(`/users/${row.id}`),
-                style: {cursor: "pointer"},
+                style: { cursor: "pointer" },
               })}
             />
             <Button onClick={handleLogout} type="primary">
@@ -172,14 +181,29 @@ const Dashboard: React.FC = () => {
           </>
         )}
       </Card>
-      <div style={{marginBottom: "20px", display: "flex", justifyContent: "center"}}>
-        <Button style={{marginRight: "10px"}}>
+      <div
+        style={{
+          marginBottom: "20px",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <Button
+          onClick={() =>
+            router.push(`/users/${localStorage.getItem("id")}/friends`)}
+          style={{ marginRight: "10px" }}
+        >
           My Friend List
         </Button>
-        <Button style={{marginRight: "10px"}}>
+        <Button style={{ marginRight: "10px" }}>
           Create a new Lobby
         </Button>
-        <Button onClick={() => router.push(`/users/${localStorage.getItem("id")}/friends-lobby-requests`)}>
+        <Button
+          onClick={() =>
+            router.push(
+              `/users/${localStorage.getItem("id")}/friends-lobby-requests`,
+            )}
+        >
           Friends & Lobby requests
         </Button>
       </div>
