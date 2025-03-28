@@ -6,6 +6,7 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
 import "@ant-design/v5-patch-for-react-19";
 import { Button, Form, Input } from "antd";
+import React from "react";
 // Optionally, you can import a CSS module or file for additional styling:
 // import styles from "@/styles/page.module.css";
 
@@ -55,41 +56,70 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="login-container">
-      <Form
-        form={form}
-        name="register"
-        size="large"
-        variant="outlined"
-        onFinish={handleRegister}
-        layout="vertical"
+      <div
+          className="login-container"
+          style={{
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgb(41, 44, 59)",
+            textAlign: "center",
+          }}
       >
-        <Form.Item
-          name="username"
-          label="Username"
-          rules={[{ required: true, message: "Please input your username!" }]}
+        <h2 style={{ fontSize: "2.5rem", marginBottom: "30px" }}>
+          Create a new account
+        </h2>
+        <div
+            style={{
+              width: "100%",
+              maxWidth: "400px",
+              padding: "30px",
+              backgroundColor: "rgb(20, 20, 30)",
+              borderRadius: "10px",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+            }}
         >
-          <Input placeholder="Enter username" />
-        </Form.Item>
-        <Form.Item
-          name="password"
-          label="Password"
-          rules={[{ required: true, message: "Please input your password!" }]}
+          <Form form={form} name="register" size="large" onFinish={handleRegister} layout="vertical">
+            <Form.Item
+                name="username"
+                label="Username"
+                rules={[{ required: true, message: "Please input your username!" }]}
+            >
+              <Input placeholder="Choose a username" />
+            </Form.Item>
+            <Form.Item
+                name="password"
+                label="Password"
+                rules={[{ required: true, message: "Please input your password!" }]}
+            >
+              <Input type="password" placeholder="Choose a password" />
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit" className="register-button" block>
+                Create account
+              </Button>
+            </Form.Item>
+            <Form.Item>
+              <Button type="link" onClick={() => router.push("login")} style={{ color: "#1890ff", display: "flex"}}>
+                Already have an account? -> Sign in
+              </Button>
+            </Form.Item>
+          </Form>
+        </div>
+        <div
+            style={{
+              position: "absolute",
+              bottom: "10px",
+              left: "10px",
+              fontSize: "16px",
+              color: "lightblue",
+            }}
         >
-          <Input type="password" placeholder="Enter password" />
-        </Form.Item>
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            className="register-button"
-            onClick={() => router.push("register")}
-          >
-            Register
-          </Button>
-        </Form.Item>
-      </Form>
-    </div>
+          Hitster by Group 24, SoPra FS25
+        </div>
+      </div>
   );
 };
 
