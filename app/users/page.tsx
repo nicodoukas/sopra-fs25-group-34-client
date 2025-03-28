@@ -153,6 +153,9 @@ const Dashboard: React.FC = () => {
           </>
         )}
       </Card>
+      <Button onClick={() => router.push(`/users/${localStorage.getItem("id")}/friends-lobby-requests`)}>
+        Friends & Lobby requests
+      </Button>
     </div>
   );
 };
