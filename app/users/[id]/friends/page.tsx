@@ -30,7 +30,7 @@ const FriendList: React.FC = () => {
         const friendIdList: number[] = user.friends;
         const friends: User[] = [];
 
-        for (var friendId of friendIdList) {
+        for (const friendId of friendIdList) {
           const friend: User = await apiService.get<User>(`/users/${friendId}`);
           friends.push(friend);
         }
