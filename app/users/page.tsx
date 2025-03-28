@@ -8,7 +8,7 @@ import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
 import "@ant-design/v5-patch-for-react-19";
-import { Button, Card, Table } from "antd";
+import { Button, Card, Table, Input, Space } from "antd";
 import type { TableProps } from "antd"; // antd component library allows imports of types
 // Optionally, you can import a CSS module or file for additional styling:
 // import "@/styles/views/Dashboard.scss";
@@ -36,6 +36,7 @@ const Dashboard: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
   const [users, setUsers] = useState<User[] | null>(null);
+  const [searchUsername, setSearchUsername] = useState(""); // variable for saving user input
   // useLocalStorage hook example use
   // The hook returns an object with the value and two functions
   // Simply choose what you need from the hook:
@@ -67,6 +68,25 @@ const Dashboard: React.FC = () => {
     localStorage.removeItem("id");
 
     router.push("/login");
+  };
+
+  const handleSearch = async (): Promise<void> => {
+    if (!searchUsername.trim()) {
+      alert("Enter a username to search for.");
+      return;
+    }
+    try {
+      const user: User = await apiService.get<User>(`/usersByUsername/${searchUsername}`);
+      console.log("user: ", user);
+      console.log("userId: ", user.id)
+      if (user && user.id) {
+        router.push(`/users/${user.id}`);
+      } else {
+        alert(`No user with username ${searchUsername} exists.`);
+      }
+    } catch {
+      alert(`No user with username ${searchUsername} exists.`);
+    }
   };
 
   useEffect(() => {
@@ -101,10 +121,20 @@ const Dashboard: React.FC = () => {
   return (
     <div className="card-container">
       <Card
-        title="Get all users from secure endpoint:"
+        title="Welcome to our goofy ass website"
         loading={!users}
         className="dashboard-container"
       >
+        <Space style={{ marginBottom: 16 }}>
+          <Input
+            placeholder="Enter username"
+            value={searchUsername}
+            onChange={(e) => setSearchUsername(e.target.value)}
+          />
+          <Button type="primary" onClick={handleSearch}>
+            Search
+          </Button>
+        </Space>
         {users && (
           <>
             {/* antd Table: pass the columns and data, plus a rowKey for stable row identity */}
