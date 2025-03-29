@@ -67,6 +67,11 @@ const FriendsLobbyRequest: React.FC = () => {
   };
 
   useEffect(() => {
+    const StorageId = localStorage.getItem("id");
+    if (!StorageId) {
+      router.push("/login");
+      return;
+    }
 
     const fetchUser = async () => {
       try {
