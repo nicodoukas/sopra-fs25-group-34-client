@@ -22,6 +22,11 @@ const FriendList: React.FC = () => {
   const [friends, setFriends] = useState<User[] | null>(null);
 
   useEffect(() => {
+    const StorageId = localStorage.getItem("id");
+    if (!StorageId) {
+      router.push("/login");
+      return;
+    }
     const fetchFriends = async () => {
       try {
         const user: User = await apiService.get<User>(
