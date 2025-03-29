@@ -20,16 +20,16 @@ Note: If a team member fails to show continuous progress after using their Joker
 
 ## Contributions Week 1 - [Begin Date] to [End Date]
 
-| **Student**      | **Date**  | **Link to Commit**          | **Description**                     | **Relevance**                          |
-|-------------------|-----------|-----------------------------|-------------------------------------|-----------------------------------------|
-| **[@githubUser1]** | [date]    | [Link to Commit 1]          | [Brief description of the task]     | [Why this contribution is relevant]     |
-|                   | [date]    | [Link to Commit 2]          | [Brief description of the task]     | [Why this contribution is relevant]     |
-| **[@githubUser2]** | [date]    | [Link to Commit 1]          | [Brief description of the task]     | [Why this contribution is relevant]     |
-|                   | [date]    | [Link to Commit 2]          | [Brief description of the task]     | [Why this contribution is relevant]     |
-| **[@githubUser3]** | [date]    | [Link to Commit 1]          | [Brief description of the task]     | [Why this contribution is relevant]     |
-|                   | [date]    | [Link to Commit 2]          | [Brief description of the task]     | [Why this contribution is relevant]     |
-| **[@githubUser4]** | [date]    | [Link to Commit 1]          | [Brief description of the task]     | [Why this contribution is relevant]     |
-|                   | [date]    | [Link to Commit 2]          | [Brief description of the task]     | [Why this contribution is relevant]     |
+| **Student**        | **Date** | **Link to Commit**          | **Description**                                        | **Relevance**                                                                 |
+|--------------------|----------|-----------------------------|--------------------------------------------------------|-------------------------------------------------------------------------------|
+| **[@githubUser1]** | [date]   | [Link to Commit 1]          | [Brief description of the task]                        | [Why this contribution is relevant]                                           |
+|                    | [date]   | [Link to Commit 2]          | [Brief description of the task]                        | [Why this contribution is relevant]                                           |
+| **[@githubUser2]** | [date]   | [Link to Commit 1]          | [Brief description of the task]                        | [Why this contribution is relevant]                                           |
+|                    | [date]   | [Link to Commit 2]          | [Brief description of the task]                        | [Why this contribution is relevant]                                           |
+| **[@githubUser3]** | [date]   | [Link to Commit 1]          | [Brief description of the task]                        | [Why this contribution is relevant]                                           |
+|                    | [date]   | [Link to Commit 2]          | [Brief description of the task]                        | [Why this contribution is relevant]                                           |
+| **phikell**        | 26.03    | https://github.com/nicodoukas/sopra-fs25-group-34-client/commit/c4dd97d6b52a8a98e8277bb9c4ed11e80b98c63d          | Added search bar and functionality to search user      | This is our main way to find other users and add them as friends              |
+| **phikell**        | 28.03    | https://github.com/nicodoukas/sopra-fs25-group-34-client/commit/adc0ec28029f795711983fa0ea5e00f6454de007<br/>https://github.com/nicodoukas/sopra-fs25-group-34-client/commit/64bdd1ef25ee2486489290ad3eb5ab5e0a0443b8<br/>https://github.com/nicodoukas/sopra-fs25-group-34-client/commit/03fbdbe72a3328211901cb444ff446607be7bc4b          | Reworked the client to match user stories and mock-ups | General layout and UI of the client matches the mock-ups now. Easy navigation |
 
 ---
 
