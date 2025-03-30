@@ -105,7 +105,7 @@ const Login: React.FC = () => {
           </Form.Item>
           <Form.Item>
             <Button type="link" onClick={() => router.push("register")} style={{ color: "#1890ff", display: "flex"}}>
-              No account? -> Click here to Register
+              No account? -&gt; Click here to Register
             </Button>
           </Form.Item>
         </Form>
