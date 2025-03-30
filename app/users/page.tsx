@@ -8,7 +8,8 @@ import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
 import "@ant-design/v5-patch-for-react-19";
-import { Button, Card, Table } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
+import { Button, Card, Input, Space, Table } from "antd";
 import type { TableProps } from "antd"; // antd component library allows imports of types
 // Optionally, you can import a CSS module or file for additional styling:
 // import "@/styles/views/Dashboard.scss";
@@ -36,6 +37,8 @@ const Dashboard: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
   const [users, setUsers] = useState<User[] | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
+  const [searchUsername, setSearchUsername] = useState(""); // save input username
   // useLocalStorage hook example use
   // The hook returns an object with the value and two functions
   // Simply choose what you need from the hook:
@@ -69,6 +72,27 @@ const Dashboard: React.FC = () => {
     router.push("/login");
   };
 
+  const handleSearch = async (): Promise<void> => {
+    if (!searchUsername.trim()) {
+      alert("Enter a username to search for.");
+      return;
+    }
+    try {
+      const user: User = await apiService.get<User>(
+        `/usersByUsername/${searchUsername}`,
+      );
+      console.log("user: ", user);
+      console.log("userId: ", user.id);
+      if (user && user.id) {
+        router.push(`/users/${user.id}`);
+      } else {
+        alert(`No user with username ${searchUsername} exists.`);
+      }
+    } catch {
+      alert(`No user with username ${searchUsername} exists.`);
+    }
+  };
+
   useEffect(() => {
     const id = localStorage.getItem("id");
     if (!id) {
@@ -82,6 +106,10 @@ const Dashboard: React.FC = () => {
         // thus we can simply assign it to our users variable.
         const users: User[] = await apiService.get<User[]>("/users");
         setUsers(users);
+        const currentUser = users.find((user) => String(user.id) === id);
+        if (currentUser) {
+          setUsername(currentUser.username);
+        }
         console.log("Fetched users:", users);
       } catch (error) {
         if (error instanceof Error) {
@@ -93,17 +121,47 @@ const Dashboard: React.FC = () => {
     };
 
     fetchUsers();
-  }, [apiService,router]); // dependency apiService does not re-trigger the useEffect on every render because the hook uses memoization (check useApi.tsx in the hooks).
+  }, [apiService, router]); // dependency apiService does not re-trigger the useEffect on every render because the hook uses memoization (check useApi.tsx in the hooks).
   // if the dependency array is left empty, the useEffect will trigger exactly once
   // if the dependency array is left away, the useEffect will run on every state change. Since we do a state change to users in the useEffect, this results in an infinite loop.
   // read more here: https://react.dev/reference/react/useEffect#specifying-reactive-dependencies
 
   return (
     <div className="card-container">
+      <Space style={{ position: "absolute", top: 20, left: 20, zIndex: 10 }}>
+        <Input
+          placeholder="Search for a user..."
+          value={searchUsername}
+          onChange={(e) => setSearchUsername(e.target.value)}
+          style={{ height: "40px", fontSize: "16px" }}
+        />
+        <Button onClick={handleSearch} icon={<SearchOutlined />} />
+      </Space>
+      <Button
+        onClick={() => router.push(`/users/${localStorage.getItem("id")}`)}
+        style={{
+          position: "absolute",
+          top: "20px",
+          right: "20px",
+        }}
+      >
+        {`My Profile (${username})`}
+      </Button>
+      <h2
+        style={{
+          fontSize: "3rem",
+          marginBottom: "50px",
+          textAlign: "center",
+          color: "lightblue",
+        }}
+      >
+        Welcome to Hitster!
+      </h2>
       <Card
-        title="Get all users from secure endpoint:"
+        title="Overview of registered users"
         loading={!users}
         className="dashboard-container"
+        style={{ marginBottom: "20px" }}
       >
         {users && (
           <>
@@ -123,6 +181,43 @@ const Dashboard: React.FC = () => {
           </>
         )}
       </Card>
+      <div
+        style={{
+          marginBottom: "20px",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <Button
+          onClick={() =>
+            router.push(`/users/${localStorage.getItem("id")}/friends`)}
+          style={{ marginRight: "10px" }}
+        >
+          My Friend List
+        </Button>
+        <Button style={{ marginRight: "10px" }}>
+          Create a new Lobby
+        </Button>
+        <Button
+          onClick={() =>
+            router.push(
+              `/users/${localStorage.getItem("id")}/friends-lobby-requests`,
+            )}
+        >
+          Friends & Lobby requests
+        </Button>
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          bottom: "10px",
+          left: "10px",
+          fontSize: "16px",
+          color: "lightblue",
+        }}
+      >
+        Hitster by Group 24, SoPra FS25
+      </div>
     </div>
   );
 };

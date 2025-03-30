@@ -23,7 +23,7 @@ const EditUserProfile: React.FC = () => {
   const [form] = Form.useForm();
 
   const handleGoBack = () => {
-    router.push(`/users/${id}`); //navigates to the previous page
+    router.back();
   };
 
   const handleSave = async (values: FormFieldProps) => {
@@ -74,9 +74,9 @@ const EditUserProfile: React.FC = () => {
   return (
     <div
       className="card-container"
-      style={{ display: "flex", justifyContent: "center", marginTop: 20 }}
+      style={{ display: "flex", justifyContent: "center"}}
     >
-      <Card title={user.username} variant="outlined" style={{ width: 400 }}>
+      <Card title={user.username} variant="outlined" style={{ width: 350 }}>
         <Form
           form={form}
           size="large"
@@ -94,11 +94,11 @@ const EditUserProfile: React.FC = () => {
             name="birthday"
             label={<strong>Birthday:</strong>}
           >
-            <Input placeholder={user.birthday?.split('T')[0] ?? "YYYY-MM-DD"} />
+            <Input placeholder={user.creation_date ? String(user.creation_date).split('T')[0] : "YYYY-MM-DD"} />
           </Form.Item>
           <Form.Item>
             <p>
-              <strong>Creationdate:</strong> {user.creation_date?.split('T')[0]}
+              <strong>Creationdate:</strong> {user.creation_date ? String(user.creation_date).split('T')[0] : "N/A"}
             </p>
           </Form.Item>
           <Form.Item>
