@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
+import { Lobby } from "@/types/lobby";
 import "@ant-design/v5-patch-for-react-19";
 import { SearchOutlined } from "@ant-design/icons";
 import { Button, Card, Input, Space, Table } from "antd";
@@ -41,6 +42,7 @@ const Dashboard: React.FC = () => {
   const [searchUsername, setSearchUsername] = useState(""); // save input username
   const [lobbyName, setLobbyName] = useState(""); // save input lobby name
   const [createLobby, setCreateLobby] = useState(false); // check if create lobby button is pushed => show field for lobby name
+  const [lobby, setLobby] = useState<Lobby>({} as Lobby);
   // useLocalStorage hook example use
   // The hook returns an object with the value and two functions
   // Simply choose what you need from the hook:
@@ -102,8 +104,9 @@ const Dashboard: React.FC = () => {
     }
     const hostId = localStorage.getItem("id");
     try {
-      await apiService.post(`/lobbies`, hostId)
-      router.push(`/lobby`);
+      const currentLobby = await apiService.post<Lobby>(`/lobbies`, hostId);
+      setLobby(currentLobby);
+      router.push(`/lobby/${lobby.id}`);
     }
     catch (error) {
       if (error instanceof Error) {
