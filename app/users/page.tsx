@@ -40,6 +40,7 @@ const Dashboard: React.FC = () => {
   const [users, setUsers] = useState<User[] | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [searchUsername, setSearchUsername] = useState(""); // save input username
+  const [user, setUser] = useState<User>({} as User);
   const [lobbyName, setLobbyName] = useState(""); // save input lobby name
   const [createLobby, setCreateLobby] = useState(false); // check if create lobby button is pushed => show field for lobby name
   const [lobby, setLobby] = useState<Lobby>({} as Lobby);
@@ -104,9 +105,9 @@ const Dashboard: React.FC = () => {
     }
     const hostId = localStorage.getItem("id");
     try {
-      const currentLobby = await apiService.post<Lobby>(`/lobbies`, hostId);
+      const RequestBody = {host: user, lobbyName: lobbyName}
+      const currentLobby = await apiService.post<Lobby>(`/lobbies`, RequestBody);
       setLobby(currentLobby);
-      router.push(`/lobby/${lobby.id}`);
     }
     catch (error) {
       if (error instanceof Error) {
@@ -116,6 +117,12 @@ const Dashboard: React.FC = () => {
       }
     }
   }
+
+  useEffect(() => {
+    if (lobby.lobbyId){
+      router.push(`/lobby/${lobby.lobbyId}`);
+    }
+  }, [lobby, router]);
 
   useEffect(() => {
     const id = localStorage.getItem("id");
@@ -133,6 +140,7 @@ const Dashboard: React.FC = () => {
         const currentUser = users.find((user) => String(user.id) === id);
         if (currentUser) {
           setUsername(currentUser.username);
+          setUser(currentUser);
         }
         console.log("Fetched users:", users);
       } catch (error) {
