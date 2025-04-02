@@ -24,7 +24,6 @@ const LobbyPage: () => void = () => {
   const params = useParams();
   const lobbyId = params.id;
   const [lobby, setLobby] = useState<Lobby>({} as Lobby);
-  const [lobbyMembers, setLobbyMembers] = useState<User[] | null>(null)
   const [user, setUser] = useState<User>({} as User);
   const [searchUsername, setSearchUsername] = useState(""); // save input username
 
@@ -76,25 +75,6 @@ const LobbyPage: () => void = () => {
 
   }, [apiService, router, lobbyId]);
 
-  useEffect(() => {
-    const fetchLobbyMembers = async () => {
-      try {
-        const currentMembers = await apiService.get<User[]>(`/lobbies/${lobbyId}/users`);
-        setLobbyMembers(currentMembers);
-      } catch (error) {
-        if (error instanceof Error) {
-          alert(
-            `Something went wrong while fetching the lobby members:\n${error.message}`,
-          );
-          console.log(error);
-        } else {
-          console.error("An unknown error occurred while fetching the lobby members.");
-        }
-      }
-    }
-    fetchLobbyMembers();
-  }, [lobby]);
-
   return (
     <div className={"card-container"}>
       <Space style={{position: "absolute", top: 20, left: 20, zIndex: 10}}>
@@ -124,7 +104,7 @@ const LobbyPage: () => void = () => {
           color: "lightblue",
         }}
       >
-        {lobby.name}
+        {lobby.lobbyName}
       </h2>
       <div style={{display:"flex", justifyContent:"space-between", width: "30%"}}>
         <Card
@@ -139,11 +119,11 @@ const LobbyPage: () => void = () => {
           className={"dashboard-container"}
           style={{marginBottom: 50}}
         >
-          {lobby && lobbyMembers && (
+          {lobby && (lobby.members?.length > 0) && (
             <>
               <Table<User>
                 columns={columns}
-                dataSource={lobbyMembers}
+                dataSource={lobby.members}
                 rowKey="id"
                 onRow={(row) => ({
                   onClick: () => console.log("Clicked Row ID:", row.id) // Log ID on click
