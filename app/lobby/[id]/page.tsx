@@ -126,7 +126,8 @@ const LobbyPage: () => void = () => {
                 dataSource={lobby.members}
                 rowKey="id"
                 onRow={(row) => ({
-                  onClick: () => console.log("Clicked Row ID:", row.id) // Log ID on click
+                  onClick: () => router.push(`/users/${row.id}`),
+                  style: {cursor: "pointer"},
                 })}
               >
               </Table>
