@@ -2,6 +2,7 @@
 
 import React, {useEffect, useState} from "react";
 import {useParams, useRouter} from "next/navigation";
+import {router} from "next/client";
 import {useApi} from "@/hooks/useApi";
 
 import {User} from "@/types/user";
@@ -26,6 +27,30 @@ const LobbyPage: () => void = () => {
   const [lobby, setLobby] = useState<Lobby>({} as Lobby);
   const [user, setUser] = useState<User>({} as User);
   const [searchUsername, setSearchUsername] = useState(""); // save input username
+  const [hostFriends, setHostFriends] = useState<User[]>([]);
+
+  const friendColumns: TableProps<User>["columns"] = [
+    {
+      title: "Username",
+      dataIndex: "username",
+      key: "username",
+      render: (text, record) => (
+          <a onClick={() => router.push(`/users/${record.id}`)}>{text}</a>
+      ),
+    },
+    {
+      title: "Invite",
+      key: "action",
+      render: (_, record) => (
+          <Button
+              type="primary"
+              onClick={() => router.push(`/users/${record.id}`)} // TODO: send lobby invite to user (api.post)
+          >
+            Invite to Lobby
+          </Button>
+      ),
+    },
+  ];
 
   const handleSearch = async (): Promise<void> => {
     if (!searchUsername.trim()) {
@@ -59,6 +84,17 @@ const LobbyPage: () => void = () => {
         //get Lobby data
         const currentLobby = await apiService.get<Lobby>(`/lobbies/${lobbyId}`);
         setLobby(currentLobby);
+
+        //get the friends of lobby Host as User objects, store them in list HostFriends
+        const lobbyHost = lobby.host
+        console.log(lobbyHost);
+        if (lobbyHost && lobbyHost.friends?.length > 0) {
+          const friendPromises = lobbyHost.friends.map((id) => apiService.get<User>(`/users/${id}`));
+          console.log(friendPromises);
+          const friendsOfHost = await Promise.all(friendPromises);
+          console.log(friendsOfHost);
+          setHostFriends(friendsOfHost);
+        }
       }
       catch (error) {
         if (error instanceof Error) {
@@ -74,6 +110,29 @@ const LobbyPage: () => void = () => {
     fetchLobby();
 
   }, [apiService, router, lobbyId]);
+
+  useEffect(() => {
+    //get the friends of lobby Host as User objects, store them in list HostFriends
+    const fetchHostFriends = async () => {
+      const lobbyHost = lobby.host
+      console.log(lobbyHost);
+      if (lobbyHost && lobbyHost.friends?.length > 0) {
+        try {
+          const friendPromises = lobbyHost.friends.map((id) => apiService.get<User>(`/users/${id}`));
+          console.log(friendPromises);
+          const friendsOfHost = await Promise.all(friendPromises);
+          console.log(friendsOfHost);
+          setHostFriends(friendsOfHost);
+        } catch (error) {
+          console.error("Failed to fetch host's friends:", error);
+        }
+      } else {
+        setHostFriends([]);
+      }
+    };
+
+    fetchHostFriends();
+  }, [lobby]);
 
   return (
     <div className={"card-container"}>
@@ -108,10 +167,21 @@ const LobbyPage: () => void = () => {
       </h2>
       <div style={{display:"flex", justifyContent:"space-between", width: "30%"}}>
         <Card
-          title="Friends"
+          title="Invite Friends"
+          loading={!hostFriends}
           className={"dashboard-container"}
-          style={{marginBottom: 50}}
+          style={{ marginBottom: 50, marginRight: 50 }}
         >
+          {hostFriends.length > 0 ? (
+            <Table<User>
+              columns={friendColumns}
+              dataSource={hostFriends}
+              rowKey="id"
+              pagination={false}
+            />
+          ) : (
+            <p>Host has no friends</p>
+          )}
         </Card>
         <Card
           title="Players"
