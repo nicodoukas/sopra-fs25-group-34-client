@@ -7,4 +7,6 @@ export interface User {
   status: string | null;
   friends: number[];
   friendrequests: number[];
+  openLobbyInvitations: number[];
+  lobbyId: string | null;
 }

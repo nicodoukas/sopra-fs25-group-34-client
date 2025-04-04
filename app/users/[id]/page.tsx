@@ -5,7 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import { User } from "@/types/user";
 import "@ant-design/v5-patch-for-react-19";
-import { Button, Card } from "antd";
+import { Button, Card, message } from "antd";
+import useLocalStorage from "@/hooks/useLocalStorage";
 
 const UserProfile: React.FC = () => {
   const router = useRouter();
@@ -15,6 +16,35 @@ const UserProfile: React.FC = () => {
   console.log("userid:", id);
 
   const [user, setUser] = useState<User>({} as User);
+  const {
+    // value: token, // is commented out because we dont need to know the token value for logout
+    // set: setToken, // is commented out because we dont need to set or update the token value
+    clear: clearToken, // all we need in this scenario is a method to clear the token
+  } = useLocalStorage<string>("token", "");
+
+  const handleLogout = async (): Promise<void> => {
+    const id = localStorage.getItem("id");
+
+    if (!id) {
+      console.error("No user ID found (localStorage)");
+      return;
+    }
+    console.log("user with id ", id, "is about to logout");
+
+    try {
+      await apiService.put("/logout", id);
+      console.log("logout successful for user with id: ", id);
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+
+    // Clear token using the returned function 'clear' from the hook
+    clearToken();
+
+    localStorage.removeItem("id");
+
+    router.push("/login");
+  };
 
   const handleGoBack = () => {
     router.back();
@@ -27,12 +57,14 @@ const UserProfile: React.FC = () => {
   const handleRemoveFriend = async () => {
     const StorageId = localStorage.getItem("id");
     await apiService.delete(`/users/${StorageId}/friends/${id}`);
+    message.success(`${user.username} removed from friend list`);
     router.back();
   };
 
   const handleAddFriend = async () => {
     const loggedInUserId = localStorage.getItem("id");
     await apiService.post(`/users/${loggedInUserId}/friendrequests`, id);
+    message.success(`Friend request sent to ${user.username}`);
     router.back();
   };
 
@@ -90,6 +122,9 @@ const UserProfile: React.FC = () => {
             }}
           >
             <Button type="primary" onClick={handleGoBack}>Go Back</Button>
+            <Button type="primary" onClick={handleLogout}>
+              Logout
+            </Button>
             <Button type="primary" onClick={handleEdit}>Edit</Button>
           </div>
         </Card>

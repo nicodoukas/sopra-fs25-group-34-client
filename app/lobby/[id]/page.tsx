@@ -2,14 +2,13 @@
 
 import React, {useEffect, useState} from "react";
 import {useParams, useRouter} from "next/navigation";
-import {router} from "next/client";
 import {useApi} from "@/hooks/useApi";
 
 import {User} from "@/types/user";
 import {Lobby} from "@/types/lobby";
 import "@ant-design/v5-patch-for-react-19";
 import {SearchOutlined} from "@ant-design/icons";
-import {Button, Space, Input, TableProps, Table, Card} from "antd";
+import {Button, Space, Input, TableProps, Table, Card, message} from "antd";
 
 const columns: TableProps<User>["columns"] = [
   {
@@ -42,12 +41,20 @@ const LobbyPage: () => void = () => {
       title: "Invite",
       key: "action",
       render: (_, record) => (
-          <Button
-              type="primary"
-              onClick={() => router.push(`/users/${record.id}`)} // TODO: send lobby invite to user (api.post)
-          >
-            Invite to Lobby
-          </Button>
+        <Button
+          type="primary"
+          onClick={async () => {
+            try {
+              await apiService.post(`/lobbies/invite/${record.id}`, lobby.lobbyId);
+              message.success(`Lobby invite sent to ${record.username}`);
+            } catch (error) {
+              alert(`Failed to invite ${record.username}.`);
+              console.error("Invite error:", error);
+            }
+          }}
+        >
+          Invite to Lobby
+        </Button>
       ),
     },
   ];
@@ -165,19 +172,18 @@ const LobbyPage: () => void = () => {
       >
         {lobby.lobbyName}
       </h2>
-      <div style={{display:"flex", justifyContent:"space-between", width: "30%"}}>
+      <div style={{display: "flex", justifyContent: "space-between", width: "50%"}}>
         <Card
           title="Invite Friends"
           loading={!hostFriends}
           className={"dashboard-container"}
-          style={{ marginBottom: 50, marginRight: 50 }}
+          style={{marginBottom: 50, marginRight: 50}}
         >
           {hostFriends.length > 0 ? (
             <Table<User>
               columns={friendColumns}
               dataSource={hostFriends}
               rowKey="id"
-              pagination={false}
             />
           ) : (
             <p>Host has no friends</p>
@@ -187,7 +193,7 @@ const LobbyPage: () => void = () => {
           title="Players"
           loading={!lobby}
           className={"dashboard-container"}
-          style={{marginBottom: 50}}
+          style={{marginBottom: 50, width: "50%"}}
         >
           {lobby && (lobby.members?.length > 0) && (
             <>
@@ -204,18 +210,30 @@ const LobbyPage: () => void = () => {
             </>
           )}
         </Card>
-
-        <div
-          style={{
-            position: "absolute",
-            bottom: "10px",
-            left: "10px",
-            fontSize: "16px",
-            color: "lightblue",
-          }}
-        >
-          Hitster by Group 24, SoPra FS25
-        </div>
+      </div>
+      <Button
+        style={{
+          position: "absolute",
+          bottom: "20px",
+          left: "50%",
+        }}
+        onClick={() => {
+          // Start the game functionality
+        }}
+        hidden={localStorage.getItem("id") !== lobby.host?.id}
+      >
+        Start Game
+      </Button>
+      <div
+        style={{
+          position: "absolute",
+          bottom: "10px",
+          left: "10px",
+          fontSize: "16px",
+          color: "lightblue",
+        }}
+      >
+        Hitster by Group 24, SoPra FS25
       </div>
     </div>
   )
