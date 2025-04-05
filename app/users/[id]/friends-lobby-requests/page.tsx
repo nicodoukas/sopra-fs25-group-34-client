@@ -70,6 +70,32 @@ const FriendsLobbyRequest: React.FC = () => {
     }
   };
 
+  const handleAcceptLobbyInvite = async (lobbyId: string | null): Promise<void> =>{
+    try {
+      const ResponseBody = {
+        "userId": user.id,
+        "accepted": true
+      }
+      const updatedLobby: Lobby = await apiService.post<Lobby>(`/lobbies/${lobbyId}/users`, ResponseBody);
+      message.success("Lobby invite accepted")
+    } catch (error) {
+      console.error("Error accepting lobby invite", error);
+    }
+  }
+
+  const handleDeclineLobbyInvite = async (lobbyId: string | null): Promise<void> =>{
+    try {
+      const ResponseBody = {
+        "userId": user.id,
+        "accepted": false
+      }
+      const updatedLobby: Lobby = await apiService.post<Lobby>(`/lobbies/${lobbyId}/users`, ResponseBody);
+      message.success("Lobby invite declined")
+    } catch (error) {
+      console.error("Error accepting lobby invite", error);
+    }
+  }
+
   useEffect(() => {
     const StorageId = localStorage.getItem("id");
     if (!StorageId || StorageId != id) {
@@ -163,13 +189,15 @@ const FriendsLobbyRequest: React.FC = () => {
         {lobbyInvites.length > 0 ? (
           lobbyInvites.map((lobby) => (
             <div key={lobby.lobbyId}>
-              <strong>
+              <strong onClick={() => router.push(`/users`)} style={{cursor: "pointer"}}>
                 You have been invited to lobby: {lobby.lobbyName}
               </strong>
-              <Button type="primary" style={{marginLeft: 10}}>
+              <Button type="primary" style={{marginLeft: 10}}
+                onClick = {() => handleAcceptLobbyInvite(lobby.lobbyId)}>
                 Accept
               </Button>
-              <Button style={{marginLeft: 5}}>
+              <Button style={{marginLeft: 5}}
+                onClick = {() => handleDeclineLobbyInvite(lobby.lobbyId)}>
                 Decline
               </Button>
             </div>
