@@ -12,6 +12,7 @@ import {Button, Space, Input, message} from "antd";
 
 
 const FriendsLobbyRequest: React.FC = () => {
+  const [messageAPI, contextHolder] = message.useMessage();
   const router = useRouter();
   const apiService = useApi();
   const params = useParams();
@@ -49,7 +50,7 @@ const FriendsLobbyRequest: React.FC = () => {
       }
       const updatedUser: User = await apiService.post<User>(`/users/${id}/friends`, ResponseBody);
       setUser(updatedUser);
-      message.success(`Friend request accepted`);
+      messageAPI.success(`Friend request accepted`);
     }
     catch (error) {
       console.error("Error accepting friend request", error);
@@ -64,7 +65,7 @@ const FriendsLobbyRequest: React.FC = () => {
       }
       const updatedUser: User = await apiService.post<User>(`/users/${id}/friends`, ResponseBody);
       setUser(updatedUser);
-      message.success(`Friend request declined`);
+      messageAPI.success(`Friend request declined`);
     } catch (error) {
       console.error("Error declining friend request", error);
     }
@@ -77,7 +78,7 @@ const FriendsLobbyRequest: React.FC = () => {
         "accepted": true
       }
       const updatedLobby: Lobby = await apiService.post<Lobby>(`/lobbies/${lobbyId}/users`, ResponseBody);
-      message.success("Lobby invite accepted")
+      messageAPI.success("Lobby invite accepted")
     } catch (error) {
       console.error("Error accepting lobby invite", error);
     }
@@ -90,7 +91,7 @@ const FriendsLobbyRequest: React.FC = () => {
         "accepted": false
       }
       const updatedLobby: Lobby = await apiService.post<Lobby>(`/lobbies/${lobbyId}/users`, ResponseBody);
-      message.success("Lobby invite declined")
+      messageAPI.success("Lobby invite declined")
     } catch (error) {
       console.error("Error accepting lobby invite", error);
     }
@@ -143,6 +144,7 @@ const FriendsLobbyRequest: React.FC = () => {
 
   return (
     <div>
+      {contextHolder}
       <div
         style={{
           display: "flex",

@@ -56,6 +56,10 @@ export default function RootLayout({
                 labelColor: "#fff",
                 algorithm: theme.defaultAlgorithm, // specify a specifc algorithm instead of true/false
               },
+              Message: {
+                colorText: "black", // black text for message from antd
+                colorBgContainer: "#f5f5f5",
+              },
               Card: {},
             },
           }}

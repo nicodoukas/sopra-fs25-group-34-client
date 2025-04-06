@@ -9,6 +9,7 @@ import { Button, Card, message } from "antd";
 import useLocalStorage from "@/hooks/useLocalStorage";
 
 const UserProfile: React.FC = () => {
+  const [messageAPI, contextHolder] = message.useMessage();
   const router = useRouter();
   const apiService = useApi();
   const params = useParams();
@@ -56,16 +57,34 @@ const UserProfile: React.FC = () => {
 
   const handleRemoveFriend = async () => {
     const StorageId = localStorage.getItem("id");
-    await apiService.delete(`/users/${StorageId}/friends/${id}`);
-    message.success(`${user.username} removed from friend list`);
-    router.back();
+    try {
+      await apiService.delete(`/users/${StorageId}/friends/${id}`);
+      messageAPI.success(`${user.username} removed from friend list`);
+
+      const updatedUser: User = await apiService.get<User>(`/users/${id}`);
+      setUser(updatedUser);
+    }
+    catch (error){
+      console.error("Error removing friend:", error);
+      messageAPI.error("Failed to remove friend.");
+    }
+
   };
 
   const handleAddFriend = async () => {
     const loggedInUserId = localStorage.getItem("id");
-    await apiService.post(`/users/${loggedInUserId}/friendrequests`, id);
-    message.success(`Friend request sent to ${user.username}`);
-    router.back();
+    try {
+      await apiService.post(`/users/${loggedInUserId}/friendrequests`, id);
+      messageAPI.success(`Friend request sent to ${user.username}`);
+
+      const updatedUser: User = await apiService.get<User>(`/users/${id}`);
+      setUser(updatedUser);
+    }
+    catch (error) {
+      console.error("Error adding friend:", error);
+      messageAPI.error("Failed to add friend.");
+    }
+
   };
 
   useEffect(() => {
@@ -101,6 +120,7 @@ const UserProfile: React.FC = () => {
         className="card-container"
         style={{display: "flex", justifyContent: "center"}}
       >
+        {contextHolder}
         <Card title={user.username} variant="outlined" style={{width: 350}}>
           <p>
             <strong>Username:</strong> {user.username}
@@ -147,6 +167,7 @@ const UserProfile: React.FC = () => {
       className="card-container"
       style={{display: "flex", justifyContent: "center"}}
       >
+      {contextHolder}
         <Card title={user.username} variant="outlined" style={{width: 350}}>
           <p>
           <strong>Username:</strong> {user.username}
