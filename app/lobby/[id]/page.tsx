@@ -116,7 +116,7 @@ const LobbyPage: () => void = () => {
     }
     fetchLobby();
 
-  }, [apiService, router, lobbyId]);
+  }, [apiService, router, lobbyId, lobby.host]);
 
   useEffect(() => {
     //get the friends of lobby Host as User objects, store them in list HostFriends
@@ -139,7 +139,7 @@ const LobbyPage: () => void = () => {
     };
 
     fetchHostFriends();
-  }, [lobby]);
+  }, [apiService, lobby]);
 
   return (
     <div className={"card-container"}>

@@ -103,7 +103,6 @@ const Dashboard: React.FC = () => {
       alert("Enter a Name for your lobby.");
       return
     }
-    const hostId = localStorage.getItem("id");
     try {
       const RequestBody = {host: user, lobbyName: lobbyName}
       const currentLobby = await apiService.post<Lobby>(`/lobbies`, RequestBody);
