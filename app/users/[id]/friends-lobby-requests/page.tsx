@@ -121,12 +121,9 @@ const FriendsLobbyRequest: React.FC = () => {
 
     const fetchFriendRequestsAndLobbies = async () => {
       try {
-        // Fetch all users and filter friend requests
-        const allUsers = await apiService.get<User[]>(`/users`);
-        const friendrequestDetails = allUsers.filter((u) =>
-            user.friendrequests.includes(Number(u.id))
-        );
-        setFriendrequests(friendrequestDetails);
+        // Fetch all users with id inside the user.friendrequests list
+        const friendrequestDetails :User[] = await Promise.all(user.friendrequests.map((id) => apiService.get<User>(`/users/${id}`)));
+        setFriendrequests(friendrequestDetails)
 
         // Fetch lobby invites
         const lobbyInvitePromises = user.openLobbyInvitations.map((lobbyId) =>
