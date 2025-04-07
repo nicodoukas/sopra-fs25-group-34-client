@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
+import { Lobby } from "@/types/lobby";
 import "@ant-design/v5-patch-for-react-19";
 import { SearchOutlined } from "@ant-design/icons";
 import { Button, Card, Input, Space, Table } from "antd";
@@ -39,6 +40,10 @@ const Dashboard: React.FC = () => {
   const [users, setUsers] = useState<User[] | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [searchUsername, setSearchUsername] = useState(""); // save input username
+  const [user, setUser] = useState<User>({} as User);
+  const [lobbyName, setLobbyName] = useState(""); // save input lobby name
+  const [createLobby, setCreateLobby] = useState(false); // check if create lobby button is pushed => show field for lobby name
+  const [lobby, setLobby] = useState<Lobby>({} as Lobby);
   // useLocalStorage hook example use
   // The hook returns an object with the value and two functions
   // Simply choose what you need from the hook:
@@ -93,6 +98,31 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const handleCreateLobby = async (): Promise<void> => {
+    if (lobbyName == ""){
+      alert("Enter a Name for your lobby.");
+      return
+    }
+    try {
+      const RequestBody = {host: user, lobbyName: lobbyName}
+      const currentLobby = await apiService.post<Lobby>(`/lobbies`, RequestBody);
+      setLobby(currentLobby);
+    }
+    catch (error) {
+      if (error instanceof Error) {
+        alert(`Something went wrong while creating the lobby:\n${error.message}`);
+      } else {
+        console.error("An unknown error occurred while creating the lobby.");
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (lobby.lobbyId){
+      router.push(`/lobby/${lobby.lobbyId}`);
+    }
+  }, [lobby, router]);
+
   useEffect(() => {
     const id = localStorage.getItem("id");
     if (!id) {
@@ -109,6 +139,7 @@ const Dashboard: React.FC = () => {
         const currentUser = users.find((user) => String(user.id) === id);
         if (currentUser) {
           setUsername(currentUser.username);
+          setUser(currentUser);
         }
         console.log("Fetched users:", users);
       } catch (error) {
@@ -157,12 +188,14 @@ const Dashboard: React.FC = () => {
       >
         Welcome to Hitster!
       </h2>
-      <Card
-        title="Overview of registered users"
-        loading={!users}
-        className="dashboard-container"
-        style={{ marginBottom: "20px" }}
-      >
+      {!createLobby ? (
+      <>
+        <Card
+          title="Overview of registered users"
+          loading={!users}
+          className="dashboard-container"
+          style={{ marginBottom: "20px" }}
+        >
         {users && (
           <>
             {/* antd Table: pass the columns and data, plus a rowKey for stable row identity */}
@@ -179,34 +212,54 @@ const Dashboard: React.FC = () => {
               Logout
             </Button>
           </>
-        )}
-      </Card>
-      <div
-        style={{
-          marginBottom: "20px",
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <Button
-          onClick={() =>
-            router.push(`/users/${localStorage.getItem("id")}/friends`)}
-          style={{ marginRight: "10px" }}
+          )}
+        </Card>
+        <div
+          style={{
+            marginBottom: "20px",
+            display: "flex",
+            justifyContent: "center",
+          }}
         >
-          My Friend List
-        </Button>
-        <Button style={{ marginRight: "10px" }}>
-          Create a new Lobby
-        </Button>
-        <Button
-          onClick={() =>
-            router.push(
+          <Button
+            onClick={() =>
+            router.push(`/users/${localStorage.getItem("id")}/friends`)}
+            style={{ marginRight: "10px" }}
+          >
+            My Friend List
+          </Button>
+          <Button onClick={() => setCreateLobby(true)} style={{marginRight: "10px"}}>
+            Create a new Lobby
+          </Button>
+          <Button
+            onClick={() =>
+              router.push(
               `/users/${localStorage.getItem("id")}/friends-lobby-requests`,
             )}
-        >
-          Friends & Lobby requests
-        </Button>
-      </div>
+          >
+            Friends & Lobby requests
+          </Button>
+        </div>
+        </>) : (
+      <>
+        <Card style={{marginBottom: "20px", width:400, height:200}}>
+          <Input
+            placeholder="enter lobby name"
+            value={lobbyName}
+            onChange={(e) => setLobbyName(e.target.value)}
+            style={{height: "40px", fontSize: "16px", marginBottom:50}}
+          />
+          <div style={{display:"flex", justifyContent:"space-between"}}>
+            <Button onClick={() => setCreateLobby(false)}>
+              Go Back
+            </Button>
+            <Button onClick={handleCreateLobby}>
+              Create Lobby
+            </Button>
+          </div>
+        </Card>
+      </>
+      )}
       <div
         style={{
           position: "absolute",
