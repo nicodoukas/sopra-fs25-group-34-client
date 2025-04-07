@@ -130,9 +130,9 @@ const FriendsLobbyRequest: React.FC = () => {
 
         // Fetch lobby invites
         const lobbyInvitePromises = user.openLobbyInvitations.map((lobbyId) =>
-            apiService.get(`/lobbies/${lobbyId}`)
+            apiService.get<Lobby> (`/lobbies/${lobbyId}`)
         );
-        const lobbyInvitesTemp = await Promise.all(lobbyInvitePromises);
+        const lobbyInvitesTemp: Lobby[] = await Promise.all(lobbyInvitePromises);
         setLobbyInvites(lobbyInvitesTemp);
       } catch (error) {
         console.error("Error fetching friend requests or lobbies:", error);
