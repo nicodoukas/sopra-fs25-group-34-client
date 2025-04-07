@@ -77,7 +77,7 @@ const FriendsLobbyRequest: React.FC = () => {
         "userId": user.id,
         "accepted": true
       }
-      const updatedLobby: Lobby = await apiService.post<Lobby>(`/lobbies/${lobbyId}/users`, ResponseBody);
+      await apiService.post<Lobby>(`/lobbies/${lobbyId}/users`, ResponseBody);
       messageAPI.success("Lobby invite accepted")
     } catch (error) {
       console.error("Error accepting lobby invite", error);
@@ -90,7 +90,10 @@ const FriendsLobbyRequest: React.FC = () => {
         "userId": user.id,
         "accepted": false
       }
-      const updatedLobby: Lobby = await apiService.post<Lobby>(`/lobbies/${lobbyId}/users`, ResponseBody);
+      await apiService.post<Lobby>(`/lobbies/${lobbyId}/users`, ResponseBody);
+      const currentUser = await apiService.get<User>(`/users/${user.id}`);
+      setUser(currentUser);
+
       messageAPI.success("Lobby invite declined")
     } catch (error) {
       console.error("Error accepting lobby invite", error);
