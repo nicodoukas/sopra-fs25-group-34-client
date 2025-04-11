@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1e63a26f-e51b-4331-99d5-b9f0e94fafc3" name="Changes" comment="Added mock game page and types needed in client (game, player, round, songcard)">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/lobby/[id]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/lobby/[id]/page.tsx" afterDir="false" />
-    </list>
+    <list default="true" id="1e63a26f-e51b-4331-99d5-b9f0e94fafc3" name="Changes" comment="Starting game in lobby pushes to game page and sets Status of all members to PLAYING" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -59,7 +56,7 @@
       <updated>1740059347832</updated>
       <workItem from="1740059348975" duration="4621000" />
       <workItem from="1744032864265" duration="5000" />
-      <workItem from="1744375794084" duration="4074000" />
+      <workItem from="1744375794084" duration="4561000" />
     </task>
     <task id="LOCAL-00001" summary="test commit 1">
       <option name="closed" value="true" />
@@ -101,7 +98,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744378653064</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Starting game in lobby pushes to game page and sets Status of all members to PLAYING">
+      <option name="closed" value="true" />
+      <created>1744380402677</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1744380402677</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -112,6 +117,7 @@
     <MESSAGE value="page.tsx change" />
     <MESSAGE value="merged story5 into main" />
     <MESSAGE value="Added mock game page and types needed in client (game, player, round, songcard)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added mock game page and types needed in client (game, player, round, songcard)" />
+    <MESSAGE value="Starting game in lobby pushes to game page and sets Status of all members to PLAYING" />
+    <option name="LAST_COMMIT_MESSAGE" value="Starting game in lobby pushes to game page and sets Status of all members to PLAYING" />
   </component>
 </project>

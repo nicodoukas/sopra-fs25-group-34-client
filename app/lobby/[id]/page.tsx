@@ -21,7 +21,6 @@ const columns: TableProps<User>["columns"] = [
 const LobbyPage: () => void = () => {
   const router = useRouter();
   const apiService = useApi();
-  const [messageAPI, contextHolder] = message.useMessage();
   const params = useParams();
   const lobbyId = params.id;
   const [lobby, setLobby] = useState<Lobby>({} as Lobby);
@@ -47,7 +46,7 @@ const LobbyPage: () => void = () => {
           onClick={async () => {
             try {
               await apiService.post(`/lobbies/invite/${record.id}`, lobby.lobbyId);
-              messageAPI.success(`Lobby invite sent to ${record.username}`);
+              message.success(`Lobby invite sent to ${record.username}`);
             } catch (error) {
               alert(`Failed to invite ${record.username}.`);
               console.error("Invite error:", error);
@@ -89,7 +88,7 @@ const LobbyPage: () => void = () => {
           apiService.put("/playing", member.id)
         );
         await Promise.all(updateStatusPromises);
-        messageAPI.success("Host has started the game");
+        message.success("Host has started the game");
         router.push(`/game/${lobbyId}`);
       } catch (error) {
         console.error("Failed to set all users to PLAYING:", error);
