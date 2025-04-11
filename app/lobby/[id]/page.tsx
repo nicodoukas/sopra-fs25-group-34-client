@@ -218,7 +218,7 @@ const LobbyPage: () => void = () => {
           left: "50%",
         }}
         onClick={() => {
-          // Start the game functionality
+          router.push(`/game/${lobbyId}`)
         }}
         hidden={localStorage.getItem("id") !== lobby.host?.id}
       >
