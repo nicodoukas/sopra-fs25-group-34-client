@@ -21,6 +21,7 @@ const columns: TableProps<User>["columns"] = [
 const LobbyPage: () => void = () => {
   const router = useRouter();
   const apiService = useApi();
+  const [messageAPI, contextHolder] = message.useMessage();
   const params = useParams();
   const lobbyId = params.id;
   const [lobby, setLobby] = useState<Lobby>({} as Lobby);
@@ -46,7 +47,7 @@ const LobbyPage: () => void = () => {
           onClick={async () => {
             try {
               await apiService.post(`/lobbies/invite/${record.id}`, lobby.lobbyId);
-              message.success(`Lobby invite sent to ${record.username}`);
+              messageAPI.success(`Lobby invite sent to ${record.username}`);
             } catch (error) {
               alert(`Failed to invite ${record.username}.`);
               console.error("Invite error:", error);
@@ -79,6 +80,22 @@ const LobbyPage: () => void = () => {
       alert(`No user with username ${searchUsername} exists.`);
     }
   };
+
+  // this function is only gonna work for the host. To get all members to game page, websockets are needed (?)
+    const startGame = async () => {
+      try {
+        // Send PUT request for each lobby member, setting status to PLAYING
+        const updateStatusPromises = lobby.members.map((member) =>
+          apiService.put("/playing", member.id)
+        );
+        await Promise.all(updateStatusPromises);
+        messageAPI.success("Host has started the game");
+        router.push(`/game/${lobbyId}`);
+      } catch (error) {
+        console.error("Failed to set all users to PLAYING:", error);
+        alert("Something went wrong while starting the game.");
+      }
+    };
 
   useEffect(() => {
     const fetchLobby = async () => {
@@ -218,7 +235,7 @@ const LobbyPage: () => void = () => {
           left: "50%",
         }}
         onClick={() => {
-          router.push(`/game/${lobbyId}`)
+          startGame
         }}
         hidden={localStorage.getItem("id") !== lobby.host?.id}
       >
