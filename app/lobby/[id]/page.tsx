@@ -19,6 +19,7 @@ const columns: TableProps<User>["columns"] = [
 ];
 
 const LobbyPage: () => void = () => {
+  const [messageAPI, contextHolder] = message.useMessage()
   const router = useRouter();
   const apiService = useApi();
   const params = useParams();
@@ -46,7 +47,7 @@ const LobbyPage: () => void = () => {
           onClick={async () => {
             try {
               await apiService.post(`/lobbies/invite/${record.id}`, lobby.lobbyId);
-              message.success(`Lobby invite sent to ${record.username}`);
+              messageAPI.success(`Lobby invite sent to ${record.username}`);
             } catch (error) {
               alert(`Failed to invite ${record.username}.`);
               console.error("Invite error:", error);
@@ -88,7 +89,7 @@ const LobbyPage: () => void = () => {
           apiService.put("/playing", member.id)
         );
         await Promise.all(updateStatusPromises);
-        message.success("Host has started the game");
+        messageAPI.success("Host has started the game");
         await apiService.post("/games", lobbyId);
         router.push(`/game/${lobbyId}`);
       } catch (error) {
@@ -160,6 +161,7 @@ const LobbyPage: () => void = () => {
 
   return (
     <div className={"card-container"}>
+      {contextHolder}
       <Space style={{position: "absolute", top: 20, left: 20, zIndex: 10}}>
         <Input
           placeholder="Search for a user..."

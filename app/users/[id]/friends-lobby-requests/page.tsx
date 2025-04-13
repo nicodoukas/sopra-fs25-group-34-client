@@ -79,7 +79,7 @@ const FriendsLobbyRequest: React.FC = () => {
       }
       await apiService.post<Lobby>(`/lobbies/${lobbyId}/users`, ResponseBody);
       messageAPI.success("Lobby invite accepted");
-      router.push(`/lobbies/${lobbyId}`);
+      router.push(`/lobby/${lobbyId}`);
     } catch (error) {
       console.error("Error accepting lobby invite", error);
     }
