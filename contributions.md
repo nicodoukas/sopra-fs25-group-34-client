@@ -66,7 +66,15 @@ Note: If a team member fails to show continuous progress after using their Joker
 
 ## Contributions Week 4 - [Begin Date] to [End Date]
 
-*Continue with the same table format as above.*
+| **Student**    | **Date** | **Link to Commit** | **Description** | **Relevance** |
+|----------------|----------|--------------------|------------------|----------------|
+|                |          |                    |                  |                |
+|                |          |                    |                  |                |
+|                |          |                    |                  |                |
+|                |          |                    |                  |                |
+|                |          |                    |                  |                |
+|                |          |                    |                  |                |
+|                |          |                    |                  |                |
 
 ---
 
