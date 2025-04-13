@@ -1,13 +1,44 @@
 "use client";
 
-import React from "react";
-import { useRouter } from "next/navigation";
-import { Button, Typography, Card } from "antd";
+import React, {useEffect, useState} from "react";
+import { useRouter, useParams } from "next/navigation";
+import {useApi} from "@/hooks/useApi";
+import { Button, Typography, Card, List } from "antd";
+import "@ant-design/v5-patch-for-react-19";
+import {Game} from "@/types/game";
+import {Player} from "@/types/player";
+import {SongCard} from "@/types/songcard";
 
-const { Title } = Typography;
+
+const { Title, Text } = Typography;
 
 const GamePage = () => {
   const router = useRouter();
+  const apiService = useApi();
+  const params = useParams();
+  const gameId = params.id;
+  const [game, setGame] = useState<Game>({} as Game);
+  const [player, setPlayer] = useState<Player>({} as Player);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const gameData = await apiService.get<Game>(`/games/${gameId}`);
+        console.log("This is the game: ", game);
+        setGame(gameData);
+        const userId = localStorage.getItem("id");
+        const playerData = await apiService.get<Player>(`/games/${gameId}/${userId}`);
+        setPlayer(playerData);
+          console.log("This is the player: ", player);
+      } catch (error) {
+        alert("Failed to fetch game or player data.");
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [apiService, gameId]);
+
+
   return (
     <div
       style={{
@@ -15,23 +46,55 @@ const GamePage = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#f0f2f5",
+        backgroundColor: "black",
         flexDirection: "column",
+        paddingTop: "80px",
+        position: "relative",
       }}
     >
+      {player && (
+        <div
+          style={{
+            position: "absolute",
+            top: "20px",
+            right: "30px",
+            fontSize: "18px",
+            fontWeight: 500,
+            color: "#52c41a",
+          }}
+        >
+          Coins: {player.coinBalance}
+        </div>
+      )}
       <Card
         style={{
           padding: "40px",
-          width: "600px",
+          width: "700px",
           textAlign: "center",
           borderRadius: "16px",
           boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
         }}
       >
         <Title level={2} style={{ color: "#1890ff" }}>
-          mock of game page
+          {game?.gameName || "{gameName}"}
         </Title>
-        <Button type="primary" onClick={() => router.back}>
+        <div style={{ marginTop: "40px", textAlign: "left" }}>
+          <Title level={4}>Your Timeline</Title>
+          {player?.timeline && player.timeline.length > 0 ? (
+            <List
+              bordered
+              dataSource={player.timeline}
+              renderItem={(card: SongCard, index: number) => (
+                <List.Item key={index}>
+                  <Text strong>{card.title}</Text> — <Text type="secondary">{card.artist}</Text>
+                </List.Item>
+              )}
+            />
+          ) : (
+            <Text type="secondary">No songcards in timeline.</Text>
+          )}
+        </div>
+        <Button style={{ marginTop: "30px" }} onClick={() => router.back()}>
           Back to Lobby-Screen
         </Button>
       </Card>

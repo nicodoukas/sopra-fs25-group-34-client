@@ -89,6 +89,7 @@ const LobbyPage: () => void = () => {
         );
         await Promise.all(updateStatusPromises);
         message.success("Host has started the game");
+        await apiService.post("/games", lobbyId);
         router.push(`/game/${lobbyId}`);
       } catch (error) {
         console.error("Failed to set all users to PLAYING:", error);
@@ -109,15 +110,15 @@ const LobbyPage: () => void = () => {
         setLobby(currentLobby);
 
         //get the friends of lobby Host as User objects, store them in list HostFriends
-        const lobbyHost = lobby.host
-        console.log(lobbyHost);
-        if (lobbyHost && lobbyHost.friends?.length > 0) {
-          const friendPromises = lobbyHost.friends.map((id) => apiService.get<User>(`/users/${id}`));
-          console.log(friendPromises);
-          const friendsOfHost = await Promise.all(friendPromises);
-          console.log(friendsOfHost);
-          setHostFriends(friendsOfHost);
-        }
+        // const lobbyHost = lobby.host
+        // console.log(lobbyHost);
+        // if (lobbyHost && lobbyHost.friends?.length > 0) {
+        //   const friendPromises = lobbyHost.friends.map((id) => apiService.get<User>(`/users/${id}`));
+        //   console.log(friendPromises);
+        //   const friendsOfHost = await Promise.all(friendPromises);
+        //   console.log(friendsOfHost);
+        //   setHostFriends(friendsOfHost);
+        // }
       }
       catch (error) {
         if (error instanceof Error) {
@@ -132,7 +133,7 @@ const LobbyPage: () => void = () => {
     }
     fetchLobby();
 
-  }, [apiService, router, lobbyId, lobby.host]);
+  }, [apiService, router, lobbyId]);
 
   useEffect(() => {
     //get the friends of lobby Host as User objects, store them in list HostFriends
@@ -155,7 +156,7 @@ const LobbyPage: () => void = () => {
     };
 
     fetchHostFriends();
-  }, [apiService, lobby]);
+  }, [apiService, lobby.host]);
 
   return (
     <div className={"card-container"}>
@@ -230,12 +231,10 @@ const LobbyPage: () => void = () => {
       <Button
         style={{
           position: "absolute",
-          bottom: "20px",
-          left: "50%",
+          bottom: "75px",
+          left: "45%",
         }}
-        onClick={() => {
-          startGame
-        }}
+        onClick={startGame}
         hidden={localStorage.getItem("id") !== lobby.host?.id}
       >
         Start Game
