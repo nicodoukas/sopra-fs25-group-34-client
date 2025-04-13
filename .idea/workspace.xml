@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1e63a26f-e51b-4331-99d5-b9f0e94fafc3" name="Changes" comment="quick fix to lobby page">
+    <list default="true" id="1e63a26f-e51b-4331-99d5-b9f0e94fafc3" name="Changes" comment="Start game works. default and barebones gamepage with player view done (egregiously ugly tho)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/game/[id]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/game/[id]/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/lobby/[id]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/lobby/[id]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/contributions.md" beforeDir="false" afterPath="$PROJECT_DIR$/contributions.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,7 +65,7 @@
       <workItem from="1740059348975" duration="4621000" />
       <workItem from="1744032864265" duration="5000" />
       <workItem from="1744375794084" duration="4679000" />
-      <workItem from="1744543755553" duration="7076000" />
+      <workItem from="1744543755553" duration="7828000" />
     </task>
     <task id="LOCAL-00001" summary="test commit 1">
       <option name="closed" value="true" />
@@ -124,7 +123,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744380596184</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Start game works. default and barebones gamepage with player view done (egregiously ugly tho)">
+      <option name="closed" value="true" />
+      <created>1744558307622</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1744558307622</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -137,6 +144,7 @@
     <MESSAGE value="Added mock game page and types needed in client (game, player, round, songcard)" />
     <MESSAGE value="Starting game in lobby pushes to game page and sets Status of all members to PLAYING" />
     <MESSAGE value="quick fix to lobby page" />
-    <option name="LAST_COMMIT_MESSAGE" value="quick fix to lobby page" />
+    <MESSAGE value="Start game works. default and barebones gamepage with player view done (egregiously ugly tho)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Start game works. default and barebones gamepage with player view done (egregiously ugly tho)" />
   </component>
 </project>
