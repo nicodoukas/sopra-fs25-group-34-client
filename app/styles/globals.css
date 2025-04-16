@@ -1,29 +1,35 @@
+/* defining main colors of the app, can be referenced by name anywhere in CSS */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fefae0;
+  --primary-dark: #bc6c25;
+  --primary-light: #dda15e;
+  --secondary-dark: #283618;
+  --secondary-light: #606c38;
+  /*--foreground: #171717;*/
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* TODO: prevents horizontal scrolling which could be needed for long timelines? */
 html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
 }
 
+/* sets defaults for non ant compnents */
 body {
-  color: var(--foreground);
+  color: var(--secondary-dark);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family:
+    var(--font-geist-sans),
+    var(--font-geist-mono),
+    Arial,
+    Helvetica,
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* 'reset' all paddings and margins, border-box makes an element be always its set with/height (including padding and margin)*/
 * {
   box-sizing: border-box;
   padding: 0;
@@ -31,16 +37,35 @@ body {
 }
 
 a {
-  color: inherit;
-  text-decoration: none;
+  color: var(--secondary-light);
+  text-decoration: underline;
 }
 
+/* these two make the parent of main take up at least as much space as the screen is high -> footer is at bottom even if main is shorter than screen */
+.content-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.content-container main {
+  flex: 1;
+}
+
+/* TODO: I would not support a dark mode, or when then only in M4
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
   }
 }
+*/
 
+/* TODO: check this whole block, when i get to the pages that use the styles */
 .login-container {
   display: flex;
   justify-content: center;
