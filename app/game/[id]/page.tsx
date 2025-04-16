@@ -8,6 +8,7 @@ import "@ant-design/v5-patch-for-react-19";
 import {Game} from "@/types/game";
 import {Player} from "@/types/player";
 import {SongCard} from "@/types/songcard";
+import '@/styles/game.css';
 
 
 const { Title, Text } = Typography;
@@ -53,21 +54,16 @@ const GamePage = () => {
       }}
     >
       {player && (
-        <div
-          style={{
-            position: "absolute",
-            top: "20px",
-            right: "30px",
-            fontSize: "18px",
-            fontWeight: 500,
-            color: "#52c41a",
-          }}
-        >
+        <div className="coins">
           Coins: {player.coinBalance}
         </div>
       )}
       <Card
         style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          alignItems: "center",
           padding: "40px",
           width: "700px",
           textAlign: "center",
@@ -78,15 +74,25 @@ const GamePage = () => {
         <Title level={2} style={{ color: "#1890ff" }}>
           {game?.gameName || "{gameName}"}
         </Title>
-        <div style={{ marginTop: "40px", textAlign: "left" }}>
-          <Title level={4}>Your Timeline</Title>
+        <div className="playButton">
+          {game?.currentRound?.songCard?.songURL && (
+            <audio controls>
+              <source src={game.currentRound.songCard.songURL} type={"audio/mpeg"}/>
+
+            </audio>
+          )
+          }
+        </div>
+        <div className="timeline">
+          <Title level={4} style={{textAlign: "center"}}>Your Timeline</Title>
           {player?.timeline && player.timeline.length > 0 ? (
             <List
               bordered
               dataSource={player.timeline}
               renderItem={(card: SongCard, index: number) => (
                 <List.Item key={index}>
-                  <Text strong>{card.title}</Text> — <Text type="secondary">{card.artist}</Text>
+                  <Text strong>{card.year}</Text>
+                  <Text type="secondary">{card.title}</Text>
                 </List.Item>
               )}
             />

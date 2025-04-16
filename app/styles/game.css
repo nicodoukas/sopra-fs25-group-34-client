@@ -1,0 +1,49 @@
+.timeline {
+  margin-top: 40px;
+  text-align: left;
+}
+
+.timeline .ant-list{
+  display: flex;
+  flex-wrap: wrap;
+  border-radius: 8px;
+  border-color: #1a1a1a;
+  justify-content: center;
+  align-items: center;
+}
+
+.timeline .ant-list-item {
+  display: flex;
+  flex-direction: column;
+  background-color: cornflowerblue;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+  font-size: 20px;
+  border-radius: 8px;
+  width: 180px;
+  height: 120px;
+}
+
+.timeline .ant-list-items {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap:12px;
+
+}
+.coins {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 18px;
+  font-weight: 500;
+  color: #52c41a;
+}
+
+.gameButton .audio {
+  margin-top: 50px;
+  margin-bottom: 50px;
+  background-color: white;
+}

@@ -1,4 +1,5 @@
 import {Player} from "./player";
+import {Round} from "./round";
 
 export interface Game {
     gameId: string | null;
@@ -7,4 +8,5 @@ export interface Game {
     turnOrder: Player[] | null;
     host: Player | null;
     players: Player[];
+    currentRound: Round;
 }

@@ -82,21 +82,21 @@ const LobbyPage: () => void = () => {
   };
 
   // this function is only gonna work for the host. To get all members to game page, websockets are needed (?)
-    const startGame = async () => {
-      try {
-        // Send PUT request for each lobby member, setting status to PLAYING
-        const updateStatusPromises = lobby.members.map((member) =>
-          apiService.put("/playing", member.id)
-        );
-        await Promise.all(updateStatusPromises);
-        messageAPI.success("Host has started the game");
-        await apiService.post("/games", lobbyId);
-        router.push(`/game/${lobbyId}`);
-      } catch (error) {
-        console.error("Failed to set all users to PLAYING:", error);
-        alert("Something went wrong while starting the game.");
-      }
-    };
+  const startGame = async () => {
+    try {
+      // Send PUT request for each lobby member, setting status to PLAYING
+      const updateStatusPromises = lobby.members.map((member) =>
+        apiService.put("/playing", member.id)
+      );
+      await Promise.all(updateStatusPromises);
+      messageAPI.success("Host has started the game");
+      await apiService.post("/games", lobbyId);
+      router.push(`/game/${lobbyId}`);
+    } catch (error) {
+      console.error("Failed to set all users to PLAYING:", error);
+      alert("Something went wrong while starting the game.");
+    }
+  };
 
   useEffect(() => {
     const fetchLobby = async () => {
