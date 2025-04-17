@@ -1,38 +1,12 @@
 .timeline {
-  margin-top: 40px;
-  text-align: left;
-}
-
-.timeline .ant-list{
-  display: flex;
-  flex-wrap: wrap;
-  border-radius: 8px;
-  border-color: #1a1a1a;
-  justify-content: center;
-  align-items: center;
-}
-
-.timeline .ant-list-item {
-  display: flex;
-  flex-direction: column;
-  background-color: cornflowerblue;
-  justify-content: center;
-  align-items: center;
-  padding: 12px;
-  font-size: 20px;
-  border-radius: 8px;
-  width: 180px;
-  height: 120px;
-}
-
-.timeline .ant-list-items {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  margin-top: 40px;
   gap:12px;
-
 }
+
 .coins {
   position: absolute;
   top: 20px;
@@ -43,8 +17,8 @@
 }
 
 .playButton {
-  margin-top: 50px;
-  margin-bottom: 50px;
+  margin-top: 20px;
+  margin-bottom: 20px;
   width: 100px;
   height: 100px;
   border-radius: 50%;
@@ -100,9 +74,36 @@
 .playIcon {
   width: 85%;;
 }
-.playButtoncontainer {
+.playButtonContainer, .songCardContainer{
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
+}
+
+.songCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  background-color: cornflowerblue;
+  padding: 12px;
+  border-radius: 8px;
+  width: 120px;
+  height: 80px;
+  cursor: pointer;
+  margin-bottom: 30px;
+}
+
+.addButton{
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: gray;
+  color: black;
+  cursor: pointer;
+}
+.plusIcon {
+  width: 100%;
 }
