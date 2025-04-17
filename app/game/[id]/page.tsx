@@ -47,10 +47,12 @@ const GamePage = () => {
   }
 
   const confirmPlacement = async (): Promise<void> => {
+    const userId = localStorage.getItem("id");
     const body = {
       "songCard": songCard,
       "position": placement,
     }
+    await apiService.put(`/game/${gameId}/${userId}`, body);
   }
 
   useEffect(() => {
@@ -125,7 +127,7 @@ const GamePage = () => {
       <div className="songCardContainer">
         {placement == null && player.userId == game.currentRound.activePlayer.userId && (
           <div className="songCard">
-          <Text strong>?</Text>
+            <Text strong>?</Text>
           </div>
         )}
 
@@ -139,41 +141,51 @@ const GamePage = () => {
                 <React.Fragment key={index}>
                   {player.userId == game?.currentRound.activePlayer.userId && (
                     placement == index ? (
-                      <div className="songCard">
-                        <Text strong>?</Text>
+                      <div className="flipContainer">
+                        <div className="songCard">
+                          <Text strong>?</Text>
+                        </div>
                       </div>
+
                     ) : (
-                      <div className="addButton" onClick={() => addCard(index)}>
-                        <img src="/img/plus.png" alt="add" className="plusIcon"/>
+                      <div className="addButtonContainer">
+                        <div className="addButton" onClick={() => addCard(index)}>
+                          <img src="/img/plus.png" alt="add" className="plusIcon"/>
+                        </div>
                       </div>
                     )
                   )}
 
-                  <div key={index} onClick={() => flipCard(index)} className="songCard">
-                    {isFlipped === index ? (
-                      <>
+                  <div key={index} onClick={() => flipCard(index)} className="flipContainer">
+                    <div className={`songCard ${isFlipped === index ? 'flipped' : ''}`}>
+                      <div className="front">
+                        <Text strong>{card.year}</Text>
+                      </div>
+                      <div className="back">
                         <Text strong style={{fontSize: "14px"}}>{card.title}</Text>
                         <Text type="secondary" style={{fontSize: "14px"}}>{card.artist}</Text>
-                      </>
-                    ) : (
-                      <Text strong>{card.year}</Text>
-                    )}
+                      </div>
+                    </div>
                   </div>
                 </React.Fragment>
               ))}
                 <div>
                   {player.userId == game.currentRound.activePlayer.userId && (
                     placement == player?.timeline?.length ? (
-                      <div className="songCard">
-                        <Text strong>?</Text>
+                      <div className="flipContainer">
+                        <div className="songCard">
+                          <Text strong>?</Text>
+                        </div>
                       </div>
+
                     ) : (
-                      <div className="addButton" onClick={() => addCard(player.timeline.length)}>
-                        <img src="/img/plus.png" alt="add" className="plusIcon"/>
+                      <div className="addButtonContainer">
+                        <div className="addButton" onClick={() => addCard(player.timeline.length)}>
+                          <img src="/img/plus.png" alt="add" className="plusIcon"/>
+                        </div>
                       </div>
                     )
                   )}
-
                 </div>
             </div>
           ) : (
