@@ -20,6 +20,17 @@ const GamePage = () => {
   const gameId = params.id;
   const [game, setGame] = useState<Game>({} as Game);
   const [player, setPlayer] = useState<Player>({} as Player);
+  const [audioState, setAudioState] = useState<Boolean>(true);
+  const [isPlaying, setIsPlaying] = useState<Boolean>(false);
+
+
+  const playAudio = async (): Promise<void> => {
+  setIsPlaying(true)
+    const audio = new Audio(game.currentRound.songCard?.songURL);
+    audio.play();
+
+    audio.onended = () => {setAudioState(false); setIsPlaying(false)}
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -74,14 +85,14 @@ const GamePage = () => {
         <Title level={2} style={{ color: "#1890ff" }}>
           {game?.gameName || "{gameName}"}
         </Title>
-        <div className="playButton">
-          {game?.currentRound?.songCard?.songURL && (
-            <audio controls>
-              <source src={game.currentRound.songCard.songURL} type={"audio/mpeg"}/>
-
-            </audio>
-          )
-          }
+        <div className="playButtoncontainer">
+        {game?.currentRound?.songCard?.songURL && (
+          <div className={`playButton ${isPlaying ? "playing" : ""}`}
+               onClick={audioState && !isPlaying ? playAudio : undefined}
+               style={{pointerEvents: audioState ? "auto" : "none"}}>
+            <img src="/img/playsymbol.png" alt="Play" className="playIcon"/>
+          </div>
+        )}
         </div>
         <div className="timeline">
           <Title level={4} style={{textAlign: "center"}}>Your Timeline</Title>
