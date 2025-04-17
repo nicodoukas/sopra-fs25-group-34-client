@@ -1,7 +1,7 @@
 import {SongCard} from "./songcard";
 
 export interface Player {
-    id: string | null;
+    userId: string | null;
     gameId: string | null;
     coinBalance: number;
     username: string | null;

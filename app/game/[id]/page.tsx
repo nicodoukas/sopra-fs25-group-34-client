@@ -57,13 +57,13 @@ const GamePage = () => {
     const fetchData = async () => {
       try {
         const gameData = await apiService.get<Game>(`/games/${gameId}`);
-        console.log("This is the game: ", game);
         setGame(gameData);
+        console.log("This is the game: ", gameData);
         setSongCard(gameData.currentRound?.songCard);
         const userId = localStorage.getItem("id");
         const playerData = await apiService.get<Player>(`/games/${gameId}/${userId}`);
         setPlayer(playerData);
-          console.log("This is the player: ", player);
+        console.log("This is the player: ", playerData);
       } catch (error) {
         alert("Failed to fetch game or player data.");
         console.error("Error fetching data:", error);
@@ -72,6 +72,12 @@ const GamePage = () => {
     fetchData();
   }, [apiService, gameId]);
 
+  console.log("PLAYER: " ,player);
+  console.log("GAME: ", game);
+
+  if (!player || !game?.currentRound?.activePlayer) {
+    return <div style={{color: "white"}}>Loading...</div>;
+  }
 
   return (
     <div
@@ -108,7 +114,7 @@ const GamePage = () => {
           {game?.gameName || "{gameName}"}
         </Title>
         <div className="playButtonContainer">
-        {songCard?.songURL && (
+        {songCard?.songURL && player.userId == game.currentRound.activePlayer.userId && (
           <div className={`playButton ${isPlaying ? "playing" : ""}`}
                onClick={audioState && !isPlaying ? playAudio : undefined}
                style={{pointerEvents: audioState ? "auto" : "none"}}>
@@ -117,7 +123,7 @@ const GamePage = () => {
         )}
         </div>
       <div className="songCardContainer">
-        {placement == null && player?.id == game?.currentRound?.activePlayer?.id && (
+        {placement == null && player.userId == game.currentRound.activePlayer.userId && (
           <div className="songCard">
           <Text strong>?</Text>
           </div>
@@ -127,11 +133,11 @@ const GamePage = () => {
 
         <div>
           <Title level={4} style={{textAlign: "center"}}>Your Timeline</Title>
-          {player?.timeline && player?.timeline?.length > 0 ? (
+          {player.timeline && player.timeline.length > 0 ? (
             <div className="timeline">
               {player.timeline.map((card: SongCard, index:number) => (
                 <React.Fragment key={index}>
-                  {player?.id == game?.currentRound?.activePlayer?.id && (
+                  {player.userId == game?.currentRound.activePlayer.userId && (
                     placement == index ? (
                       <div className="songCard">
                         <Text strong>?</Text>
@@ -156,7 +162,7 @@ const GamePage = () => {
                 </React.Fragment>
               ))}
                 <div>
-                  {player?.id == game?.currentRound?.activePlayer?.id && (
+                  {player.userId == game.currentRound.activePlayer.userId && (
                     placement == player?.timeline?.length ? (
                       <div className="songCard">
                         <Text strong>?</Text>
