@@ -74,9 +74,6 @@ const GamePage = () => {
     fetchData();
   }, [apiService, gameId]);
 
-  console.log("PLAYER: " ,player);
-  console.log("GAME: ", game);
-
   if (!player || !game?.currentRound?.activePlayer) {
     return <div style={{color: "white"}}>Loading...</div>;
   }
@@ -192,7 +189,7 @@ const GamePage = () => {
             <Text type="secondary">No songcards in timeline.</Text>
           )}
         </div>
-        <Button onClick={() => confirmPlacement}>Confirm</Button>
+        <Button onClick={confirmPlacement}>Confirm</Button>
         <Button style={{ marginTop: "30px" }} onClick={() => router.back()}>
           Back to Lobby-Screen
         </Button>
