@@ -14,14 +14,12 @@ export default function Home() {
         <div className={styles.ctas}>
           <Button
             type="primary"
-            variant="solid"
             onClick={() => router.push("/login")}
           >
             Login
           </Button>
           <Button
             type="primary"
-            variant="solid"
             onClick={() => router.push("/register")}
           >
             Register

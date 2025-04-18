@@ -3,8 +3,8 @@
   grid-template-rows: 20px 1fr 20px;
   align-items: center;
   justify-items: center;
-/* TODO: check on different screens if still shows footer and appears centered */
-  min-height: 95vh; 
+  /* TODO: check on different screens if still shows footer and appears centered */
+  min-height: 95vh;
   padding: 80px;
   gap: 64px;
   font-family: var(--font-geist-sans);
@@ -15,10 +15,11 @@
   flex-direction: column;
   gap: 32px;
   grid-row-start: 2;
-} 
+}
 
 .ctas {
   display: flex;
+  justify-content: center;
   gap: 16px;
 }
 
@@ -35,7 +36,6 @@
   .ctas {
     flex-direction: column;
   }
-
 }
 
 /* TODO: I would not support a dark mode, or when then only in M4

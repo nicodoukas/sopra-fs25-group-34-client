@@ -10,8 +10,6 @@ import { User } from "@/types/user";
 import "@ant-design/v5-patch-for-react-19";
 import { Button, Form, Input } from "antd";
 
-import "@/styles/login_register.css";
-
 interface FormFieldProps {
   username: string;
   password: string;
@@ -42,8 +40,7 @@ const Register: React.FC = () => {
         setID(response.id);
       }
 
-      //TODO: this needs to change once I do not have /users as overview page
-      router.push("/users");
+      router.push("/overview");
     } catch (error) {
       if (error instanceof Error) {
         alert(`Something went wrong during the login:\n${error.message}`);
@@ -55,11 +52,11 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="register-container">
+    <div className="card-container">
       <h2>
         Create a new account
       </h2>
-      <div className="register-card">
+      <div className="green-card">
         <Form
           form={form}
           name="register"
