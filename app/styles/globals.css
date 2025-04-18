@@ -5,7 +5,22 @@
   --primary-light: #dda15e;
   --secondary-dark: #283618;
   --secondary-light: #606c38;
+
+  --background-transparent: rgba(254, 250, 224, 0.5);
+  --secondary-light-transparent: rgba(96, 108, 56, 0.85);
   /*--foreground: #171717;*/
+}
+
+/* makes background image slightly opaque */
+.background-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--background-transparent);
+  z-index: 0;
+  pointer-events: none;
 }
 
 /* TODO: prevents horizontal scrolling which could be needed for long timelines? */
@@ -41,11 +56,18 @@ a {
   text-decoration: underline;
 }
 
+h2 {
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+}
+
 /* these two make the parent of main take up at least as much space as the screen is high -> footer is at bottom even if main is shorter than screen */
 .content-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  position: relative;
+  z-index: 1;
 }
 .content-container main {
   flex: 1;
@@ -68,31 +90,6 @@ footer {
   }
 }
 */
-
-/* TODO: check this whole block, when i get to the pages that use the styles */
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: rgb(41, 44, 59);
-}
-
-.login-button {
-  width: 100%;
-}
-
-.register-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: rgb(41, 44, 59);
-}
-
-.register-button {
-  width: 100%;
-}
 
 .card-container {
   display: flex;

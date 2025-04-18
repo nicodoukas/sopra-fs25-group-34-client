@@ -35,6 +35,7 @@ export default function RootLayout({
           /* TODO: check on different devices, maybe needs backgroundSize: 'cover', and backgroundRepeat: 'no-repeat' */
         }}
       >
+        <div className="background-overlay" />
         <ConfigProvider
           theme={{
             algorithm: theme.defaultAlgorithm,
@@ -50,23 +51,23 @@ export default function RootLayout({
             components: {
               Button: {
                 controlHeight: 38,
+                controlOutline: "none",
+                controlOutlineWidth: 0,
               },
-              /* TODO: go through these as i go through the pages and see the corresponding components
               Input: {
-                colorBorder: "gray",
+                colorBorder: "#283618",
                 colorTextPlaceholder: "#888888",
+                activeBorderColor: "#bc6c25",
+                activeShadow: "0 0 0 2px rgba(188, 108, 37, 0.2)",
+                hoverBorderColor: "#bc6c25",
                 algorithm: false,
               },
-              Form: {
-                labelColor: "#fff",
-                algorithm: theme.defaultAlgorithm,
-              },
-              Message: {
+              /* TODO: go through these as i go through the pages and see the corresponding components */
+              /*               Message: {
                 colorText: "#283618",
                 colorBgContainer: "#FEFAE0",
               },
-              Card: {},
-              */
+              Card: {}, */
             },
           }}
         >
