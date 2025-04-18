@@ -51,6 +51,10 @@ a {
   flex: 1;
 }
 
+footer {
+  margin: 5px;
+}
+
 /* TODO: I would not support a dark mode, or when then only in M4
 @media (prefers-color-scheme: dark) {
   :root {

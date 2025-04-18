@@ -10,8 +10,7 @@ export default function Home() {
   const router = useRouter();
   return (
     <div className={styles.page}>
-      <main className={styles.main}>
-        {/* TODO: das main muss ich rauslöschen weils schon in layout.tsx ist */}
+      <div className={styles.main}>
         <div className={styles.ctas}>
           <Button
             type="primary"
@@ -28,10 +27,7 @@ export default function Home() {
             Register
           </Button>
         </div>
-      </main>
-      {/* TODO: probalby auch footer entfernen da auch schon in layout.tsx */}
-      <footer className={styles.footer}>
-      </footer>
+      </div>
     </div>
   );
 }
