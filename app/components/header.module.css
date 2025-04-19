@@ -1,7 +1,7 @@
 .searchBar {
   position: absolute;
-  top: 20;
-  left: 20;
+  top: 20px;
+  left: 20px;
 }
 
 .searchInput {
@@ -9,7 +9,7 @@
 }
 
 .profileButton {
-  position: absolute;
-  top: 20;
-  right: 20;
+  position: absolute !important;
+  top: 20px;
+  right: 20px;
 }

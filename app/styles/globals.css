@@ -61,6 +61,10 @@ h2 {
   margin-bottom: 30px;
 }
 
+h3 {
+  margin-bottom: 10px;
+}
+
 /* these two make the parent of main take up at least as much space as the screen is high -> footer is at bottom even if main is shorter than screen */
 .content-container {
   display: flex;
@@ -106,4 +110,17 @@ footer {
   background-color: var(--secondary-light-transparent);
   backdrop-filter: blur(5px);
   border-radius: 10px;
+}
+
+.tableWrapper {
+  background: var(--background);
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.textWrapper {
+  background: var(--background);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
 }
