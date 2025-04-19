@@ -52,7 +52,7 @@ const GamePage = () => {
       "songCard": songCard,
       "position": placement,
     }
-    await apiService.put(`/game/${gameId}/${userId}`, body);
+    //await apiService.put(`/games/${gameId}/${userId}`, body);
   }
 
   useEffect(() => {
