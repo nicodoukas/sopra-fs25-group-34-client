@@ -20,8 +20,8 @@ const GamePage = () => {
   const gameId = params.id;
   const [game, setGame] = useState<Game>({} as Game);
   const [player, setPlayer] = useState<Player>({} as Player);
-  const [audioState, setAudioState] = useState<Boolean>(true); //True if song not yet played, false otherwise
-  const [isPlaying, setIsPlaying] = useState<Boolean>(false); //True if song is currently playing
+  const [audioState, setAudioState] = useState<boolean>(true); //True if song not yet played, false otherwise
+  const [isPlaying, setIsPlaying] = useState<boolean>(false); //True if song is currently playing
   const [isFlipped, setIsFlipped] = useState<number | null>(null); //index of flipped SongCard
   const [placement, setPlacement] = useState<number | null>(null); //position of placement of SongCard
   const [songCard, setSongCard] = useState<SongCard | null>({} as SongCard); // SongCard of currentRound
@@ -47,11 +47,11 @@ const GamePage = () => {
   }
 
   const confirmPlacement = async (): Promise<void> => {
-    const userId = localStorage.getItem("id");
-    const body = {
+    //const userId = localStorage.getItem("id");
+    /*const body = {
       "songCard": songCard,
       "position": placement,
-    }
+    }*/
     //await apiService.put(`/games/${gameId}/${userId}`, body);
   }
 
