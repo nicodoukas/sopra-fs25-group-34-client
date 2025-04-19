@@ -3,10 +3,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
-//import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
+import Header from "@/components/header";
+
 import "@ant-design/v5-patch-for-react-19";
-import { Button, Card, Form, Input } from "antd";
+import { Button, Form, Input, Space } from "antd";
 
 interface FormFieldProps {
   username: string;
@@ -17,7 +18,7 @@ const EditUserProfile: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
   const params = useParams();
-  const id = params.id;
+  const displayedUsersId = params.id;
 
   const [user, setUser] = useState<User>({} as User);
   const [form] = Form.useForm();
@@ -27,17 +28,15 @@ const EditUserProfile: React.FC = () => {
   };
 
   const handleSave = async (values: FormFieldProps) => {
-    console.log("update requestBody:", values);
-
     try {
-      await apiService.put(`/users/${id}`, values);
-      console.log("User updated correctly");
-      router.push(`/users/${id}`);
+      await apiService.put(`/users/${displayedUsersId}`, values);
+      router.push(`/users/${displayedUsersId}`);
     } catch (error) {
       if (error instanceof Error) {
         alert(
           `Something went wrong while updating the user:\n${error.message}`,
         );
+        console.error(error);
       } else {
         console.error("An unknown error occurred while updating the user.");
       }
@@ -46,22 +45,27 @@ const EditUserProfile: React.FC = () => {
 
   useEffect(() => {
     const StorageId = localStorage.getItem("id");
-    if (!StorageId || StorageId != id) {
-      router.push("/users");
+    if (!StorageId) {
+      router.push("/");
+      return;
+    }
+    if (StorageId != displayedUsersId) {
+      router.back();
       return;
     }
 
     const fetchUser = async () => {
       try {
-        const user: User = await apiService.get<User>(`/users/${id}`);
+        const user: User = await apiService.get<User>(
+          `/users/${displayedUsersId}`,
+        );
         setUser(user);
-        console.log("Fetched user:", user);
       } catch (error) {
         if (error instanceof Error) {
           alert(
             `Something went wrong while fetching the user:\n${error.message}`,
           );
-          console.log(error);
+          console.error(error);
         } else {
           console.error("An unknown error occurred while fetching the user.");
         }
@@ -69,57 +73,57 @@ const EditUserProfile: React.FC = () => {
     };
 
     fetchUser();
-  }, [apiService, id, router]);
+  }, [apiService, displayedUsersId, router]);
 
   return (
-    <div
-      className="card-container"
-      style={{ display: "flex", justifyContent: "center"}}
-    >
-      <Card title={user.username} variant="outlined" style={{ width: 350 }}>
-        <Form
-          form={form}
-          size="large"
-          variant="outlined"
-          onFinish={handleSave}
-          layout="horizontal"
-        >
-          <Form.Item
-            name="username"
-            label={<strong>Username:</strong>}
+    <div>
+      <Header />
+      <div className="card-container">
+        <h2>Edit your profile</h2>
+        <div className="green-card">
+          <Form
+            form={form}
+            size="large"
+            onFinish={handleSave}
+            layout="horizontal"
           >
-            <Input placeholder={user.username ?? ""} />
-          </Form.Item>
-          <Form.Item
-            name="birthday"
-            label={<strong>Birthday:</strong>}
-          >
-            <Input placeholder={user.creation_date ? String(user.creation_date).split('T')[0] : "YYYY-MM-DD"} />
-          </Form.Item>
-          <Form.Item>
-            <p>
-              <strong>Creationdate:</strong> {user.creation_date ? String(user.creation_date).split('T')[0] : "N/A"}
-            </p>
-          </Form.Item>
-          <Form.Item>
-            <p>
-              <strong>Status:</strong> {user.status}
-            </p>
-          </Form.Item>
-          <Form.Item>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginTop: 16,
-              }}
+            <Form.Item
+              name="username"
+              label={<strong>Username</strong>}
             >
-              <Button type="primary" onClick={handleGoBack}>Go Back</Button>
-              <Button type="primary" htmlType="submit">Save</Button>
-            </div>
-          </Form.Item>
-        </Form>
-      </Card>
+              <Input placeholder={user.username ?? ""} />
+            </Form.Item>
+            <Form.Item
+              name="birthday"
+              label={<strong>Birthday</strong>}
+            >
+              <Input
+                placeholder={user.birthday
+                  ? String(user.birthday).split("T")[0]
+                  : "YYYY-MM-DD"}
+              />
+            </Form.Item>
+            <Form.Item>
+              <p>
+                <strong>Creationdate:</strong> {user.creation_date
+                  ? String(user.creation_date).split("T")[0]
+                  : "N/A"}
+              </p>
+            </Form.Item>
+            <Form.Item>
+              <p>
+                <strong>Status:</strong> {user.status}
+              </p>
+            </Form.Item>
+            <Form.Item>
+              <Space>
+                <Button onClick={handleGoBack}>Back</Button>
+                <Button type="primary" htmlType="submit">Save</Button>
+              </Space>
+            </Form.Item>
+          </Form>
+        </div>
+      </div>
     </div>
   );
 };
