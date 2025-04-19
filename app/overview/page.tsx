@@ -1,69 +1,25 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
-import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { User } from "@/types/user";
+import Header from "@/components/header";
 
 import "@ant-design/v5-patch-for-react-19";
-import { SearchOutlined } from "@ant-design/icons";
-import { Button, Input, Space } from "antd";
+import { Button } from "antd";
 
 import styles from "@/styles/page.module.css";
 
 const Overview: React.FC = () => {
   const router = useRouter();
-  const apiService = useApi();
-  const [username] = useState<string | null>(null);
-  const [searchUsername, setSearchUsername] = useState(""); // save input username
 
   const {
     value: id,
   } = useLocalStorage<string>("id", "");
 
-  const handleSearch = async (): Promise<void> => {
-    if (!searchUsername.trim()) {
-      alert("Enter a username to search for.");
-      return;
-    }
-    try {
-      const user: User = await apiService.get<User>(
-        `/usersByUsername/${searchUsername}`,
-      );
-      console.log("user: ", user);
-      console.log("userId: ", user.id);
-      if (user && user.id) {
-        router.push(`/users/${user.id}`);
-      } else {
-        alert(`No user with username ${searchUsername} exists.`);
-      }
-    } catch {
-      alert(`No user with username ${searchUsername} exists.`);
-    }
-  };
-
   return (
     <div className={styles.page}>
-      <Space style={{ position: "absolute", top: 20, left: 20, zIndex: 10 }}>
-        <Input
-          placeholder="Search for a user..."
-          value={searchUsername}
-          onChange={(e) => setSearchUsername(e.target.value)}
-          style={{ height: "40px", fontSize: "16px" }}
-        />
-        <Button onClick={handleSearch} icon={<SearchOutlined />} />
-      </Space>
-      <Button
-        onClick={() => router.push(`/users/${id}`)}
-        style={{
-          position: "absolute",
-          top: "20px",
-          right: "20px",
-        }}
-      >
-        {`My Profile (${username})`}
-      </Button>
+      <Header />
       <div className={styles.main}>
         <div className={styles.ctas}>
           <h2>

@@ -1,0 +1,15 @@
+.searchBar {
+  position: absolute;
+  top: 20;
+  left: 20;
+}
+
+.searchInput {
+  height: 40px;
+}
+
+.profileButton {
+  position: absolute;
+  top: 20;
+  right: 20;
+}

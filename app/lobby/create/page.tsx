@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
+import Header from "@/components/header";
 
 import { Button, Form, Input } from "antd";
 
@@ -66,6 +67,7 @@ const CreateLobby: React.FC = () => {
 
   return (
     <div className="card-container">
+      <Header />
       <h2>Create a lobby</h2>
       <div className="green-card">
         <Form

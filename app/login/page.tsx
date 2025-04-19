@@ -27,6 +27,10 @@ const Login: React.FC = () => {
     set: setID,
   } = useLocalStorage<string>("id", "");
 
+  const {
+    set: setUsername,
+  } = useLocalStorage<string>("username", "");
+
   const handleLogin = async (values: FormFieldProps) => {
     try {
       const response = await apiService.post<User>("/login", values);
@@ -37,7 +41,10 @@ const Login: React.FC = () => {
 
       if (response.id) {
         setID(response.id);
-        localStorage.setItem("id", response.id);
+      }
+
+      if (response.username) {
+        setUsername(response.username);
       }
 
       router.push("/overview");
