@@ -80,12 +80,11 @@ const GamePage = () => {
 
   return (
     <div
+      className={"card-container"}
       style={{
-        height: "100vh",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "black",
         flexDirection: "column",
         paddingTop: "80px",
         position: "relative",
@@ -101,6 +100,7 @@ const GamePage = () => {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
+          backgroundColor: "#e5e1ca",
           alignItems: "center",
           paddingTop: "20px",
           width: "700px",
@@ -109,7 +109,7 @@ const GamePage = () => {
           boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
         }}
       >
-        <Title level={2} style={{ color: "#1890ff" }}>
+        <Title level={2} style={{ color: "black" }}>
           {game?.gameName || "{gameName}"}
         </Title>
         <div className="playButtonContainer">
@@ -124,7 +124,7 @@ const GamePage = () => {
       <div className="songCardContainer">
         {placement == null && player.userId == game.currentRound.activePlayer.userId && (
           <div className="songCard">
-            <Text strong>?</Text>
+            <Text strong style={{fontSize: "30px"}}>?</Text>
           </div>
         )}
 
@@ -140,7 +140,7 @@ const GamePage = () => {
                     placement == index ? (
                       <div className="flipContainer">
                         <div className="songCard">
-                          <Text strong>?</Text>
+                          <Text strong style={{fontSize: "30px"}}>?</Text>
                         </div>
                       </div>
 
@@ -159,7 +159,7 @@ const GamePage = () => {
                         <Text strong>{card.year}</Text>
                       </div>
                       <div className="back">
-                        <Text strong style={{fontSize: "14px"}}>{card.title}</Text>
+                        <Text strong style={{fontSize: "14px", color: "#fefae0"}}>{card.title}</Text>
                         <Text type="secondary" style={{fontSize: "14px"}}>{card.artist}</Text>
                       </div>
                     </div>
@@ -171,7 +171,7 @@ const GamePage = () => {
                     placement == player?.timeline?.length ? (
                       <div className="flipContainer">
                         <div className="songCard">
-                          <Text strong>?</Text>
+                          <Text strong style={{ fontSize: "30px"}}>?</Text>
                         </div>
                       </div>
 
@@ -194,19 +194,9 @@ const GamePage = () => {
           Back to Lobby-Screen
         </Button>
       </Card>
-      <div
-        style={{
-          position: "absolute",
-          bottom: "10px",
-          left: "10px",
-          fontSize: "14px",
-          color: "#aaa",
-        }}
-      >
-        Hitster by Group 24, SoPra FS25
-      </div>
     </div>
   );
 };
+
 
 export default GamePage;

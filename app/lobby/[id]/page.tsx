@@ -181,12 +181,24 @@ const LobbyPage: () => void = () => {
       >
         {`My Profile (${user.username})`}
       </Button>
+      <Card style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        backgroundColor: "#e5e1ca",
+        alignItems: "center",
+        paddingTop: "20px",
+        width: "700px",
+        textAlign: "center",
+        borderRadius: "16px",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+      }}>
       <h2
         style={{
           fontSize: "3rem",
           marginBottom: "50px",
           textAlign: "center",
-          color: "lightblue",
+          color: "#BC6C25",
         }}
       >
         {lobby.lobbyName}
@@ -196,7 +208,7 @@ const LobbyPage: () => void = () => {
           title="Invite Friends"
           loading={!hostFriends}
           className={"dashboard-container"}
-          style={{marginBottom: 50, marginRight: 50}}
+          style={{marginBottom: 50, marginRight: 50, minWidth: "200px"}}
         >
           {hostFriends.length > 0 ? (
             <Table<User>
@@ -212,13 +224,16 @@ const LobbyPage: () => void = () => {
           title="Players"
           loading={!lobby}
           className={"dashboard-container"}
-          style={{marginBottom: 50, width: "50%"}}
+          style={{marginBottom: 50, width: "100%"}}
         >
           {lobby && (lobby.members?.length > 0) && (
             <>
               <Table<User>
                 columns={columns}
                 dataSource={lobby.members}
+                style={{minWidth: "150px", display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center"}}
                 rowKey="id"
                 onRow={(row) => ({
                   onClick: () => router.push(`/users/${row.id}`),
@@ -230,6 +245,7 @@ const LobbyPage: () => void = () => {
           )}
         </Card>
       </div>
+      </Card>
       <Button
         style={{
           position: "absolute",
@@ -241,17 +257,6 @@ const LobbyPage: () => void = () => {
       >
         Start Game
       </Button>
-      <div
-        style={{
-          position: "absolute",
-          bottom: "10px",
-          left: "10px",
-          fontSize: "16px",
-          color: "lightblue",
-        }}
-      >
-        Hitster by Group 24, SoPra FS25
-      </div>
     </div>
   )
 }
