@@ -9,6 +9,8 @@ import {Game} from "@/types/game";
 import {Player} from "@/types/player";
 import {SongCard} from "@/types/songcard";
 import '@/styles/game.css';
+import { connectWebSocket } from "@/websocket/websocketService";
+import { Client } from "@stomp/stompjs";
 
 
 const { Title, Text } = Typography;
@@ -17,7 +19,7 @@ const GamePage = () => {
   const router = useRouter();
   const apiService = useApi();
   const params = useParams();
-  const gameId = params.id;
+  const gameId = Array.isArray(params.id) ? params.id[0] : params.id!;
   const [game, setGame] = useState<Game>({} as Game);
   const [player, setPlayer] = useState<Player>({} as Player);
   const [audioState, setAudioState] = useState<boolean>(true); //True if song not yet played, false otherwise
@@ -25,10 +27,19 @@ const GamePage = () => {
   const [isFlipped, setIsFlipped] = useState<number | null>(null); //index of flipped SongCard
   const [placement, setPlacement] = useState<number | null>(null); //position of placement of SongCard
   const [songCard, setSongCard] = useState<SongCard | null>({} as SongCard); // SongCard of currentRound
+  const [stompClient, setStompClient] = useState<Client | null>(null);
+
+
+  const handleWebSocketMessage = (message: string) => {
+    const parsedMessage = JSON.parse(message);
+    if (parsedMessage.event_type === "play-song") {
+      playAudio();
+    }
+  };
 
 
   const playAudio = async (): Promise<void> => {
-  setIsPlaying(true)
+    setIsPlaying(true);
     const audio = new Audio(game.currentRound.songCard?.songURL);
     audio.play();
 
@@ -72,7 +83,27 @@ const GamePage = () => {
       }
     };
     fetchData();
+
   }, [apiService, gameId]);
+
+  useEffect(()=>{
+    const client = connectWebSocket(handleWebSocketMessage, gameId);
+    setStompClient(client);
+
+    return () => {
+      client?.deactivate();
+    };
+
+  }, []);
+
+  const handlePlayButtonClick = () => {
+    if (stompClient?.connected) {
+      (stompClient as Client).publish({
+        destination: "/app/play",
+        body: gameId ?? "",
+      });
+  };
+}
 
   if (!player || !game?.currentRound?.activePlayer) {
     return <div style={{color: "white"}}>Loading...</div>;
@@ -115,7 +146,7 @@ const GamePage = () => {
         <div className="playButtonContainer">
         {songCard?.songURL && player.userId == game.currentRound.activePlayer.userId && (
           <div className={`playButton ${isPlaying ? "playing" : ""}`}
-               onClick={audioState && !isPlaying ? playAudio : undefined}
+               onClick={audioState && !isPlaying ? handlePlayButtonClick : undefined}
                style={{pointerEvents: audioState ? "auto" : "none"}}>
             <img src="/img/playsymbol.png" alt="Play" className="playIcon"/>
           </div>
