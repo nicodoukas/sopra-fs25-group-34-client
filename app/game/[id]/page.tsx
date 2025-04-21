@@ -3,7 +3,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import { useRouter, useParams } from "next/navigation";
 import {useApi} from "@/hooks/useApi";
-import { Button, Typography, Card } from "antd";
+import { Button, Typography, Card, Form, Input, message} from "antd";
 import "@ant-design/v5-patch-for-react-19";
 import {Game} from "@/types/game";
 import {Player} from "@/types/player";
@@ -15,7 +15,13 @@ import { Client } from "@stomp/stompjs";
 
 const { Title, Text } = Typography;
 
+interface FormFieldProps {
+  guessedTitle: string;
+  guessedArtist: string;
+}
+
 const GamePage = () => {
+  const [messageAPI, contextHolder] = message.useMessage();
   const router = useRouter();
   const apiService = useApi();
   const params = useParams();
@@ -29,6 +35,8 @@ const GamePage = () => {
   const [songCard, setSongCard] = useState<SongCard | null>({} as SongCard); // SongCard of currentRound
   const [stompClient, setStompClient] = useState<Client | null>(null);
   const gameRef = useRef<Game | null>(null);
+  const [form] = Form.useForm(); //for guess
+  const [guessed, setGuessed] = useState<boolean>(false);
 
 
   const handleWebSocketMessage = (message: string) => {
@@ -66,6 +74,36 @@ const GamePage = () => {
     }*/
     //await apiService.put(`/games/${gameId}/${userId}`, body);
   }
+
+  const handleGuess = async (values: FormFieldProps) => {
+    const body = {
+      ...values,
+      player: player,
+    };
+    const userId = localStorage.getItem("id");
+    try {
+      const correct = await apiService.post<boolean>(`/games/${gameId}/${userId}/guess`, body);
+      if (correct) {
+        setGuessed(true);
+        messageAPI.success("Congratulation, you guessed correct!");
+        const updatedPlayer = await apiService.get<Player>(`/games/${gameId}/${userId}`);
+        setPlayer(updatedPlayer);
+      }
+      else {
+        messageAPI.warning("Guess incorrect, try again.");
+      }
+
+    }
+    catch (error) {
+      if (error instanceof Error) {
+        alert(`Something went wrong during the guess:\n${error.message}`);
+        console.error(error);
+      } else {
+        console.error("An unknown error occurred during guess.");
+      }
+    }
+  }
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -108,7 +146,7 @@ const GamePage = () => {
         destination: "/app/play",
         body: gameId ?? "",
       });
-    };
+    }
   }
 
 
@@ -122,94 +160,96 @@ const GamePage = () => {
       style={{
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
-        flexDirection: "column",
+        alignItems: "flex-start",
+        flexDirection: "row",
         paddingTop: "80px",
         position: "relative",
+        gap: "20px",
       }}
     >
+      {contextHolder}
       {player && (
         <div className="coins">
           Coins: {player.coinBalance}
         </div>
       )}
-      <Card
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          backgroundColor: "#e5e1ca",
-          alignItems: "center",
-          paddingTop: "20px",
-          width: "700px",
-          textAlign: "center",
-          borderRadius: "16px",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-        }}
-      >
-        <Title level={2} style={{ color: "black" }}>
-          {game?.gameName || "{gameName}"}
-        </Title>
-        <div className="playButtonContainer">
-        {songCard?.songURL && player.userId == game.currentRound.activePlayer.userId && (
-          <div className={`playButton ${isPlaying ? "playing" : ""}`}
-               onClick={audioState && !isPlaying ? handlePlayButtonClick : undefined}
-               style={{pointerEvents: audioState ? "auto" : "none"}}>
-            <img src="/img/playsymbol.png" alt="Play" className="playIcon"/>
+      <div style={{flex: "0 0 500px", position: "relative", display: "flex", justifyContent: "center", width: "800px"}}>
+        <Card
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            backgroundColor: "#e5e1ca",
+            alignItems: "center",
+            paddingTop: "20px",
+            textAlign: "center",
+            borderRadius: "16px",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+          }}
+        >
+          <Title level={2} style={{color: "black"}}>
+            {game?.gameName || "{gameName}"}
+          </Title>
+          <div className="playButtonContainer">
+            {songCard?.songURL && player.userId == game.currentRound.activePlayer.userId && (
+              <div className={`playButton ${isPlaying ? "playing" : ""}`}
+                   onClick={audioState && !isPlaying ? handlePlayButtonClick : undefined}
+                   style={{pointerEvents: audioState ? "auto" : "none"}}>
+                <img src="/img/playsymbol.png" alt="Play" className="playIcon"/>
+              </div>
+            )}
           </div>
-        )}
-        </div>
-      <div className="songCardContainer">
-        {placement == null && player.userId == game.currentRound.activePlayer.userId && (
-          <div className="songCard">
-            <Text strong style={{fontSize: "30px"}}>?</Text>
+          <div className="songCardContainer">
+            {placement == null && player.userId == game.currentRound.activePlayer.userId && (
+              <div className="songCard">
+                <Text strong style={{fontSize: "30px"}}>?</Text>
+              </div>
+            )}
+
           </div>
-        )}
 
-      </div>
-
-        <div>
-          <Title level={4} style={{textAlign: "center"}}>Your Timeline</Title>
-          {player.timeline && player.timeline.length > 0 ? (
-            <div className="timeline">
-              {player.timeline.map((card: SongCard, index:number) => (
-                <React.Fragment key={index}>
-                  {player.userId == game?.currentRound.activePlayer.userId && (
-                    placement == index ? (
-                      <div className="flipContainer">
-                        <div className="songCard">
-                          <Text strong style={{fontSize: "30px"}}>?</Text>
+          <div>
+            <Title level={4} style={{textAlign: "center"}}>Your Timeline</Title>
+            {player.timeline && player.timeline.length > 0 ? (
+              <div className="timeline">
+                {player.timeline.map((card: SongCard, index: number) => (
+                  <React.Fragment key={index}>
+                    {player.userId == game?.currentRound.activePlayer.userId && (
+                      placement == index ? (
+                        <div className="flipContainer">
+                          <div className="songCard">
+                            <Text strong style={{fontSize: "30px"}}>?</Text>
+                          </div>
                         </div>
-                      </div>
 
-                    ) : (
-                      <div className="addButtonContainer">
-                        <div className="addButton" onClick={() => addCard(index)}>
-                          <img src="/img/plus.png" alt="add" className="plusIcon"/>
+                      ) : (
+                        <div className="addButtonContainer">
+                          <div className="addButton" onClick={() => addCard(index)}>
+                            <img src="/img/plus.png" alt="add" className="plusIcon"/>
+                          </div>
                         </div>
-                      </div>
-                    )
-                  )}
+                      )
+                    )}
 
-                  <div key={index} onClick={() => flipCard(index)} className="flipContainer">
-                    <div className={`songCard ${isFlipped === index ? 'flipped' : ''}`}>
-                      <div className="front">
-                        <Text strong>{card.year}</Text>
-                      </div>
-                      <div className="back">
-                        <Text strong style={{fontSize: "14px", color: "#fefae0"}}>{card.title}</Text>
-                        <Text type="secondary" style={{fontSize: "14px"}}>{card.artist}</Text>
+                    <div key={index} onClick={() => flipCard(index)} className="flipContainer">
+                      <div className={`songCard ${isFlipped === index ? 'flipped' : ''}`}>
+                        <div className="front">
+                          <Text strong>{card.year}</Text>
+                        </div>
+                        <div className="back">
+                          <Text strong style={{fontSize: "14px", color: "#fefae0"}}>{card.title}</Text>
+                          <Text type="secondary" style={{fontSize: "14px"}}>{card.artist}</Text>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </React.Fragment>
-              ))}
+                  </React.Fragment>
+                ))}
                 <div>
                   {player.userId == game.currentRound.activePlayer.userId && (
                     placement == player?.timeline?.length ? (
                       <div className="flipContainer">
                         <div className="songCard">
-                          <Text strong style={{ fontSize: "30px"}}>?</Text>
+                          <Text strong style={{fontSize: "30px"}}>?</Text>
                         </div>
                       </div>
 
@@ -222,16 +262,74 @@ const GamePage = () => {
                     )
                   )}
                 </div>
-            </div>
+              </div>
+            ) : (
+              <Text type="secondary">No songcards in timeline.</Text>
+            )}
+          </div>
+          <Button onClick={confirmPlacement}>Confirm</Button>
+          <Button style={{marginTop: "30px"}} onClick={() => router.back()}>
+            Back to Lobby-Screen
+          </Button>
+        </Card>
+      </div>
+      <div style={{flex: "0 0 300px", position: "absolute", right: 20}}>
+        <Card
+          style={{
+            backgroundColor: "#e5e1ca",
+            width: "250px",
+            textAlign: "center",
+            borderRadius: "16px",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+          }}
+        >
+          <div>
+            <Text strong style={{fontSize: "20px", color: "black"}}>Guess</Text>
+          </div>
+          { guessed ? (
+            <>
+            <Text>You already guessed correct:)</Text>
+            </>
           ) : (
-            <Text type="secondary">No songcards in timeline.</Text>
+          <>
+            <div>
+              <Form
+                form={form}
+                name="login"
+                size="large"
+                onFinish={handleGuess}
+                layout="vertical"
+              >
+                <Form.Item
+                  name="guessedTitle"
+                  rules={[{message: "guessedTitle"}]}
+                >
+                  <Input placeholder="Title"/>
+                </Form.Item>
+                <Form.Item
+                  name="guessedArtist"
+                  rules={[{message: "guessedArtist"}]}
+                >
+                  <Input placeholder="Artist"/>
+                </Form.Item>
+                <Form.Item>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    block
+                    style={{color: "#283618"}}
+                  >
+                    guess
+                  </Button>
+                </Form.Item>
+              </Form>
+            </div>
+          </>
           )}
-        </div>
-        <Button onClick={confirmPlacement}>Confirm</Button>
-        <Button style={{ marginTop: "30px" }} onClick={() => router.back()}>
-          Back to Lobby-Screen
-        </Button>
-      </Card>
+
+        </Card>
+      </div>
+
     </div>
   );
 };
