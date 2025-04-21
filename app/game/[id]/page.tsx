@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { useRouter, useParams } from "next/navigation";
 import {useApi} from "@/hooks/useApi";
 import { Button, Typography, Card } from "antd";
@@ -28,23 +28,24 @@ const GamePage = () => {
   const [placement, setPlacement] = useState<number | null>(null); //position of placement of SongCard
   const [songCard, setSongCard] = useState<SongCard | null>({} as SongCard); // SongCard of currentRound
   const [stompClient, setStompClient] = useState<Client | null>(null);
+  const gameRef = useRef<Game | null>(null);
 
 
   const handleWebSocketMessage = (message: string) => {
     const parsedMessage = JSON.parse(message);
     if (parsedMessage.event_type === "play-song") {
-      playAudio();
+        playAudio();
     }
   };
 
-
   const playAudio = async (): Promise<void> => {
     setIsPlaying(true);
-    const audio = new Audio(game.currentRound.songCard?.songURL);
+    const audio = new Audio(gameRef.current?.currentRound.songCard?.songURL);
     audio.play();
-
+  
     audio.onended = () => {setAudioState(false); setIsPlaying(false)}
   }
+
 
   const flipCard = function (index: number) {
     if (isFlipped === index) {setIsFlipped(null); return;} // if card already flipped
@@ -96,14 +97,20 @@ const GamePage = () => {
 
   }, []);
 
+
+  useEffect(() => {
+    gameRef.current = game;
+  }, [game]);
+
   const handlePlayButtonClick = () => {
     if (stompClient?.connected) {
       (stompClient as Client).publish({
         destination: "/app/play",
         body: gameId ?? "",
       });
-  };
-}
+    };
+  }
+
 
   if (!player || !game?.currentRound?.activePlayer) {
     return <div style={{color: "white"}}>Loading...</div>;
