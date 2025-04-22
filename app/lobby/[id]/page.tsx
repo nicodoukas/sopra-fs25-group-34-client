@@ -9,6 +9,8 @@ import {Lobby} from "@/types/lobby";
 import "@ant-design/v5-patch-for-react-19";
 import {SearchOutlined} from "@ant-design/icons";
 import {Button, Space, Input, TableProps, Table, Card, message} from "antd";
+import { connectWebSocket } from "@/websocket/websocketService";
+import { Client } from "@stomp/stompjs";
 
 const columns: TableProps<User>["columns"] = [
   {
@@ -23,11 +25,12 @@ const LobbyPage: () => void = () => {
   const router = useRouter();
   const apiService = useApi();
   const params = useParams();
-  const lobbyId = params.id;
+  const lobbyId = Array.isArray(params.id) ? params.id[0] : params.id;;
   const [lobby, setLobby] = useState<Lobby>({} as Lobby);
   const [user, setUser] = useState<User>({} as User);
   const [searchUsername, setSearchUsername] = useState(""); // save input username
   const [hostFriends, setHostFriends] = useState<User[]>([]);
+  const [stompClient, setStompClient] = useState<Client | null>(null);
 
   const friendColumns: TableProps<User>["columns"] = [
     {
@@ -81,6 +84,15 @@ const LobbyPage: () => void = () => {
     }
   };
 
+  const handleWebSocketMessage = (message: string) => {
+    const parsedMessage = JSON.parse(message);
+    console.log("Websocket message handled")
+    if (parsedMessage.event_type === "start-game") {
+        router.push(`/game/${lobbyId}`);
+    }
+  };
+  
+
   // this function is only gonna work for the host. To get all members to game page, websockets are needed (?)
   const startGame = async () => {
     try {
@@ -91,7 +103,13 @@ const LobbyPage: () => void = () => {
       await Promise.all(updateStatusPromises);
       messageAPI.success("Host has started the game");
       await apiService.post("/games", lobbyId);
-      router.push(`/game/${lobbyId}`);
+      console.log("stompClient:", stompClient?.connected);
+      if (stompClient?.connected) {
+            (stompClient as Client).publish({
+              destination: "/app/start",
+              body: lobbyId ?? "",
+            });
+          }
     } catch (error) {
       console.error("Failed to set all users to PLAYING:", error);
       alert("Something went wrong while starting the game.");
@@ -158,6 +176,18 @@ const LobbyPage: () => void = () => {
 
     fetchHostFriends();
   }, [apiService, lobby.host]);
+
+  useEffect(()=>{
+      console.log("lobbyId:", lobbyId);
+      const client = connectWebSocket(handleWebSocketMessage, lobbyId);
+      setStompClient(client);
+  
+      return () => {
+        client?.deactivate();
+      };
+  
+    }, []);
+
 
   return (
     <div className={"card-container"}>
