@@ -37,6 +37,7 @@ const GamePage = () => {
   const gameRef = useRef<Game | null>(null);
   const [form] = Form.useForm(); //for guess
   const [guessed, setGuessed] = useState<boolean>(false);
+  const [audioUnlocked, setAudioUnlocked] = useState(false);
 
 
   const handleWebSocketMessage = (message: string) => {
@@ -44,6 +45,13 @@ const GamePage = () => {
     if (parsedMessage.event_type === "play-song") {
         playAudio();
     }
+  };
+
+  
+  const unlockAudio = () => {
+    const silentAudio = new Audio();
+    silentAudio.play().catch(() => {});
+    setAudioUnlocked(true);
   };
 
   const playAudio = async (): Promise<void> => {
@@ -196,6 +204,11 @@ const GamePage = () => {
                    onClick={audioState && !isPlaying ? handlePlayButtonClick : undefined}
                    style={{pointerEvents: audioState ? "auto" : "none"}}>
                 <img src="/img/playsymbol.png" alt="Play" className="playIcon"/>
+              </div>
+            )}
+            {!audioUnlocked && player.userId != game.currentRound.activePlayer.userId && (
+              <div style={{ padding: "20px", textAlign: "center" }}>
+              <Button onClick={unlockAudio}>Enable Audio</Button>
               </div>
             )}
           </div>
