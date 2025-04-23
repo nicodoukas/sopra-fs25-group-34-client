@@ -3,7 +3,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import useSessionStorage from "@/hooks/useSessionStorage";
 import { User } from "@/types/user";
 
 import "@ant-design/v5-patch-for-react-19";
@@ -21,15 +21,15 @@ const Login: React.FC = () => {
 
   const {
     set: setToken,
-  } = useLocalStorage<string>("token", "");
+  } = useSessionStorage<string>("token", "");
 
   const {
     set: setID,
-  } = useLocalStorage<string>("id", "");
+  } = useSessionStorage<string>("id", "");
 
   const {
     set: setUsername,
-  } = useLocalStorage<string>("username", "");
+  } = useSessionStorage<string>("username", "");
 
   const handleLogin = async (values: FormFieldProps) => {
     try {

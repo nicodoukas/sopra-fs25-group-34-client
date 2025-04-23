@@ -131,7 +131,7 @@ const FriendsLobbyRequest: React.FC = () => {
   };
 
   useEffect(() => {
-    const StorageId = localStorage.getItem("id");
+    const StorageId = sessionStorage.getItem("id");
     if (!StorageId || StorageId != id) {
       router.push("/users");
       return;

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import useSessionStorage from "@/hooks/useSessionStorage";
 
 import { SearchOutlined } from "@ant-design/icons";
 import { Button, Input, Space } from "antd";
@@ -18,11 +18,11 @@ export default function Header() {
 
   const {
     value: id,
-  } = useLocalStorage<string>("id", "");
+  } = useSessionStorage<string>("id", "");
 
   const {
     value: username,
-  } = useLocalStorage<string>("username", "");
+  } = useSessionStorage<string>("username", "");
 
   const handleSearch = async (): Promise<void> => {
     if (!searchUsername.trim()) {

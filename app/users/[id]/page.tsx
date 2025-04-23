@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import useSessionStorage from "@/hooks/useSessionStorage";
 import { User } from "@/types/user";
 import Header from "@/components/header";
 
@@ -21,12 +21,16 @@ const UserProfile: React.FC = () => {
 
   const {
     clear: clearToken,
-  } = useLocalStorage<string>("token", "");
+  } = useSessionStorage<string>("token", "");
 
   const {
     value: loggedInUsersId,
     clear: clearId,
-  } = useLocalStorage<string>("id", "");
+  } = useSessionStorage<string>("id", "");
+
+  const {
+    clear: clearUsername,
+  } = useSessionStorage<string>("username", "");
 
   const handleLogout = async (): Promise<void> => {
     try {
@@ -42,6 +46,7 @@ const UserProfile: React.FC = () => {
 
     clearToken();
     clearId();
+    clearUsername();
 
     router.push("/");
   };
@@ -99,7 +104,7 @@ const UserProfile: React.FC = () => {
 
   useEffect(() => {
     //TODO: here again we have the case, that this does not work when using the hook
-    const StorageId = localStorage.getItem("id");
+    const StorageId = sessionStorage.getItem("id");
     if (!StorageId) {
       router.push("/");
       return;
@@ -127,7 +132,7 @@ const UserProfile: React.FC = () => {
   }, [apiService, diplayedUsersId, router]);
 
   /* TODO: this does not work when using the hook */
-  if (localStorage.getItem("id") === diplayedUsersId) {
+  if (sessionStorage.getItem("id") === diplayedUsersId) {
     return (
       <div>
         {contextHolder}
@@ -194,7 +199,7 @@ const UserProfile: React.FC = () => {
               //Check if the current user's ID is in the friends list of the user of this profile
               //TODO: check localStorage usage
               (displayedUser.friends?.includes(
-                  Number(localStorage.getItem("id")),
+                  Number(sessionStorage.getItem("id")),
                 ))
                 ? (
                   <Button type="primary" onClick={handleRemoveFriend}>
@@ -202,7 +207,7 @@ const UserProfile: React.FC = () => {
                   </Button>
                 )
                 : (displayedUser.friendrequests?.includes(
-                    Number(localStorage.getItem("id")),
+                    Number(sessionStorage.getItem("id")),
                   ))
                 ? <p>pending friendrequest...</p>
                 : (

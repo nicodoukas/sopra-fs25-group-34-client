@@ -44,7 +44,7 @@ const EditUserProfile: React.FC = () => {
   };
 
   useEffect(() => {
-    const StorageId = localStorage.getItem("id");
+    const StorageId = sessionStorage.getItem("id");
     if (!StorageId) {
       router.push("/");
       return;

@@ -4,7 +4,7 @@ import React from "react";
 
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import useSessionStorage from "@/hooks/useSessionStorage";
 import { User } from "@/types/user";
 
 import "@ant-design/v5-patch-for-react-19";
@@ -22,11 +22,15 @@ const Register: React.FC = () => {
 
   const {
     set: setToken,
-  } = useLocalStorage<string>("token", "");
+  } = useSessionStorage<string>("token", "");
 
   const {
     set: setID,
-  } = useLocalStorage<string>("id", "");
+  } = useSessionStorage<string>("id", "");
+
+  const {
+    set: setUsername,
+  } = useSessionStorage<string>("username", "");
 
   const handleRegister = async (values: FormFieldProps) => {
     try {
@@ -38,6 +42,10 @@ const Register: React.FC = () => {
 
       if (response.id) {
         setID(response.id);
+      }
+
+      if (response.username) {
+        setUsername(response.username);
       }
 
       router.push("/overview");

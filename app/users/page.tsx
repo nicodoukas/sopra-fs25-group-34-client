@@ -5,7 +5,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import useSessionStorage from "@/hooks/useSessionStorage";
 import { User } from "@/types/user";
 import { Lobby } from "@/types/lobby";
 import "@ant-design/v5-patch-for-react-19";
@@ -51,13 +51,13 @@ const Dashboard: React.FC = () => {
     // value: token, // is commented out because we dont need to know the token value for logout
     // set: setToken, // is commented out because we dont need to set or update the token value
     clear: clearToken, // all we need in this scenario is a method to clear the token
-  } = useLocalStorage<string>("token", ""); // if you wanted to select a different token, i.e "lobby", useLocalStorage<string>("lobby", "");
+  } = useSessionStorage<string>("token", ""); // if you wanted to select a different token, i.e "lobby", useLocalStorage<string>("lobby", "");
 
   const handleLogout = async (): Promise<void> => {
-    const id = localStorage.getItem("id");
+    const id = sessionStorage.getItem("id");
 
     if (!id) {
-      console.error("No user ID found (localStorage)");
+      console.error("No user ID found (sessionStorage)");
       return;
     }
     console.log("user with id ", id, "is about to logout");
@@ -72,7 +72,7 @@ const Dashboard: React.FC = () => {
     // Clear token using the returned function 'clear' from the hook
     clearToken();
 
-    localStorage.removeItem("id");
+    sessionStorage.removeItem("id");
 
     router.push("/login");
   };
@@ -99,32 +99,36 @@ const Dashboard: React.FC = () => {
   };
 
   const handleCreateLobby = async (): Promise<void> => {
-    if (lobbyName == ""){
+    if (lobbyName == "") {
       alert("Enter a Name for your lobby.");
-      return
+      return;
     }
     try {
-      const RequestBody = {host: user, lobbyName: lobbyName}
-      const currentLobby = await apiService.post<Lobby>(`/lobbies`, RequestBody);
+      const RequestBody = { host: user, lobbyName: lobbyName };
+      const currentLobby = await apiService.post<Lobby>(
+        `/lobbies`,
+        RequestBody,
+      );
       setLobby(currentLobby);
-    }
-    catch (error) {
+    } catch (error) {
       if (error instanceof Error) {
-        alert(`Something went wrong while creating the lobby:\n${error.message}`);
+        alert(
+          `Something went wrong while creating the lobby:\n${error.message}`,
+        );
       } else {
         console.error("An unknown error occurred while creating the lobby.");
       }
     }
-  }
+  };
 
   useEffect(() => {
-    if (lobby.lobbyId){
+    if (lobby.lobbyId) {
       router.push(`/lobby/${lobby.lobbyId}`);
     }
   }, [lobby, router]);
 
   useEffect(() => {
-    const id = localStorage.getItem("id");
+    const id = sessionStorage.getItem("id");
     if (!id) {
       router.push("/login");
       return;
@@ -169,7 +173,7 @@ const Dashboard: React.FC = () => {
         <Button onClick={handleSearch} icon={<SearchOutlined />} />
       </Space>
       <Button
-        onClick={() => router.push(`/users/${localStorage.getItem("id")}`)}
+        onClick={() => router.push(`/users/${sessionStorage.getItem("id")}`)}
         style={{
           position: "absolute",
           top: "20px",
@@ -188,78 +192,86 @@ const Dashboard: React.FC = () => {
       >
         Welcome to Hitster!
       </h2>
-      {!createLobby ? (
-      <>
-        <Card
-          title="Overview of registered users"
-          loading={!users}
-          className="dashboard-container"
-          style={{ marginBottom: "20px" }}
-        >
-        {users && (
+      {!createLobby
+        ? (
           <>
-            {/* antd Table: pass the columns and data, plus a rowKey for stable row identity */}
-            <Table<User>
-              columns={columns}
-              dataSource={users}
-              rowKey="id"
-              onRow={(row) => ({
-                onClick: () => router.push(`/users/${row.id}`),
-                style: { cursor: "pointer" },
-              })}
-            />
-            <Button onClick={handleLogout} type="primary">
-              Logout
-            </Button>
+            <Card
+              title="Overview of registered users"
+              loading={!users}
+              className="dashboard-container"
+              style={{ marginBottom: "20px" }}
+            >
+              {users && (
+                <>
+                  {/* antd Table: pass the columns and data, plus a rowKey for stable row identity */}
+                  <Table<User>
+                    columns={columns}
+                    dataSource={users}
+                    rowKey="id"
+                    onRow={(row) => ({
+                      onClick: () => router.push(`/users/${row.id}`),
+                      style: { cursor: "pointer" },
+                    })}
+                  />
+                  <Button onClick={handleLogout} type="primary">
+                    Logout
+                  </Button>
+                </>
+              )}
+            </Card>
+            <div
+              style={{
+                marginBottom: "20px",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <Button
+                onClick={() =>
+                  router.push(`/users/${sessionStorage.getItem("id")}/friends`)}
+                style={{ marginRight: "10px" }}
+              >
+                My Friend List
+              </Button>
+              <Button
+                onClick={() => setCreateLobby(true)}
+                style={{ marginRight: "10px" }}
+              >
+                Create a new Lobby
+              </Button>
+              <Button
+                onClick={() =>
+                  router.push(
+                    `/users/${
+                      sessionStorage.getItem("id")
+                    }/friends-lobby-requests`,
+                  )}
+              >
+                Friends & Lobby requests
+              </Button>
+            </div>
           </>
-          )}
-        </Card>
-        <div
-          style={{
-            marginBottom: "20px",
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
-          <Button
-            onClick={() =>
-            router.push(`/users/${localStorage.getItem("id")}/friends`)}
-            style={{ marginRight: "10px" }}
-          >
-            My Friend List
-          </Button>
-          <Button onClick={() => setCreateLobby(true)} style={{marginRight: "10px"}}>
-            Create a new Lobby
-          </Button>
-          <Button
-            onClick={() =>
-              router.push(
-              `/users/${localStorage.getItem("id")}/friends-lobby-requests`,
-            )}
-          >
-            Friends & Lobby requests
-          </Button>
-        </div>
-        </>) : (
-      <>
-        <Card style={{marginBottom: "20px", width:400, height:200}}>
-          <Input
-            placeholder="enter lobby name"
-            value={lobbyName}
-            onChange={(e) => setLobbyName(e.target.value)}
-            style={{height: "40px", fontSize: "16px", marginBottom:50}}
-          />
-          <div style={{display:"flex", justifyContent:"space-between"}}>
-            <Button onClick={() => setCreateLobby(false)}>
-              Go Back
-            </Button>
-            <Button onClick={handleCreateLobby}>
-              Create Lobby
-            </Button>
-          </div>
-        </Card>
-      </>
-      )}
+        )
+        : (
+          <>
+            <Card style={{ marginBottom: "20px", width: 400, height: 200 }}>
+              <Input
+                placeholder="enter lobby name"
+                value={lobbyName}
+                onChange={(e) => setLobbyName(e.target.value)}
+                style={{ height: "40px", fontSize: "16px", marginBottom: 50 }}
+              />
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <Button onClick={() => setCreateLobby(false)}>
+                  Go Back
+                </Button>
+                <Button onClick={handleCreateLobby}>
+                  Create Lobby
+                </Button>
+              </div>
+            </Card>
+          </>
+        )}
       <div
         style={{
           position: "absolute",

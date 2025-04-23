@@ -26,7 +26,7 @@ const FriendList: React.FC = () => {
   useEffect(() => {
     //TODO: when i replace this to use the useLocalStorage Hook it always trigers
     //also, when i replace it below in the fetchFreinds
-    const StorageId = localStorage.getItem("id");
+    const StorageId = sessionStorage.getItem("id");
     if (!StorageId) {
       router.push("/");
       return;
@@ -35,7 +35,7 @@ const FriendList: React.FC = () => {
     const fetchFriends = async () => {
       try {
         const user: User = await apiService.get<User>(
-          `/users/${localStorage.getItem("id")}`,
+          `/users/${sessionStorage.getItem("id")}`,
         );
 
         const friendIdList: number[] = user.friends;

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import useSessionStorage from "@/hooks/useSessionStorage";
 import Header from "@/components/header";
 
 import "@ant-design/v5-patch-for-react-19";
@@ -15,7 +15,7 @@ const Overview: React.FC = () => {
 
   const {
     value: id,
-  } = useLocalStorage<string>("id", "");
+  } = useSessionStorage<string>("id", "");
 
   return (
     <div className={styles.page}>

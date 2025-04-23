@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import useSessionStorage from "@/hooks/useSessionStorage";
 import Header from "@/components/header";
 
 import { Button, Form, Input } from "antd";
@@ -23,7 +23,7 @@ const CreateLobby: React.FC = () => {
 
   const {
     value: id,
-  } = useLocalStorage<string>("id", "");
+  } = useSessionStorage<string>("id", "");
 
   const handleCreateLobby = async (values: FormFieldProps) => {
     try {
