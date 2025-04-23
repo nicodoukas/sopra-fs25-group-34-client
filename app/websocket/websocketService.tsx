@@ -7,7 +7,7 @@ type OnMessageCallback = (message: string) => void;
 export const connectWebSocket = (onMessageCallback: OnMessageCallback, gameId: string | string[] | undefined) => {
   const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
   const client = new Client({
-    webSocketFactory: () => new SockJS("`${protocol}://sopra-fs25-group-34-server.oa.r.appspot.com/ws`"),
+    webSocketFactory: () => new SockJS(`${protocol}://sopra-fs25-group-34-server.oa.r.appspot.com/ws`),
     connectHeaders: {
     },
     onConnect: () => {
