@@ -61,6 +61,7 @@ const GamePage = () => {
   const playAudio = async (): Promise<void> => {
     setIsPlaying(true);
     const audio = new Audio(gameRef.current?.currentRound.songCard?.songURL);
+    audio.volume = 0.8;
     audio.play();
   
     audio.onended = () => {setAudioState(false); setIsPlaying(false)}
