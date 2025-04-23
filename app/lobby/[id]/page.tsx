@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
+import useSessionStorage from "@/hooks/useSessionStorage";
 import Header from "@/components/header";
 import { User } from "@/types/user";
 import { Lobby } from "@/types/lobby";
@@ -29,8 +30,12 @@ const LobbyPage: () => void = () => {
   const lobbyId = Array.isArray(params.id) ? params.id[0] : params.id;
   const [lobby, setLobby] = useState<Lobby>({} as Lobby);
   const [user, setUser] = useState<User>({} as User);
-  const [hostFriends, setHostFriends] = useState<User[]>([]);
+  const [userFriends, setUserFriends] = useState<User[]>([]);
   const [stompClient, setStompClient] = useState<Client | null>(null);
+
+  const {
+    value: id,
+  } = useSessionStorage<string>("id", "");
 
   const friendColumns: TableProps<User>["columns"] = [
     {
@@ -99,6 +104,7 @@ const LobbyPage: () => void = () => {
 
   useEffect(() => {
     const fetchLobby = async () => {
+      //TODO: check if hook can be used instead
       const StorageId = sessionStorage.getItem("id");
       try {
         //get User data of current logged in user
@@ -108,17 +114,6 @@ const LobbyPage: () => void = () => {
         //get Lobby data
         const currentLobby = await apiService.get<Lobby>(`/lobbies/${lobbyId}`);
         setLobby(currentLobby);
-
-        //get the friends of lobby Host as User objects, store them in list HostFriends
-        // const lobbyHost = lobby.host
-        // console.log(lobbyHost);
-        // if (lobbyHost && lobbyHost.friends?.length > 0) {
-        //   const friendPromises = lobbyHost.friends.map((id) => apiService.get<User>(`/users/${id}`));
-        //   console.log(friendPromises);
-        //   const friendsOfHost = await Promise.all(friendPromises);
-        //   console.log(friendsOfHost);
-        //   setHostFriends(friendsOfHost);
-        // }
       } catch (error) {
         if (error instanceof Error) {
           alert(
@@ -133,30 +128,32 @@ const LobbyPage: () => void = () => {
     fetchLobby();
   }, [apiService, router, lobbyId]);
 
+  // effect to load users friends, trigered as soon as user is set
   useEffect(() => {
-    //get the friends of lobby Host as User objects, store them in list HostFriends
-    const fetchHostFriends = async () => {
-      const lobbyHost = lobby.host;
-      console.log(lobbyHost);
-      if (lobbyHost && lobbyHost.friends?.length > 0) {
+    const fetchFriends = async () => {
+      if (user && user.friends?.length > 0) {
         try {
-          const friendPromises = lobbyHost.friends.map((id) =>
+          const friendPromises = user.friends.map((id) =>
             apiService.get<User>(`/users/${id}`)
           );
-          console.log(friendPromises);
-          const friendsOfHost = await Promise.all(friendPromises);
-          console.log(friendsOfHost);
-          setHostFriends(friendsOfHost);
+          const friendsOfUser = await Promise.all(friendPromises);
+          setUserFriends(friendsOfUser);
         } catch (error) {
-          console.error("Failed to fetch host's friends:", error);
+          if (error instanceof Error) {
+            alert(
+              `Something went wrong while fetching the friends:\n${error.message}`,
+            );
+            console.log(error);
+          } else {
+            console.error(
+              "An unknown error occurred while fetching the friends.",
+            );
+          }
         }
-      } else {
-        setHostFriends([]);
       }
     };
-
-    fetchHostFriends();
-  }, [apiService, lobby.host]);
+    fetchFriends();
+  }, [user]);
 
   useEffect(() => {
     console.log("lobbyId:", lobbyId);
@@ -205,19 +202,19 @@ const LobbyPage: () => void = () => {
         >
           <Card
             title="Invite Friends"
-            loading={!hostFriends}
+            loading={!userFriends}
             className={"dashboard-container"}
             style={{ marginBottom: 50, marginRight: 50, minWidth: "200px" }}
           >
-            {hostFriends.length > 0
+            {userFriends.length > 0
               ? (
                 <Table<User>
                   columns={friendColumns}
-                  dataSource={hostFriends}
+                  dataSource={userFriends}
                   rowKey="id"
                 />
               )
-              : <p>Host has no friends</p>}
+              : <p>User has no friends</p>}
           </Card>
           <Card
             title="Players"
@@ -248,17 +245,18 @@ const LobbyPage: () => void = () => {
           </Card>
         </div>
       </Card>
-      <Button
-        style={{
-          position: "absolute",
-          bottom: "75px",
-          left: "45%",
-        }}
-        onClick={startGame}
-        hidden={sessionStorage.getItem("id") !== lobby.host?.id}
-      >
-        Start Game
-      </Button>
+      {id === lobby.host?.id && (
+        <Button
+          style={{
+            position: "absolute",
+            bottom: "75px",
+            left: "45%",
+          }}
+          onClick={startGame}
+        >
+          Start Game
+        </Button>
+      )}
     </div>
   );
 };
