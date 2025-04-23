@@ -37,6 +37,7 @@ const GamePage = () => {
   const gameRef = useRef<Game | null>(null);
   const [form] = Form.useForm(); //for guess
   const [guessed, setGuessed] = useState<boolean>(false);
+  const [triggerUseEffect, setTriggerUseEffect] = useState<number>(0);
   const [audioUnlocked, setAudioUnlocked] = useState(false);
 
 
@@ -45,9 +46,12 @@ const GamePage = () => {
     if (parsedMessage.event_type === "play-song") {
         playAudio();
     }
+    if (parsedMessage.event_type === "start-new-round"){
+      setTriggerUseEffect(prev => prev + 1);
+    }
   };
 
-  
+
   const unlockAudio = () => {
     const silentAudio = new Audio();
     silentAudio.play().catch(() => {});
@@ -70,17 +74,49 @@ const GamePage = () => {
 
   const addCard = function (index: number) {
     setPlacement(index);
-
-    console.log("CardPlacement: " + placement);
   }
 
   const confirmPlacement = async (): Promise<void> => {
-    //const userId = localStorage.getItem("id");
-    /*const body = {
-      "songCard": songCard,
-      "position": placement,
-    }*/
-    //await apiService.put(`/games/${gameId}/${userId}`, body);
+    //check if placement is correct
+    const year = songCard?.year
+    let yearBefore = -1;
+    let yearAfter = 3000;
+    if (
+      placement != null &&
+      year != null
+    ) {
+      if (placement > 0) {yearBefore = player?.timeline[placement - 1].year;}
+      if (placement < player.timeline.length){yearAfter = player?.timeline[placement].year;}
+      if (yearBefore <= year && yearAfter >= year) {
+        messageAPI.success("Congratulation your placement is correct!")
+        //actually place the songCard into the timeline
+        const userId = localStorage.getItem("id");
+        const body = {
+          "songCard": songCard,
+          "position": placement,
+        }
+        try {
+          await apiService.put(`/games/${gameId}/${userId}`, body);
+        }
+        catch (error) {
+          if (error instanceof Error) {
+            alert(`Something went wrong during the guess:\n${error.message}`);
+            console.error(error);
+          } else {
+            console.error("An unknown error occurred during guess.");
+          }
+        }
+      } else {
+        messageAPI.warning("Wrong placement.")
+      }
+    }
+    //startNewRound
+    if (stompClient?.connected) {
+      (stompClient as Client).publish({
+        destination: "/app/startNewRound",
+        body: gameId ?? "",
+      });
+    }
   }
 
   const handleGuess = async (values: FormFieldProps) => {
@@ -131,7 +167,7 @@ const GamePage = () => {
     };
     fetchData();
 
-  }, [apiService, gameId]);
+  }, [apiService, gameId, triggerUseEffect]);
 
   useEffect(()=>{
     const client = connectWebSocket(handleWebSocketMessage, gameId);
@@ -280,7 +316,9 @@ const GamePage = () => {
               <Text type="secondary">No songcards in timeline.</Text>
             )}
           </div>
-          <Button onClick={confirmPlacement}>Confirm</Button>
+          { (player.userId == game.currentRound.activePlayer.userId) && (placement != null) && (
+            <Button onClick={confirmPlacement}>Confirm</Button>
+          )}
           <Button style={{marginTop: "30px"}} onClick={() => router.back()}>
             Back to Lobby-Screen
           </Button>
