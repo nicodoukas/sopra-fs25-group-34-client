@@ -47,6 +47,7 @@ const CreateLobby: React.FC = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
+      if (!id){return;}
       try {
         const user: User = await apiService.get<User>(`/users/${id}`);
         setUser(user);
