@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useSessionStorage from "@/hooks/useSessionStorage";
 import Header from "@/components/header";
+import InviteAction from "@/components/InviteAction";
 import { User } from "@/types/user";
 import { Lobby } from "@/types/lobby";
 
@@ -50,23 +51,7 @@ const LobbyPage: () => void = () => {
       title: "Invite",
       key: "action",
       render: (_, record) => (
-        <Button
-          type="primary"
-          onClick={async () => {
-            try {
-              await apiService.post(
-                `/lobbies/invite/${record.id}`,
-                lobby.lobbyId,
-              );
-              messageAPI.success(`Lobby invite sent to ${record.username}`);
-            } catch (error) {
-              alert(`Failed to invite ${record.username}.`);
-              console.error("Invite error:", error);
-            }
-          }}
-        >
-          Invite to Lobby
-        </Button>
+        <InviteAction user={record} lobby={lobby} messageAPI={messageAPI} />
       ),
     },
   ];
