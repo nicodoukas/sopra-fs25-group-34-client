@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ConfigProvider, theme } from "antd";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
+
 import "@/styles/globals.css";
 
 const geistSans = Geist({
@@ -15,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Student XX-XXX-XXX",
-  description: "sopra-fs25-template-client",
+  title: "Hitster",
+  description: "Hitster by Group 34 SoPra FS25",
 };
 
 export default function RootLayout({
@@ -26,45 +27,58 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable}`}
+        style={{
+          backgroundImage: "url(/background.png)",
+          backgroundPosition: "center",
+          /* TODO: check on different devices, maybe needs backgroundSize: 'cover', and backgroundRepeat: 'no-repeat' */
+        }}
+      >
+        <div className="background-overlay" />
         <ConfigProvider
           theme={{
             algorithm: theme.defaultAlgorithm,
             token: {
-              // general theme options are set in token, meaning all primary elements (button, menu, ...) will have this color
-              colorPrimary: "#22426b", // selected input field boarder will have this color as well
+              /*sets defaults for ant components */
+              colorPrimary: "#BC6C25",
               borderRadius: 8,
-              colorText: "#fff",
+              colorText: "#283618",
               fontSize: 16,
-
-              // Alias Token
-              colorBgContainer: "#16181D",
+              colorBgContainer: "#FEFAE0",
+              colorBorder: "#DDA15E",
             },
-            // if a component type needs special styling, setting here will override default options set in token
             components: {
               Button: {
-                colorPrimary: "#75bd9d", // this will color all buttons in #75bd9d, overriding the default primaryColor #22426b set in token line 35
-                algorithm: true, // enable algorithm (redundant with line 33 but here for demo purposes)
                 controlHeight: 38,
+                controlOutline: "none",
+                controlOutlineWidth: 0,
               },
               Input: {
-                colorBorder: "gray", // color boarder selected is not overridden but instead is set by primary color in line 35
+                colorBorder: "#283618",
                 colorTextPlaceholder: "#888888",
-                algorithm: false, // disable algorithm (line 32)
+                activeBorderColor: "#bc6c25",
+                activeShadow: "0 0 0 2px rgba(188, 108, 37, 0.2)",
+                hoverBorderColor: "#bc6c25",
+                algorithm: false,
               },
-              Form: {
-                labelColor: "#fff",
-                algorithm: theme.defaultAlgorithm, // specify a specifc algorithm instead of true/false
+              /* TODO: go through these as i go through the pages and see the corresponding components */
+              /*               Message: {
+                colorText: "#283618",
+                colorBgContainer: "#FEFAE0",
               },
-              Message: {
-                colorText: "black", // black text for message from antd
-                colorBgContainer: "#f5f5f5",
-              },
-              Card: {},
+              Card: {}, */
             },
           }}
         >
-          <AntdRegistry>{children}</AntdRegistry>
+          <AntdRegistry>
+            <div className="content-container">
+              <main>
+                {children}
+              </main>
+              <footer>Hitster by Group 34 SoPra FS25</footer>
+            </div>
+          </AntdRegistry>
         </ConfigProvider>
       </body>
     </html>
