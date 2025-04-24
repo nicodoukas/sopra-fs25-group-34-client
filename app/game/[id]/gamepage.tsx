@@ -48,6 +48,10 @@ const GamePage = ({onGameEnd}: { onGameEnd: () => void }) => {
       playAudio();
     }
     if (parsedMessage.event_type === "start-new-round") {
+      setGuessed(false);
+      setAudioState(true);
+      setPlacement(null);
+      setIsPlaying(false);
       setTriggerUseEffect((prev) => prev + 1);
     }
   };
@@ -119,6 +123,7 @@ const GamePage = ({onGameEnd}: { onGameEnd: () => void }) => {
       }
     }
     //startNewRound
+    console.log("Sending start-new-round message...");
     if (stompClient?.connected) {
       (stompClient as Client).publish({
         destination: "/app/startNewRound",
@@ -378,7 +383,7 @@ const GamePage = ({onGameEnd}: { onGameEnd: () => void }) => {
               : <Text type="secondary">No songcards in timeline.</Text>}
           </div>
           {(player.userId == game.currentRound.activePlayer.userId) &&
-            (placement != null) && (
+            (placement != null) && (!isPlaying) && (
               <Button onClick={confirmPlacement}>Confirm</Button>
             )}
           <Button style={{marginTop: "30px"}} onClick={() => router.back()}>
@@ -420,13 +425,13 @@ const GamePage = ({onGameEnd}: { onGameEnd: () => void }) => {
                   >
                     <Form.Item
                       name="guessedTitle"
-                      rules={[{message: "guessedTitle"}]}
+                      rules={[{required: true, message: "Please enter the title"}]}
                     >
                       <Input placeholder="Title"/>
                     </Form.Item>
                     <Form.Item
                       name="guessedArtist"
-                      rules={[{message: "guessedArtist"}]}
+                      rules={[{required: true, message: "Please enter the artist"}]}
                     >
                       <Input placeholder="Artist"/>
                     </Form.Item>
