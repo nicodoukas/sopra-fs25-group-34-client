@@ -97,7 +97,7 @@ const GamePage = ({onGameEnd}: { onGameEnd: () => void }) => {
         yearAfter = player?.timeline[placement].year;
       }
       if (yearBefore <= year && yearAfter >= year) {
-        messageAPI.success("Congratulation your placement is correct!");
+        messageAPI.success("Congratulations, your placement is correct!");
         //actually place the songCard into the timeline
         const userId = sessionStorage.getItem("id");
         const body = {
@@ -157,6 +157,21 @@ const GamePage = ({onGameEnd}: { onGameEnd: () => void }) => {
       }
     }
   };
+
+  const handleBuyCard = async () => {
+    try {
+      const updatedPlayer= apiService.put<Player>(`/games/${gameId}/buy`, player.userId);
+      setPlayer(updatedPlayer);
+      messageAPI.success("SongCard purchased and added to your timeline!");
+    } catch (error) {
+      if (error instanceof Error) {
+        messageAPI.error(`Error: ${error.message}`);
+      } else {
+        messageAPI.error("Unknown error while buying a SongCard.");
+      }
+    }
+  };
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -437,7 +452,7 @@ const GamePage = ({onGameEnd}: { onGameEnd: () => void }) => {
                         block
                         style={{color: "#283618"}}
                       >
-                        guess
+                        check guess
                       </Button>
                     </Form.Item>
                   </Form>
@@ -445,6 +460,15 @@ const GamePage = ({onGameEnd}: { onGameEnd: () => void }) => {
               </>
             )}
         </Card>
+        <div style={{marginTop: "100px", width: "250px"}}>
+          <Button
+            type="primary"
+            block
+            onClick={handleBuyCard}
+            style={{backgroundColor: "#fefae0", color: "#283618", border: "1px solid #283618", borderRadius: "8px",}}
+            > Buy a SongCard for 3 coins!
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -113,7 +113,7 @@ const LobbyPage: () => void = () => {
     fetchLobby();
   }, [apiService, router, lobbyId]);
 
-  // effect to load users friends, trigered as soon as user is set
+  // effect to load users friends, triggered as soon as user is set
   useEffect(() => {
     const fetchFriends = async () => {
       if (user && user.friends?.length > 0) {
