@@ -13,15 +13,13 @@ import Timeline from "./timeline";
 import ExitButton from "./exitGame";
 
 import "@ant-design/v5-patch-for-react-19";
-import { message, Typography } from "antd";
+import { message } from "antd";
 
 import { connectWebSocket } from "@/websocket/websocketService";
 import { Client } from "@stomp/stompjs";
 
 import styles from "./gamePage.module.css";
 import "@/styles/game.css";
-
-const { Text } = Typography;
 
 interface GuessProps {
   guessedTitle: string;
@@ -43,7 +41,6 @@ const GamePage = (
   const [player, setPlayer] = useState<Player>({} as Player);
   const [audioState, setAudioState] = useState<boolean>(true); //True if song not yet played, false otherwise
   const [isPlaying, setIsPlaying] = useState<boolean>(false); //True if song is currently playing
-  const [placement, setPlacement] = useState<number | null>(null); //position of placement of SongCard
   const [songCard, setSongCard] = useState<SongCard | null>({} as SongCard); // SongCard of currentRound
   const [stompClient, setStompClient] = useState<Client | null>(null);
   const gameRef = useRef<Game | null>(null);
@@ -60,7 +57,6 @@ const GamePage = (
     if (parsedMessage.event_type === "start-new-round") {
       setGuessed(false);
       setAudioState(true);
-      setPlacement(null);
       setIsPlaying(false);
       setTriggerUseEffect((prev) => prev + 1);
     }
@@ -240,7 +236,10 @@ const GamePage = (
       />
       {contextHolder}
       <div className="beige-card" style={{ textAlign: "center" }}>
-        <h2>{game?.gameName || "{gameName}"}</h2>
+        <h2 style={{ fontSize: "1.5rem", marginBottom: "0px" }}>
+          {game?.gameName || "{gameName}"}
+        </h2>
+        <h3>{game.currentRound.activePlayer.username}'s turn</h3>
         <PlayButton
           songUrl={songCard?.songURL}
           playerId={player.userId}
@@ -252,30 +251,16 @@ const GamePage = (
           unlockAudio={unlockAudio}
         >
         </PlayButton>
-        <div className="songCardContainer">
-          {placement == null &&
-            player.userId == game.currentRound.activePlayer.userId && (
-            <div className="songCard">
-              <Text strong style={{ fontSize: "30px" }}>?</Text>
-            </div>
-          )}
-        </div>
-        {
-          /*         //TODO: for trying out show only timeline for active player
-        so that i can remove the active player checks from in there */
-        }
-        {player.userId ==
-            game?.currentRound.activePlayer.userId
-          ? (
-            <Timeline
-              timeline={player.timeline}
-              isPlaying={isPlaying}
-              songCard={songCard}
-              gameId={gameId}
-              placementConfirmed={placementConfirmed}
-            />
-          )
-          : <p>not active player</p>}
+        <Timeline
+          title="Your Timeline"
+          timeline={player.timeline}
+          songCard={songCard}
+          gameId={gameId}
+          isPlaying={isPlaying}
+          isPlacementMode={player.userId ==
+            game.currentRound?.activePlayer?.userId}
+          placementConfirmed={placementConfirmed}
+        />
       </div>
       <Guess guessed={guessed} onHandleGuess={handleGuess}></Guess>
       <ExitButton playerId={player.userId} hostId={game.host?.userId ?? null} handleExitGame={handleExitGame}/>

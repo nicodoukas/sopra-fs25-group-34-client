@@ -8,15 +8,25 @@ import { Button, message, Typography } from "antd";
 const { Title, Text } = Typography;
 
 interface Props {
+  title: string;
   timeline: SongCard[];
-  isPlaying: boolean;
   songCard: SongCard | null;
   gameId: string;
+  isPlaying: boolean;
+  isPlacementMode: boolean;
   placementConfirmed: () => void;
 }
 
 const Timeline: React.FC<Props> = (
-  { timeline, isPlaying, songCard, gameId, placementConfirmed },
+  {
+    title,
+    timeline,
+    songCard,
+    gameId,
+    isPlaying,
+    isPlacementMode,
+    placementConfirmed,
+  },
 ) => {
   const [placement, setPlacement] = useState<number | null>(null); //position of placement of SongCard
   const [isFlipped, setIsFlipped] = useState<number | null>(null); //index of flipped SongCard
@@ -77,38 +87,48 @@ const Timeline: React.FC<Props> = (
     <div>
       {contextHolder}
       <div>
+        <div className="songCardContainer">
+          {placement == null &&
+            isPlacementMode && (
+            <div className="songCard">
+              <Text strong style={{ fontSize: "30px" }}>?</Text>
+            </div>
+          )}
+        </div>
         <Title level={4} style={{ textAlign: "center" }}>
-          Your Timeline
+          {title}
         </Title>
         {timeline && timeline.length > 0
           ? (
             <div className="timeline">
               {timeline.map((card: SongCard, index: number) => (
                 <React.Fragment key={index}>
-                  {placement == index
-                    ? (
-                      <div className="flipContainer">
-                        <div className="songCard">
-                          <Text strong style={{ fontSize: "30px" }}>
-                            ?
-                          </Text>
+                  {isPlacementMode && (
+                    placement == index
+                      ? (
+                        <div className="flipContainer">
+                          <div className="songCard">
+                            <Text strong style={{ fontSize: "30px" }}>
+                              ?
+                            </Text>
+                          </div>
                         </div>
-                      </div>
-                    )
-                    : (
-                      <div className="addButtonContainer">
-                        <div
-                          className="addButton"
-                          onClick={() => addCard(index)}
-                        >
-                          <img
-                            src="/img/plus.png"
-                            alt="add"
-                            className="plusIcon"
-                          />
+                      )
+                      : (
+                        <div className="addButtonContainer">
+                          <div
+                            className="addButton"
+                            onClick={() => addCard(index)}
+                          >
+                            <img
+                              src="/img/plus.png"
+                              alt="add"
+                              className="plusIcon"
+                            />
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )
+                  )}
 
                   <div
                     key={index}
@@ -140,35 +160,36 @@ const Timeline: React.FC<Props> = (
                 </React.Fragment>
               ))}
               <div>
-                {placement == timeline?.length
-                  ? (
-                    <div className="flipContainer">
-                      <div className="songCard">
-                        <Text strong style={{ fontSize: "30px" }}>?</Text>
+                {isPlacementMode && (
+                  placement == timeline?.length
+                    ? (
+                      <div className="flipContainer">
+                        <div className="songCard">
+                          <Text strong style={{ fontSize: "30px" }}>?</Text>
+                        </div>
                       </div>
-                    </div>
-                  )
-                  : (
-                    <div className="addButtonContainer">
-                      <div
-                        className="addButton"
-                        onClick={() => addCard(timeline.length)}
-                      >
-                        <img
-                          src="/img/plus.png"
-                          alt="add"
-                          className="plusIcon"
-                        />
+                    )
+                    : (
+                      <div className="addButtonContainer">
+                        <div
+                          className="addButton"
+                          onClick={() => addCard(timeline.length)}
+                        >
+                          <img
+                            src="/img/plus.png"
+                            alt="add"
+                            className="plusIcon"
+                          />
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )
+                )}
               </div>
             </div>
           )
           : <Text type="secondary">No songcards in timeline.</Text>}
       </div>
-
-      {(placement != null) && (!isPlaying) && (
+      {(placement != null) && (!isPlaying) && isPlacementMode && (
         <Button onClick={confirmPlacement}>Confirm</Button>
       )}
     </div>
