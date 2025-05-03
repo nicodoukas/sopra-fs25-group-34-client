@@ -56,7 +56,7 @@ const LobbyPage: () => void = () => {
     },
   ];
 
-  const handleWebSocketMessage = (message: string) => {
+  const handleWebSocketMessage = async (message: string) => {
     const parsedMessage = JSON.parse(message);
     console.log("Websocket message handled");
     if (parsedMessage.event_type === "start-game") {
@@ -65,6 +65,9 @@ const LobbyPage: () => void = () => {
     if (parsedMessage.event_type === "delete-lobby"){
       sessionStorage.setItem("infoMessage", "Lobby was deleted by host");
       router.push("/overview");
+    }
+    if (parsedMessage.event_type === "update-lobby"){
+      await fetchLobby();
     }
   };
 
@@ -129,29 +132,30 @@ const LobbyPage: () => void = () => {
     console.log("Lobby deleted/left successfully");
   };
 
-  useEffect(() => {
-    const fetchLobby = async () => {
-      //TODO: check if hook can be used instead
-      const StorageId = sessionStorage.getItem("id");
-      try {
-        //get User data of current logged in user
-        const currentUser = await apiService.get<User>(`/users/${StorageId}`);
-        setUser(currentUser);
+  const fetchLobby = async () => {
+    //TODO: check if hook can be used instead
+    const StorageId = sessionStorage.getItem("id");
+    try {
+      //get User data of current logged in user
+      const currentUser = await apiService.get<User>(`/users/${StorageId}`);
+      setUser(currentUser);
 
-        //get Lobby data
-        const currentLobby = await apiService.get<Lobby>(`/lobbies/${lobbyId}`);
-        setLobby(currentLobby);
-      } catch (error) {
-        if (error instanceof Error) {
-          alert(
-            `Something went wrong while fetching the lobby:\n${error.message}`,
-          );
-          console.log(error);
-        } else {
-          console.error("An unknown error occurred while fetching the lobby.");
-        }
+      //get Lobby data
+      const currentLobby = await apiService.get<Lobby>(`/lobbies/${lobbyId}`);
+      setLobby(currentLobby);
+    } catch (error) {
+      if (error instanceof Error) {
+        alert(
+          `Something went wrong while fetching the lobby:\n${error.message}`,
+        );
+        console.log(error);
+      } else {
+        console.error("An unknown error occurred while fetching the lobby.");
       }
-    };
+    }
+  };
+
+  useEffect(() => {
     fetchLobby();
   }, [apiService, router, lobbyId]);
 
