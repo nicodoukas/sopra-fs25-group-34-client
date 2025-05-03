@@ -8,13 +8,15 @@ import { Player } from "@/types/player";
 import { SongCard } from "@/types/songcard";
 import GameHeader from "./gameHeader";
 import Guess from "./guess";
+import PlayButton from "./playButton";
 
 import "@ant-design/v5-patch-for-react-19";
-import { Button, Card, message, Typography } from "antd";
+import { Button, message, Typography } from "antd";
 
 import { connectWebSocket } from "@/websocket/websocketService";
 import { Client } from "@stomp/stompjs";
 
+import styles from "./gamePage.module.css";
 import "@/styles/game.css";
 
 const { Title, Text } = Typography;
@@ -228,183 +230,133 @@ const GamePage = ({ onGameEnd }: { onGameEnd: () => void }) => {
   }
 
   return (
-    <div
-      className={"card-container"}
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "flex-start",
-        flexDirection: "row",
-        paddingTop: "80px",
-        position: "relative",
-        gap: "20px",
-      }}
-    >
+    <div className={styles.gameContainer}>
       <GameHeader
         player={player}
         onBuyCard={handleBuyCard}
         onGameEnd={onGameEnd}
-      >
-      </GameHeader>
+      />
       {contextHolder}
-      <div
-        style={{
-          flex: "0 0 500px",
-          position: "relative",
-          display: "flex",
-          justifyContent: "center",
-          width: "800px",
-        }}
-      >
-        <Card
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            backgroundColor: "#e5e1ca",
-            alignItems: "center",
-            paddingTop: "20px",
-            textAlign: "center",
-            borderRadius: "16px",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-          }}
+      <div className="beige-card" style={{ textAlign: "center" }}>
+        <h2>{game?.gameName || "{gameName}"}</h2>
+        <PlayButton
+          songUrl={songCard?.songURL}
+          playerId={player.userId}
+          activePlayerId={game.currentRound.activePlayer.userId}
+          isPlaying={isPlaying}
+          audioState={audioState}
+          audioUnlocked={audioUnlocked}
+          handlePlayButtonClick={handlePlayButtonClick}
+          unlockAudio={unlockAudio}
         >
-          <Title level={2} style={{ color: "black" }}>
-            {game?.gameName || "{gameName}"}
+        </PlayButton>
+        <div className="songCardContainer">
+          {placement == null &&
+            player.userId == game.currentRound.activePlayer.userId && (
+            <div className="songCard">
+              <Text strong style={{ fontSize: "30px" }}>?</Text>
+            </div>
+          )}
+        </div>
+        <div>
+          <Title level={4} style={{ textAlign: "center" }}>
+            Your Timeline
           </Title>
-          <div className="playButtonContainer">
-            {songCard?.songURL &&
-              player.userId == game.currentRound.activePlayer.userId && (
-              <div
-                className={`playButton ${isPlaying ? "playing" : ""}`}
-                onClick={audioState && !isPlaying
-                  ? handlePlayButtonClick
-                  : undefined}
-                style={{ pointerEvents: audioState ? "auto" : "none" }}
-              >
-                <img
-                  src="/img/playsymbol.png"
-                  alt="Play"
-                  className="playIcon"
-                />
-              </div>
-            )}
-            {!audioUnlocked &&
-              player.userId != game.currentRound.activePlayer.userId && (
-              <div style={{ padding: "20px", textAlign: "center" }}>
-                <Button onClick={unlockAudio}>Enable Audio</Button>
-              </div>
-            )}
-          </div>
-          <div className="songCardContainer">
-            {placement == null &&
-              player.userId == game.currentRound.activePlayer.userId && (
-              <div className="songCard">
-                <Text strong style={{ fontSize: "30px" }}>?</Text>
-              </div>
-            )}
-          </div>
-
-          <div>
-            <Title level={4} style={{ textAlign: "center" }}>
-              Your Timeline
-            </Title>
-            {player.timeline && player.timeline.length > 0
-              ? (
-                <div className="timeline">
-                  {player.timeline.map((card: SongCard, index: number) => (
-                    <React.Fragment key={index}>
-                      {player.userId ==
-                          game?.currentRound.activePlayer.userId && (
-                          placement == index
-                            ? (
-                              <div className="flipContainer">
-                                <div className="songCard">
-                                  <Text strong style={{ fontSize: "30px" }}>
-                                    ?
-                                  </Text>
-                                </div>
+          {player.timeline && player.timeline.length > 0
+            ? (
+              <div className="timeline">
+                {player.timeline.map((card: SongCard, index: number) => (
+                  <React.Fragment key={index}>
+                    {player.userId ==
+                        game?.currentRound.activePlayer.userId && (
+                        placement == index
+                          ? (
+                            <div className="flipContainer">
+                              <div className="songCard">
+                                <Text strong style={{ fontSize: "30px" }}>
+                                  ?
+                                </Text>
                               </div>
-                            )
-                            : (
-                              <div className="addButtonContainer">
-                                <div
-                                  className="addButton"
-                                  onClick={() => addCard(index)}
-                                >
-                                  <img
-                                    src="/img/plus.png"
-                                    alt="add"
-                                    className="plusIcon"
-                                  />
-                                </div>
+                            </div>
+                          )
+                          : (
+                            <div className="addButtonContainer">
+                              <div
+                                className="addButton"
+                                onClick={() => addCard(index)}
+                              >
+                                <img
+                                  src="/img/plus.png"
+                                  alt="add"
+                                  className="plusIcon"
+                                />
                               </div>
-                            )
-                        )}
+                            </div>
+                          )
+                      )}
 
+                    <div
+                      key={index}
+                      onClick={() => flipCard(index)}
+                      className="flipContainer"
+                    >
                       <div
-                        key={index}
-                        onClick={() => flipCard(index)}
-                        className="flipContainer"
+                        className={`songCard ${
+                          isFlipped === index ? "flipped" : ""
+                        }`}
                       >
-                        <div
-                          className={`songCard ${
-                            isFlipped === index ? "flipped" : ""
-                          }`}
-                        >
-                          <div className="front">
-                            <Text strong>{card.year}</Text>
-                          </div>
-                          <div className="back">
-                            <Text
-                              strong
-                              style={{ fontSize: "14px", color: "#fefae0" }}
-                            >
-                              {card.title}
-                            </Text>
-                            <Text type="secondary" style={{ fontSize: "14px" }}>
-                              {card.artist}
-                            </Text>
-                          </div>
+                        <div className="front">
+                          <Text strong>{card.year}</Text>
+                        </div>
+                        <div className="back">
+                          <Text
+                            strong
+                            style={{ fontSize: "14px", color: "#fefae0" }}
+                          >
+                            {card.title}
+                          </Text>
+                          <Text type="secondary" style={{ fontSize: "14px" }}>
+                            {card.artist}
+                          </Text>
                         </div>
                       </div>
-                    </React.Fragment>
-                  ))}
-                  <div>
-                    {player.userId == game.currentRound.activePlayer.userId && (
-                      placement == player?.timeline?.length
-                        ? (
-                          <div className="flipContainer">
-                            <div className="songCard">
-                              <Text strong style={{ fontSize: "30px" }}>?</Text>
-                            </div>
+                    </div>
+                  </React.Fragment>
+                ))}
+                <div>
+                  {player.userId == game.currentRound.activePlayer.userId && (
+                    placement == player?.timeline?.length
+                      ? (
+                        <div className="flipContainer">
+                          <div className="songCard">
+                            <Text strong style={{ fontSize: "30px" }}>?</Text>
                           </div>
-                        )
-                        : (
-                          <div className="addButtonContainer">
-                            <div
-                              className="addButton"
-                              onClick={() => addCard(player.timeline.length)}
-                            >
-                              <img
-                                src="/img/plus.png"
-                                alt="add"
-                                className="plusIcon"
-                              />
-                            </div>
+                        </div>
+                      )
+                      : (
+                        <div className="addButtonContainer">
+                          <div
+                            className="addButton"
+                            onClick={() => addCard(player.timeline.length)}
+                          >
+                            <img
+                              src="/img/plus.png"
+                              alt="add"
+                              className="plusIcon"
+                            />
                           </div>
-                        )
-                    )}
-                  </div>
+                        </div>
+                      )
+                  )}
                 </div>
-              )
-              : <Text type="secondary">No songcards in timeline.</Text>}
-          </div>
-          {(player.userId == game.currentRound.activePlayer.userId) &&
-            (placement != null) && (!isPlaying) && (
-            <Button onClick={confirmPlacement}>Confirm</Button>
-          )}
-        </Card>
+              </div>
+            )
+            : <Text type="secondary">No songcards in timeline.</Text>}
+        </div>
+        {(player.userId == game.currentRound.activePlayer.userId) &&
+          (placement != null) && (!isPlaying) && (
+          <Button onClick={confirmPlacement}>Confirm</Button>
+        )}
       </div>
       <Guess guessed={guessed} onHandleGuess={handleGuess}></Guess>
     </div>
