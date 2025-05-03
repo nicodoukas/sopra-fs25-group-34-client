@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import { Game } from "@/types/game";
 import { Player } from "@/types/player";
@@ -26,7 +26,6 @@ interface GuessProps {
 
 const GamePage = ({ onGameEnd }: { onGameEnd: () => void }) => {
   const [messageAPI, contextHolder] = message.useMessage();
-  const router = useRouter();
   const apiService = useApi();
   const params = useParams();
   const gameId = Array.isArray(params.id) ? params.id[0] : params.id!;
@@ -241,7 +240,12 @@ const GamePage = ({ onGameEnd }: { onGameEnd: () => void }) => {
         gap: "20px",
       }}
     >
-      <GameHeader player={player} onBuyCard={handleBuyCard}></GameHeader>
+      <GameHeader
+        player={player}
+        onBuyCard={handleBuyCard}
+        onGameEnd={onGameEnd}
+      >
+      </GameHeader>
       {contextHolder}
       <div
         style={{
@@ -400,10 +404,6 @@ const GamePage = ({ onGameEnd }: { onGameEnd: () => void }) => {
             (placement != null) && (!isPlaying) && (
             <Button onClick={confirmPlacement}>Confirm</Button>
           )}
-          <Button style={{ marginTop: "30px" }} onClick={() => router.back()}>
-            Back to Lobby-Screen
-          </Button>
-          <Button onClick={() => onGameEnd()}>End Game</Button>
         </Card>
       </div>
       <Guess guessed={guessed} onHandleGuess={handleGuess}></Guess>

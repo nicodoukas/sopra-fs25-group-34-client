@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import { Player } from "@/types/player";
 
 import { Button } from "antd";
@@ -7,9 +8,12 @@ import styles from "./gameHeader.module.css";
 interface Props {
   player: Player;
   onBuyCard: () => void;
+  onGameEnd: () => void;
 }
 
-export default function GameHeader({ player, onBuyCard }: Props) {
+export default function GameHeader({ player, onBuyCard, onGameEnd }: Props) {
+  const router = useRouter();
+
   return (
     <header>
       <div className={styles.coinContainer}>
@@ -17,6 +21,10 @@ export default function GameHeader({ player, onBuyCard }: Props) {
         <Button onClick={onBuyCard} disabled={player.coinBalance < 3}>
           Buy a SongCard for 3 coins!
         </Button>
+      </div>
+      <div className={styles.buttonContainer}>
+        <Button onClick={() => router.back()}>Back to Lobby-Screen</Button>
+        <Button onClick={() => onGameEnd()}>End Game</Button>
       </div>
     </header>
   );
