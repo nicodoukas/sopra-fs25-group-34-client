@@ -1,16 +1,18 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import {useRouter, useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import { Game } from "@/types/game";
 import { Player } from "@/types/player";
 import { SongCard } from "@/types/songcard";
+
 import GameHeader from "./gameHeader";
 import Guess from "./guess";
 import PlayButton from "./playButton";
 import Timeline from "./timeline";
 import ExitButton from "./exitGame";
+import Challenge from "./challenge";
 
 import "@ant-design/v5-patch-for-react-19";
 import { message } from "antd";
@@ -27,9 +29,8 @@ interface GuessProps {
 }
 
 const GamePage = (
-  { onGameEnd, onStartChallenge }: {
+  { onGameEnd }: {
     onGameEnd: () => void;
-    onStartChallenge: () => void;
   },
 ) => {
   const [messageAPI, contextHolder] = message.useMessage();
@@ -48,6 +49,7 @@ const GamePage = (
   const [triggerUseEffect, setTriggerUseEffect] = useState<number>(0);
   const [audioUnlocked, setAudioUnlocked] = useState(false);
   const [playerIsLeaving, setPlayerIsLeaving] = useState(false);
+  const [startChallenge, setStartChallenge] = useState<boolean>(false);
 
   const handleWebSocketMessage = (message: string) => {
     const parsedMessage = JSON.parse(message);
@@ -60,14 +62,14 @@ const GamePage = (
       setIsPlaying(false);
       setTriggerUseEffect((prev) => prev + 1);
     }
-    if (parsedMessage.event_type == "update-game"){
-      setTriggerUseEffect((prev) => prev + 1)
+    if (parsedMessage.event_type == "update-game") {
+      setTriggerUseEffect((prev) => prev + 1);
     }
-    if (parsedMessage.event_type == "delete-game"){
+    if (parsedMessage.event_type == "delete-game") {
       onGameEnd();
     }
     if (parsedMessage.event_type === "start-challenge") {
-      onStartChallenge();
+      setStartChallenge(true);
     }
   };
 
@@ -90,14 +92,26 @@ const GamePage = (
     };
   };
 
-  const placementConfirmed = async () => {
-    //startchallenge
+  const setActivePlayerPlacementAndStartChallengePhase = async (
+    index: number,
+  ) => {
+    //TODO: i need to put this with the api service once it is implemented
+    // as long as i do it just like that, the correct placement Number is
+    // only passed to the challenge component for the active player
+    game.currentRound.activePlayerPlacement = index;
+    setStartChallenge(true);
+
     if (stompClient?.connected) {
       (stompClient as Client).publish({
         destination: "/app/startchallenge",
         body: gameId ?? "",
       });
     }
+  };
+
+  const challengeHandeled = () => {
+    setStartChallenge(false);
+    //TODO: add websockets to start new round
   };
 
   const handleGuess = async (values: GuessProps) => {
@@ -157,17 +171,16 @@ const GamePage = (
             body: gameId ?? "",
           });
         }
-      }
-      else {
+      } else {
         await apiService.delete(`/games/${gameId}/${player.userId}`);
-        setPlayerIsLeaving(true)
+        setPlayerIsLeaving(true);
         if (stompClient?.connected) {
           (stompClient as Client).publish({
             destination: "/app/updategame",
             body: gameId ?? "",
           });
         }
-        router.push("/overview")
+        router.push("/overview");
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -186,7 +199,7 @@ const GamePage = (
         console.log("This is the game: ", gameData);
         setSongCard(gameData.currentRound?.songCard);
         const userId = sessionStorage.getItem("id");
-        if (!playerIsLeaving){
+        if (!playerIsLeaving) {
           const playerData = await apiService.get<Player>(
             `/games/${gameId}/${userId}`,
           );
@@ -235,35 +248,56 @@ const GamePage = (
         onGameEnd={onGameEnd}
       />
       {contextHolder}
-      <div className="beige-card" style={{ textAlign: "center" }}>
-        <h2 style={{ fontSize: "1.5rem", marginBottom: "0px" }}>
-          {game?.gameName || "{gameName}"}
-        </h2>
-        <h3>{game.currentRound.activePlayer.username}'s turn</h3>
-        <PlayButton
-          songUrl={songCard?.songURL}
-          playerId={player.userId}
-          activePlayerId={game.currentRound.activePlayer.userId}
-          isPlaying={isPlaying}
-          audioState={audioState}
-          audioUnlocked={audioUnlocked}
-          handlePlayButtonClick={handlePlayButtonClick}
-          unlockAudio={unlockAudio}
-        >
-        </PlayButton>
-        <Timeline
-          title="Your Timeline"
-          timeline={player.timeline}
-          songCard={songCard}
-          gameId={gameId}
-          isPlaying={isPlaying}
-          isPlacementMode={player.userId ==
-            game.currentRound?.activePlayer?.userId}
-          placementConfirmed={placementConfirmed}
-        />
-      </div>
-      <Guess guessed={guessed} onHandleGuess={handleGuess}></Guess>
-      <ExitButton playerId={player.userId} hostId={game.host?.userId ?? null} handleExitGame={handleExitGame}/>
+      {startChallenge
+        ? (
+          <Challenge
+            activePlayersTimeline={game.currentRound.activePlayer.timeline}
+            songCard={songCard}
+            gameId={gameId}
+            gameName={game?.gameName || "{gameName}"}
+            activePlayerName={game.currentRound?.activePlayer?.username}
+            activePlayerPlacement={game.currentRound.activePlayerPlacement}
+            challengeHandeled={challengeHandeled}
+          />
+        )
+        : (
+          <>
+            <div className="beige-card" style={{ textAlign: "center" }}>
+              <h2 style={{ fontSize: "1.5rem", marginBottom: "0px" }}>
+                {game?.gameName || "{gameName}"}
+              </h2>
+              <h3>{game.currentRound.activePlayer.username}'s turn</h3>
+              <PlayButton
+                songUrl={songCard?.songURL}
+                playerId={player.userId}
+                activePlayerId={game.currentRound.activePlayer.userId}
+                isPlaying={isPlaying}
+                audioState={audioState}
+                audioUnlocked={audioUnlocked}
+                handlePlayButtonClick={handlePlayButtonClick}
+                unlockAudio={unlockAudio}
+              >
+              </PlayButton>
+              <Timeline
+                title="Your Timeline"
+                timeline={player.timeline}
+                songCard={songCard}
+                gameId={gameId}
+                isPlaying={isPlaying}
+                isPlacementMode={player.userId ==
+                  game.currentRound?.activePlayer?.userId}
+                confirmPlacement={setActivePlayerPlacementAndStartChallengePhase}
+                activePlayerPlacement={null}
+              />
+            </div>
+            <Guess guessed={guessed} onHandleGuess={handleGuess}></Guess>
+          </>
+        )}
+      <ExitButton
+        playerId={player.userId}
+        hostId={game.host?.userId ?? null}
+        handleExitGame={handleExitGame}
+      />
     </div>
   );
 };

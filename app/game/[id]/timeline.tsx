@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useApi } from "@/hooks/useApi";
 import { SongCard } from "@/types/songcard";
 
@@ -14,9 +14,11 @@ interface Props {
   gameId: string;
   isPlaying: boolean;
   isPlacementMode: boolean;
-  placementConfirmed: () => void;
+  confirmPlacement: (index: number) => void;
+  activePlayerPlacement: number | null;
 }
 
+//TODO: delete Props I do not need
 const Timeline: React.FC<Props> = (
   {
     title,
@@ -25,13 +27,23 @@ const Timeline: React.FC<Props> = (
     gameId,
     isPlaying,
     isPlacementMode,
-    placementConfirmed,
+    confirmPlacement,
+    activePlayerPlacement,
   },
 ) => {
   const [placement, setPlacement] = useState<number | null>(null); //position of placement of SongCard
   const [isFlipped, setIsFlipped] = useState<number | null>(null); //index of flipped SongCard
   const [messageAPI, contextHolder] = message.useMessage();
   const apiService = useApi();
+
+  useEffect(() => {
+    if (activePlayerPlacement != null) {
+      console.log(
+        "in use Effect with active PlayerPlacement " + activePlayerPlacement,
+      );
+      setPlacement(activePlayerPlacement);
+    }
+  }, [activePlayerPlacement]);
 
   const addCard = function (index: number) {
     setPlacement(index);
@@ -45,8 +57,16 @@ const Timeline: React.FC<Props> = (
     setIsFlipped(index);
   };
 
-  const confirmPlacement = async (): Promise<void> => {
-    const year = songCard?.year;
+  const handleConfirmPlacement = async (): Promise<void> => {
+    //TODO: this does not need to check if placement is correct,
+    //that will happen only AFTER Challenge phase
+    //but code left here (commented out) to be copied to correct place
+
+    if (placement != null) {
+      confirmPlacement(placement);
+    }
+
+    /*     const year = songCard?.year;
     let yearBefore = -1;
     let yearAfter = 3000;
     if (
@@ -81,6 +101,7 @@ const Timeline: React.FC<Props> = (
       }
     }
     placementConfirmed();
+    */
   };
 
   return (
@@ -128,6 +149,20 @@ const Timeline: React.FC<Props> = (
                           </div>
                         </div>
                       )
+                  )}
+
+                  {!isPlacementMode && (
+                    placement == index
+                      ? (
+                        <div className="flipContainer">
+                          <div className="songCard">
+                            <Text strong style={{ fontSize: "30px" }}>
+                              ?
+                            </Text>
+                          </div>
+                        </div>
+                      )
+                      : <></>
                   )}
 
                   <div
@@ -190,7 +225,7 @@ const Timeline: React.FC<Props> = (
           : <Text type="secondary">No songcards in timeline.</Text>}
       </div>
       {(placement != null) && (!isPlaying) && isPlacementMode && (
-        <Button onClick={confirmPlacement}>Confirm</Button>
+        <Button onClick={handleConfirmPlacement}>Confirm</Button>
       )}
     </div>
   );
