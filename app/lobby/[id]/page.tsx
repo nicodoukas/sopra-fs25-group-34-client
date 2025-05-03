@@ -231,17 +231,25 @@ const LobbyPage: () => void = () => {
             title="Invite Friends"
             loading={!userFriends}
             className={"dashboard-container"}
-            style={{ marginBottom: 50, marginRight: 50, minWidth: "200px" }}
+            style={{ marginBottom: 50, marginRight: 50, width: "100%" }}
           >
-            {userFriends.length > 0
-              ? (
-                <Table<User>
-                  columns={friendColumns}
-                  dataSource={userFriends}
-                  rowKey="id"
-                />
-              )
-              : <p>User has no friends</p>}
+            <div style={{display: "flex", justifyContent: "center"}}>
+              {userFriends.length > 0
+                ? (
+                  <Table<User>
+                    columns={friendColumns}
+                    dataSource={userFriends}
+                    rowKey="id"
+                    style={{
+                      minWidth: "150px",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  />
+                )
+                : <p>User has no friends</p>}
+            </div>
           </Card>
           <Card
             title="Players"

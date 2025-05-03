@@ -6,7 +6,7 @@ type OnMessageCallback = (message: string) => void;
 
 export const connectWebSocket = (onMessageCallback: OnMessageCallback, gameId: string | string[] | undefined) => {
   const client = new Client({
-    webSocketFactory: () => new SockJS("http://localhost:8080/ws"),
+    webSocketFactory: () => new SockJS("https://backendv2-dot-sopra-fs25-group-34-server.oa.r.appspot.com/ws"),
     connectHeaders: {
     },
     onConnect: () => {
