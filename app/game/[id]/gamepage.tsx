@@ -160,7 +160,7 @@ const GamePage = ({onGameEnd}: { onGameEnd: () => void }) => {
 
   const handleBuyCard = async () => {
     try {
-      const updatedPlayer= apiService.put<Player>(`/games/${gameId}/buy`, player.userId);
+      const updatedPlayer= await apiService.put<Player>(`/games/${gameId}/buy`, player.userId);
       setPlayer(updatedPlayer);
       messageAPI.success("SongCard purchased and added to your timeline!");
     } catch (error) {
