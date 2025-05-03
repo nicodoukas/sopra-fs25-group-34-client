@@ -62,6 +62,10 @@ const LobbyPage: () => void = () => {
     if (parsedMessage.event_type === "start-game") {
       router.push(`/game/${lobbyId}`);
     }
+    if (parsedMessage.event_type === "delete-lobby"){
+      sessionStorage.setItem("infoMessage", "Lobby was deleted by host");
+      router.push("/overview");
+    }
   };
 
   // this function is only gonna work for the host. To get all members to game page, websockets are needed (?)
@@ -85,6 +89,44 @@ const LobbyPage: () => void = () => {
       console.error("Failed to set all users to PLAYING:", error);
       alert("Something went wrong while starting the game.");
     }
+  };
+
+  const deleteLobby = async () => {
+    try {
+      //Delete Lobby / leave Lobby
+      if (id === lobby.host?.id) {
+        console.log("host deletes lobby");
+        await apiService.delete(`/lobbies/${lobbyId}/${id}`);
+
+        //websocket for deleting lobby
+        console.log("stompClient:", stompClient?.connected);
+        if (stompClient?.connected) {
+          (stompClient as Client).publish({
+            destination: "/app/delete",
+            body: lobbyId ?? "",
+          });
+        }
+      }
+      else {
+        console.log("user leaves lobby");
+        await apiService.delete(`/lobbies/${lobbyId}/${id}`);
+
+        //websocket for updating users in lobby
+        console.log("stompClient:", stompClient?.connected);
+        if (stompClient?.connected) {
+          (stompClient as Client).publish({
+            destination: "/app/updatelobby",
+            body: lobbyId ?? "",
+          });
+        }
+        //user is now navigated back to overview
+        router.push("/overview");
+      }
+
+    } catch (error) {
+      alert("Something went wrong while deleting/leaving the lobby.");
+    }
+    console.log("Lobby deleted/left successfully");
   };
 
   useEffect(() => {
@@ -230,7 +272,8 @@ const LobbyPage: () => void = () => {
           </Card>
         </div>
       </Card>
-      {id === lobby.host?.id && (
+      {id === lobby.host?.id ? (
+      <>
         <Button
           style={{
             position: "absolute",
@@ -241,6 +284,23 @@ const LobbyPage: () => void = () => {
         >
           Start Game
         </Button>
+        <Button style={{
+          position: "absolute",
+          right: "2%",
+          top:"90%",
+        }}
+        onClick={deleteLobby}
+        >
+        Delete Lobby</Button>
+      </>
+      ) : (
+      <Button style={{
+        position:"absolute",
+        right: "2%",
+        top: "90%",
+      }}
+      onClick={deleteLobby}
+      >Leave Lobby</Button>
       )}
     </div>
   );
