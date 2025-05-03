@@ -9,10 +9,11 @@ import { SongCard } from "@/types/songcard";
 import GameHeader from "./gameHeader";
 import Guess from "./guess";
 import PlayButton from "./playButton";
+import Timeline from "./timeline";
 import ExitButton from "./exitGame";
 
 import "@ant-design/v5-patch-for-react-19";
-import { Button, message, Typography } from "antd";
+import { message, Typography } from "antd";
 
 import { connectWebSocket } from "@/websocket/websocketService";
 import { Client } from "@stomp/stompjs";
@@ -20,14 +21,19 @@ import { Client } from "@stomp/stompjs";
 import styles from "./gamePage.module.css";
 import "@/styles/game.css";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 interface GuessProps {
   guessedTitle: string;
   guessedArtist: string;
 }
 
-const GamePage = ({ onGameEnd, onStartChallenge }: { onGameEnd: () => void; onStartChallenge: () => void; }) => {
+const GamePage = (
+  { onGameEnd, onStartChallenge }: {
+    onGameEnd: () => void;
+    onStartChallenge: () => void;
+  },
+) => {
   const [messageAPI, contextHolder] = message.useMessage();
   const apiService = useApi();
   const router = useRouter();
@@ -37,7 +43,6 @@ const GamePage = ({ onGameEnd, onStartChallenge }: { onGameEnd: () => void; onSt
   const [player, setPlayer] = useState<Player>({} as Player);
   const [audioState, setAudioState] = useState<boolean>(true); //True if song not yet played, false otherwise
   const [isPlaying, setIsPlaying] = useState<boolean>(false); //True if song is currently playing
-  const [isFlipped, setIsFlipped] = useState<number | null>(null); //index of flipped SongCard
   const [placement, setPlacement] = useState<number | null>(null); //position of placement of SongCard
   const [songCard, setSongCard] = useState<SongCard | null>({} as SongCard); // SongCard of currentRound
   const [stompClient, setStompClient] = useState<Client | null>(null);
@@ -65,7 +70,7 @@ const GamePage = ({ onGameEnd, onStartChallenge }: { onGameEnd: () => void; onSt
     if (parsedMessage.event_type == "delete-game"){
       onGameEnd();
     }
-    if (parsedMessage.event_type === "start-challenge"){
+    if (parsedMessage.event_type === "start-challenge") {
       onStartChallenge();
     }
   };
@@ -89,54 +94,7 @@ const GamePage = ({ onGameEnd, onStartChallenge }: { onGameEnd: () => void; onSt
     };
   };
 
-  const flipCard = function (index: number) {
-    if (isFlipped === index) {
-      setIsFlipped(null);
-      return;
-    } // if card already flipped
-    setIsFlipped(index);
-  };
-
-  const addCard = function (index: number) {
-    setPlacement(index);
-  };
-
-  const confirmPlacement = async (): Promise<void> => {
-    //check if placement is correct
-    const year = songCard?.year;
-    let yearBefore = -1;
-    let yearAfter = 3000;
-    if (
-      placement != null &&
-      year != null
-    ) {
-      if (placement > 0) yearBefore = player?.timeline[placement - 1].year;
-      if (placement < player.timeline.length) {
-        yearAfter = player?.timeline[placement].year;
-      }
-      if (yearBefore <= year && yearAfter >= year) {
-        messageAPI.success("Congratulations, your placement is correct!");
-        //actually place the songCard into the timeline
-        const userId = sessionStorage.getItem("id");
-        const body = {
-          "songCard": songCard,
-          "position": placement,
-        };
-        try {
-          await apiService.put(`/games/${gameId}/${userId}`, body);
-        } catch (error) {
-          if (error instanceof Error) {
-            alert(`Something went wrong during the guess:\n${error.message}`);
-            console.error(error);
-          } else {
-            console.error("An unknown error occurred during guess.");
-          }
-        }
-      } else {
-        messageAPI.warning("Wrong placement.");
-      }
-    }
-
+  const placementConfirmed = async () => {
     //startchallenge
     if (stompClient?.connected) {
       (stompClient as Client).publish({
@@ -302,105 +260,22 @@ const GamePage = ({ onGameEnd, onStartChallenge }: { onGameEnd: () => void; onSt
             </div>
           )}
         </div>
-        <div>
-          <Title level={4} style={{ textAlign: "center" }}>
-            Your Timeline
-          </Title>
-          {player.timeline && player.timeline.length > 0
-            ? (
-              <div className="timeline">
-                {player.timeline.map((card: SongCard, index: number) => (
-                  <React.Fragment key={index}>
-                    {player.userId ==
-                        game?.currentRound.activePlayer.userId && (
-                        placement == index
-                          ? (
-                            <div className="flipContainer">
-                              <div className="songCard">
-                                <Text strong style={{ fontSize: "30px" }}>
-                                  ?
-                                </Text>
-                              </div>
-                            </div>
-                          )
-                          : (
-                            <div className="addButtonContainer">
-                              <div
-                                className="addButton"
-                                onClick={() => addCard(index)}
-                              >
-                                <img
-                                  src="/img/plus.png"
-                                  alt="add"
-                                  className="plusIcon"
-                                />
-                              </div>
-                            </div>
-                          )
-                      )}
-
-                    <div
-                      key={index}
-                      onClick={() => flipCard(index)}
-                      className="flipContainer"
-                    >
-                      <div
-                        className={`songCard ${
-                          isFlipped === index ? "flipped" : ""
-                        }`}
-                      >
-                        <div className="front">
-                          <Text strong>{card.year}</Text>
-                        </div>
-                        <div className="back">
-                          <Text
-                            strong
-                            style={{ fontSize: "14px", color: "#fefae0" }}
-                          >
-                            {card.title}
-                          </Text>
-                          <Text type="secondary" style={{ fontSize: "14px" }}>
-                            {card.artist}
-                          </Text>
-                        </div>
-                      </div>
-                    </div>
-                  </React.Fragment>
-                ))}
-                <div>
-                  {player.userId == game.currentRound.activePlayer.userId && (
-                    placement == player?.timeline?.length
-                      ? (
-                        <div className="flipContainer">
-                          <div className="songCard">
-                            <Text strong style={{ fontSize: "30px" }}>?</Text>
-                          </div>
-                        </div>
-                      )
-                      : (
-                        <div className="addButtonContainer">
-                          <div
-                            className="addButton"
-                            onClick={() => addCard(player.timeline.length)}
-                          >
-                            <img
-                              src="/img/plus.png"
-                              alt="add"
-                              className="plusIcon"
-                            />
-                          </div>
-                        </div>
-                      )
-                  )}
-                </div>
-              </div>
-            )
-            : <Text type="secondary">No songcards in timeline.</Text>}
-        </div>
-        {(player.userId == game.currentRound.activePlayer.userId) &&
-          (placement != null) && (!isPlaying) && (
-          <Button onClick={confirmPlacement}>Confirm</Button>
-        )}
+        {
+          /*         //TODO: for trying out show only timeline for active player
+        so that i can remove the active player checks from in there */
+        }
+        {player.userId ==
+            game?.currentRound.activePlayer.userId
+          ? (
+            <Timeline
+              timeline={player.timeline}
+              isPlaying={isPlaying}
+              songCard={songCard}
+              gameId={gameId}
+              placementConfirmed={placementConfirmed}
+            />
+          )
+          : <p>not active player</p>}
       </div>
       <Guess guessed={guessed} onHandleGuess={handleGuess}></Guess>
       <ExitButton playerId={player.userId} hostId={game.host?.userId ?? null} handleExitGame={handleExitGame}/>
