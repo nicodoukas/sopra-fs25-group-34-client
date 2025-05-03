@@ -1,6 +1,7 @@
 /* defining main colors of the app, can be referenced by name anywhere in CSS */
 :root {
   --background: #fefae0;
+  --background-dark: #e5e1ca;
   --primary-dark: #bc6c25;
   --primary-light: #dda15e;
   --secondary-dark: #283618;
@@ -108,6 +109,13 @@ footer {
   max-width: 400px;
   padding: 30px;
   background-color: var(--secondary-light-transparent);
+  backdrop-filter: blur(5px);
+  border-radius: 10px;
+}
+
+.beige-card {
+  padding: 15px;
+  background-color: var(--background-dark);
   backdrop-filter: blur(5px);
   border-radius: 10px;
 }

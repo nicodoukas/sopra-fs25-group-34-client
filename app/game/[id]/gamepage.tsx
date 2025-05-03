@@ -7,8 +7,10 @@ import { Game } from "@/types/game";
 import { Player } from "@/types/player";
 import { SongCard } from "@/types/songcard";
 import GameHeader from "./gameHeader";
+import Guess from "./guess";
 
-import { Button, Card, Form, Input, message, Typography } from "antd";
+import "@ant-design/v5-patch-for-react-19";
+import { Button, Card, message, Typography } from "antd";
 
 import { connectWebSocket } from "@/websocket/websocketService";
 import { Client } from "@stomp/stompjs";
@@ -17,7 +19,7 @@ import "@/styles/game.css";
 
 const { Title, Text } = Typography;
 
-interface FormFieldProps {
+interface GuessProps {
   guessedTitle: string;
   guessedArtist: string;
 }
@@ -37,7 +39,6 @@ const GamePage = ({ onGameEnd }: { onGameEnd: () => void }) => {
   const [songCard, setSongCard] = useState<SongCard | null>({} as SongCard); // SongCard of currentRound
   const [stompClient, setStompClient] = useState<Client | null>(null);
   const gameRef = useRef<Game | null>(null);
-  const [form] = Form.useForm(); //for guess
   const [guessed, setGuessed] = useState<boolean>(false);
   const [triggerUseEffect, setTriggerUseEffect] = useState<number>(0);
   const [audioUnlocked, setAudioUnlocked] = useState(false);
@@ -132,7 +133,7 @@ const GamePage = ({ onGameEnd }: { onGameEnd: () => void }) => {
     }
   };
 
-  const handleGuess = async (values: FormFieldProps) => {
+  const handleGuess = async (values: GuessProps) => {
     const body = {
       ...values,
       player: player,
@@ -405,71 +406,7 @@ const GamePage = ({ onGameEnd }: { onGameEnd: () => void }) => {
           <Button onClick={() => onGameEnd()}>End Game</Button>
         </Card>
       </div>
-      <div style={{ flex: "0 0 300px", position: "absolute", right: 20 }}>
-        <Card
-          style={{
-            backgroundColor: "#e5e1ca",
-            width: "250px",
-            textAlign: "center",
-            borderRadius: "16px",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-          }}
-        >
-          <div>
-            <Text strong style={{ fontSize: "20px", color: "black" }}>
-              Guess
-            </Text>
-          </div>
-          {guessed
-            ? (
-              <>
-                <Text>You already guessed correct:)</Text>
-              </>
-            )
-            : (
-              <>
-                <div>
-                  <Form
-                    form={form}
-                    name="login"
-                    size="large"
-                    onFinish={handleGuess}
-                    layout="vertical"
-                  >
-                    <Form.Item
-                      name="guessedTitle"
-                      rules={[{
-                        required: true,
-                        message: "Please enter the title",
-                      }]}
-                    >
-                      <Input placeholder="Title" />
-                    </Form.Item>
-                    <Form.Item
-                      name="guessedArtist"
-                      rules={[{
-                        required: true,
-                        message: "Please enter the artist",
-                      }]}
-                    >
-                      <Input placeholder="Artist" />
-                    </Form.Item>
-                    <Form.Item>
-                      <Button
-                        type="primary"
-                        htmlType="submit"
-                        block
-                        style={{ color: "#283618" }}
-                      >
-                        check guess
-                      </Button>
-                    </Form.Item>
-                  </Form>
-                </div>
-              </>
-            )}
-        </Card>
-      </div>
+      <Guess guessed={guessed} onHandleGuess={handleGuess}></Guess>
     </div>
   );
 };
