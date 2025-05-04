@@ -29,7 +29,11 @@ const EditUserProfile: React.FC = () => {
 
   const handleSave = async (values: FormFieldProps) => {
     try {
-      await apiService.put(`/users/${displayedUsersId}`, values);
+      const updatedValues = { ...values };
+      if (updatedValues.username === user.username) {
+        delete updatedValues.username; // Just a quick change to not get an error when not changing username
+      }
+      await apiService.put(`/users/${displayedUsersId}`, updatedValues);
       router.push(`/users/${displayedUsersId}`);
     } catch (error) {
       if (error instanceof Error) {
@@ -60,6 +64,11 @@ const EditUserProfile: React.FC = () => {
           `/users/${displayedUsersId}`,
         );
         setUser(user);
+        form.setFieldsValue({
+          username: user.username,
+          birthday: user.birthday ? String(user.birthday).split("T")[0] : "",
+          description: user.description || "",
+        });
       } catch (error) {
         if (error instanceof Error) {
           alert(
@@ -73,7 +82,7 @@ const EditUserProfile: React.FC = () => {
     };
 
     fetchUser();
-  }, [apiService, displayedUsersId, router]);
+  }, [apiService, displayedUsersId, router, form]);
 
   return (
     <div>
@@ -85,42 +94,44 @@ const EditUserProfile: React.FC = () => {
             form={form}
             size="large"
             onFinish={handleSave}
-            layout="horizontal"
+            layout="vertical"
           >
+            <div className="profile-edit-field">
+              <strong>Old Username:</strong> {user.username}
+            </div>
             <Form.Item
               name="username"
-              label={<strong>Username</strong>}
+              label={<strong>New Username:</strong>}
+              initialValue={user.username}
             >
-              <Input placeholder={user.username ?? ""} />
+              <Input />
             </Form.Item>
+            <div className="profile-edit-field">
+              <strong>Old Birthday:</strong> {user.birthday
+                ? String(user.birthday).split("T")[0]
+                : "N/A"}
+            </div>
             <Form.Item
               name="birthday"
-              label={<strong>Birthday</strong>}
+              label={<strong>New Birthday:</strong>}
+              initialValue={user.birthday ? String(user.birthday).split("T")[0] : ""}
             >
-              <Input
-                placeholder={user.birthday
-                  ? String(user.birthday).split("T")[0]
-                  : "YYYY-MM-DD"}
-              />
+              <Input placeholder="YYYY-MM-DD" />
             </Form.Item>
-            <Form.Item>
-              <p>
-                <strong>Creationdate:</strong> {user.creation_date
-                  ? String(user.creation_date).split("T")[0]
-                  : "N/A"}
-              </p>
+            <div className="profile-edit-field">
+              <strong>Old Description:</strong> {user.description || "To be implemented."}
+            </div>
+            <Form.Item
+              name="description"
+              label={<strong>New Description:</strong>}
+              initialValue={user.description || ""}
+            >
+              <Input.TextArea placeholder="Type the funny shi" />
             </Form.Item>
-            <Form.Item>
-              <p>
-                <strong>Status:</strong> {user.status}
-              </p>
-            </Form.Item>
-            <Form.Item>
-              <Space>
-                <Button onClick={handleGoBack}>Back</Button>
-                <Button type="primary" htmlType="submit">Save</Button>
-              </Space>
-            </Form.Item>
+            <div className="profile-buttons">
+              <Button onClick={handleGoBack}>Back</Button>
+              <Button type="primary" htmlType="submit">Save Changes</Button>
+            </div>
           </Form>
         </div>
       </div>
