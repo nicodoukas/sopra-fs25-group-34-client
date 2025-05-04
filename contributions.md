@@ -79,12 +79,46 @@ Note: If a team member fails to show continuous progress after using their Joker
 
 ---
 
-## Contributions Week 5 - [Begin Date] to [End Date]
+## Contributions Week 5 - 28.04 to 05.05
 
-*Continue with the same table format as above.*
+| **Student**    | **Date** | **Link to Commit**                                                                                                                                                                                                    | **Description**                                                                                                          | **Relevance**                                                                                                                                           |
+|----------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **monolino**   | x        | Link                                                                                                                                                                                                                  | Desc                                                                                                                     | Relevance                                                                                                                                               |
+| **monolino**   | x        | Link                                                                                                                                                                                                                  | Desc                                                                                                                     | Relevance                                                                                                                                               |
+| **nicodoukas** | x        | Link                                                                                                                                                                                                                  | Desc                                                                                                                     | Relevance                                                                                                                                               |
+| **nicodoukas** | x        | Link                                                                                                                                                                                                                  | Desc                                                                                                                     | Relevance                                                                                                                                               |
+| **AnchaXD**    | x        | Link                                                                                                                                                                                                                  | Desc                                                                                                                     | Relevance                                                                                                                                               |
+| **AnchaXD**    | x        | Link                                                                                                                                                                                                                  | Desc                                                                                                                     | Relevance                                                                                                                                               |
+| **phikell**    | 02.05    | https://github.com/nicodoukas/sopra-fs25-group-34-server/commit/17bf47c7d6e6c26ea00eb587372b28ee954a561e</br>https://github.com/nicodoukas/sopra-fs25-group-34-server/commit/cefcebe48017d48dce9033a7d087f5b9b9c8ca2c</br>https://github.com/nicodoukas/sopra-fs25-group-34-server/commit/d47c01d65bd374a1d83bc9cd3fa5aff1b80c8926</br>https://github.com/nicodoukas/sopra-fs25-group-34-client/commit/712c7a1136d4f9714c0a7a7d7b612415f42ba59b                                                                                               | Added buyCard endpoint & corresponding backend functionality. Added corresponding client functionality to the game page. | An integral part of Hitster is to be able to buy a card for 3 coins. That way you are directly rewarded for knowing Title and Artist (you get coins for that) |
+| **phikell**    | 04.05.   | https://github.com/nicodoukas/sopra-fs25-group-34-client/commit/f8f0387e7de2cc9d7bfb3782f950888f5407e6b9</br>https://github.com/nicodoukas/sopra-fs25-group-34-client/commit/9b0d943b5456b8a66c05343bce1a9938e8729ba9 | Reworked profile & edit page + laid foundation for profile picture                                                       | Profile page was ugly since we never adjusted it. Looks better now, clearer to edit and ready to implement profile picture functionality                |
 
 ---
 
-## Contributions Week 6 - [Begin Date] to [End Date]
+## Contributions Week 6 - 05.05 to 12.05
 
-*Continue with the same table format as above.*
+| **Student**    | **Date** | **Link to Commit**  | **Description** | **Relevance** |
+|----------------|----------|---------------------|-----------------|---------------|
+| **monolino**   | x        | Link                | Desc            | Relevance     |
+| **monolino**   | x        | Link                | Desc            | Relevance     |
+| **nicodoukas** | x        | Link                | Desc            | Relevance     |
+| **nicodoukas** | x        | Link                | Desc            | Relevance     |
+| **AnchaXD**    | x        | Link                | Desc            | Relevance     |
+| **AnchaXD**    | x        | Link                | Desc            | Relevance     |
+| **phikell**    | x        | Link                | Desc            | Relevance     |
+| **phikell**    | x        | Link                | Desc            | Relevance     |
+
+---
+
+## Contributions Week 7 - 12.05 to 19.05
+## M4 Deadline 23.05. 23:59
+
+| **Student**    | **Date** | **Link to Commit**  | **Description** | **Relevance** |
+|----------------|----------|---------------------|-----------------|---------------|
+| **monolino**   | x        | Link                | Desc            | Relevance     |
+| **monolino**   | x        | Link                | Desc            | Relevance     |
+| **nicodoukas** | x        | Link                | Desc            | Relevance     |
+| **nicodoukas** | x        | Link                | Desc            | Relevance     |
+| **AnchaXD**    | x        | Link                | Desc            | Relevance     |
+| **AnchaXD**    | x        | Link                | Desc            | Relevance     |
+| **phikell**    | x        | Link                | Desc            | Relevance     |
+| **phikell**    | x        | Link                | Desc            | Relevance     |
