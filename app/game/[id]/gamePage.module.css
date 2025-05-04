@@ -5,3 +5,9 @@
   padding-left: 20px;
   padding-right: 20px;
 }
+
+.exitGameContainer {
+  position: absolute;
+  right: 5%;
+  bottom: 10%;
+}

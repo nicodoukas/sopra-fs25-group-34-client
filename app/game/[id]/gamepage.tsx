@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "next/navigation";
+import {useRouter, useParams } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import { Game } from "@/types/game";
 import { Player } from "@/types/player";
@@ -9,6 +9,7 @@ import { SongCard } from "@/types/songcard";
 import GameHeader from "./gameHeader";
 import Guess from "./guess";
 import PlayButton from "./playButton";
+import ExitButton from "./exitGame";
 
 import "@ant-design/v5-patch-for-react-19";
 import { Button, message, Typography } from "antd";
@@ -18,7 +19,6 @@ import { Client } from "@stomp/stompjs";
 
 import styles from "./gamePage.module.css";
 import "@/styles/game.css";
-import { Router, useRouter } from "next/router";
 
 const { Title, Text } = Typography;
 
@@ -30,6 +30,7 @@ interface GuessProps {
 const GamePage = ({ onGameEnd, onStartChallenge }: { onGameEnd: () => void; onStartChallenge: () => void; }) => {
   const [messageAPI, contextHolder] = message.useMessage();
   const apiService = useApi();
+  const router = useRouter();
   const params = useParams();
   const gameId = Array.isArray(params.id) ? params.id[0] : params.id!;
   const [game, setGame] = useState<Game>({} as Game);
@@ -44,6 +45,7 @@ const GamePage = ({ onGameEnd, onStartChallenge }: { onGameEnd: () => void; onSt
   const [guessed, setGuessed] = useState<boolean>(false);
   const [triggerUseEffect, setTriggerUseEffect] = useState<number>(0);
   const [audioUnlocked, setAudioUnlocked] = useState(false);
+  const [playerIsLeaving, setPlayerIsLeaving] = useState(false);
 
   const handleWebSocketMessage = (message: string) => {
     const parsedMessage = JSON.parse(message);
@@ -56,6 +58,12 @@ const GamePage = ({ onGameEnd, onStartChallenge }: { onGameEnd: () => void; onSt
       setPlacement(null);
       setIsPlaying(false);
       setTriggerUseEffect((prev) => prev + 1);
+    }
+    if (parsedMessage.event_type == "update-game"){
+      setTriggerUseEffect((prev) => prev + 1)
+    }
+    if (parsedMessage.event_type == "delete-game"){
+      onGameEnd();
     }
     if (parsedMessage.event_type === "start-challenge"){
       onStartChallenge();
@@ -128,6 +136,14 @@ const GamePage = ({ onGameEnd, onStartChallenge }: { onGameEnd: () => void; onSt
         messageAPI.warning("Wrong placement.");
       }
     }
+    //startnewRound just for testing
+    if (stompClient?.connected) {
+      (stompClient as Client).publish({
+        destination: "/app/startNewRound",
+        body: gameId ?? "",
+      });
+    }
+    /*
     //startchallenge
     if (stompClient?.connected) {
       (stompClient as Client).publish({
@@ -135,6 +151,7 @@ const GamePage = ({ onGameEnd, onStartChallenge }: { onGameEnd: () => void; onSt
         body: gameId ?? "",
       });
     }
+    */
   };
 
   const handleGuess = async (values: GuessProps) => {
@@ -185,6 +202,36 @@ const GamePage = ({ onGameEnd, onStartChallenge }: { onGameEnd: () => void; onSt
     }
   };
 
+  const handleExitGame = async () => {
+    try {
+      if (player.userId == game.host?.userId) {
+        if (stompClient?.connected) {
+          (stompClient as Client).publish({
+            destination: "/app/deleteGame",
+            body: gameId ?? "",
+          });
+        }
+      }
+      else {
+        await apiService.delete(`/games/${gameId}/${player.userId}`);
+        setPlayerIsLeaving(true)
+        if (stompClient?.connected) {
+          (stompClient as Client).publish({
+            destination: "/app/updategame",
+            body: gameId ?? "",
+          });
+        }
+        router.push("/overview")
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        messageAPI.error(`Error: ${error.message}`);
+      } else {
+        messageAPI.error("Unknown error while leaving the game.");
+      }
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -193,11 +240,13 @@ const GamePage = ({ onGameEnd, onStartChallenge }: { onGameEnd: () => void; onSt
         console.log("This is the game: ", gameData);
         setSongCard(gameData.currentRound?.songCard);
         const userId = sessionStorage.getItem("id");
-        const playerData = await apiService.get<Player>(
-          `/games/${gameId}/${userId}`,
-        );
-        setPlayer(playerData);
-        console.log("This is the player: ", playerData);
+        if (!playerIsLeaving){
+          const playerData = await apiService.get<Player>(
+            `/games/${gameId}/${userId}`,
+          );
+          setPlayer(playerData);
+          console.log("This is the player: ", playerData);
+        }
       } catch (error) {
         alert("Failed to fetch game or player data.");
         console.error("Error fetching data:", error);
@@ -362,6 +411,7 @@ const GamePage = ({ onGameEnd, onStartChallenge }: { onGameEnd: () => void; onSt
         )}
       </div>
       <Guess guessed={guessed} onHandleGuess={handleGuess}></Guess>
+      <ExitButton playerId={player.userId} hostId={game.host?.userId ?? null} handleExitGame={handleExitGame}/>
     </div>
   );
 };

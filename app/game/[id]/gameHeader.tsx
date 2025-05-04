@@ -24,7 +24,6 @@ export default function GameHeader({ player, onBuyCard, onGameEnd }: Props) {
       </div>
       <div className={styles.buttonContainer}>
         <Button onClick={() => router.back()}>Back to Lobby-Screen</Button>
-        <Button onClick={() => onGameEnd()}>End Game</Button>
       </div>
     </header>
   );
