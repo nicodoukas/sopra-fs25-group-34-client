@@ -136,14 +136,7 @@ const GamePage = ({ onGameEnd, onStartChallenge }: { onGameEnd: () => void; onSt
         messageAPI.warning("Wrong placement.");
       }
     }
-    //startnewRound just for testing
-    if (stompClient?.connected) {
-      (stompClient as Client).publish({
-        destination: "/app/startNewRound",
-        body: gameId ?? "",
-      });
-    }
-    /*
+
     //startchallenge
     if (stompClient?.connected) {
       (stompClient as Client).publish({
@@ -151,7 +144,6 @@ const GamePage = ({ onGameEnd, onStartChallenge }: { onGameEnd: () => void; onSt
         body: gameId ?? "",
       });
     }
-    */
   };
 
   const handleGuess = async (values: GuessProps) => {

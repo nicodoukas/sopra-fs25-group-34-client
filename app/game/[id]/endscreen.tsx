@@ -1,11 +1,13 @@
 "use client";
 
-import {Card, Table, TableProps} from "antd";
+import {Card, Table, TableProps, Button, message} from "antd";
 import React, {useEffect, useState} from "react";
 import {useApi} from "@/hooks/useApi";
 import {Game} from "@/types/game";
 import {Player} from "@/types/player";
-import {useParams} from "next/navigation";
+import {useParams, useRouter} from "next/navigation";
+import {Client} from "@stomp/stompjs";
+import {connectWebSocket} from "@/websocket/websocketService";
 
 const columns: TableProps["columns"] = [
   {
@@ -26,10 +28,39 @@ const columns: TableProps["columns"] = [
 ];
 const EndScreen = () => {
   const [game, setGame] = useState<Game>({} as Game);
+  const [messageAPI, contextHolder] = message.useMessage();
   const apiService = useApi();
+  const router = useRouter();
   const params = useParams();
   const gameId = Array.isArray(params.id) ? params.id[0] : params.id!;
   const [player, setPlayer] = useState<Player>({} as Player);
+  const [stompClient, setStompClient] = useState<Client | null>(null);
+
+  const handleWebSocketMessage = (message: string) => {
+    const parsedMessage = JSON.parse(message);
+    if (parsedMessage.eventType === "delete-game"){
+      router.push(`/lobby/${gameId}`);
+    }
+
+  };
+
+  const deleteGame = async () => {
+    try {
+      await apiService.delete(`/games/${gameId}/${player.userId}`)
+      if (stompClient?.connected) {
+        (stompClient as Client).publish({
+          destination: "/app/deleteGame",
+          body: gameId ?? "",
+        });
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        messageAPI.error(`Error: ${error.message}`);
+      } else {
+        messageAPI.error("Unknown error while deleting game.");
+      }
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,6 +81,15 @@ const EndScreen = () => {
     fetchData();
 
   }, [apiService, gameId]);
+
+  useEffect(() => {
+    const client = connectWebSocket(handleWebSocketMessage, gameId);
+    setStompClient(client);
+
+    return () => {
+      client?.deactivate();
+    };
+  }, []);
 
   if (!player?.timeline || !game) {
     return <div style={{color: "white"}}>Loading...</div>;
@@ -88,6 +128,7 @@ const EndScreen = () => {
         alignItems: "center"
       }}
     >
+      {contextHolder}
 
       <Card
         style={{
@@ -120,6 +161,9 @@ const EndScreen = () => {
           columns={columns}
           rowKey="userId"
         />
+        {player.userId === game.host?.userId && (
+          <Button onClick={deleteGame}>Back to Lobby</Button>
+        )}
       </Card>
 
     </div>
