@@ -1,12 +1,29 @@
 "use client";
 
-import {Card} from "antd";
+import {Card, Table, TableProps} from "antd";
 import React, {useEffect, useState} from "react";
 import {useApi} from "@/hooks/useApi";
 import {Game} from "@/types/game";
 import {Player} from "@/types/player";
 import {useParams} from "next/navigation";
 
+const columns: TableProps["columns"] = [
+  {
+    title: "Rank",
+    dataIndex: "rank",
+    key: "rank",
+  },
+  {
+    title: "Player",
+    dataIndex: "username",
+    key: "username",
+  },
+  {
+    title: "#Cards",
+    dataIndex: "cards",
+    key: "cards",
+  },
+];
 const EndScreen = () => {
   const [game, setGame] = useState<Game>({} as Game);
   const apiService = useApi();
@@ -21,7 +38,7 @@ const EndScreen = () => {
         setGame(gameData);
         console.log("This is the game: ", gameData);
 
-        const userId = localStorage.getItem("id");
+        const userId = sessionStorage.getItem("id");
         const playerData = await apiService.get<Player>(`/games/${gameId}/${userId}`);
         setPlayer(playerData);
         console.log("This is the player: ", playerData);
@@ -37,6 +54,28 @@ const EndScreen = () => {
   if (!player?.timeline || !game) {
     return <div style={{color: "white"}}>Loading...</div>;
   }
+
+  const sortedPlayers = game.players
+    .map((player, index) => ({
+      ...player,
+      rank: index + 1,
+      cards: player.timeline.length,
+    }))
+    .sort((a, b) => b.cards - a.cards);
+
+  let currentRank = 1;
+  const sortedPlayersWithRank = sortedPlayers.map((player,index, array) => {
+    if (index > 0 && player.cards === array[index -1].cards) {
+      player.rank = array[index - 1].rank;
+    }
+    else {
+      player.rank = currentRank;
+      currentRank += 1;
+    }
+    return player;
+  });
+
+  const playerRank = sortedPlayersWithRank.find((p) => p.userId === player.userId)?.rank;
 
   return (
     <div
@@ -66,15 +105,21 @@ const EndScreen = () => {
       >
         <h1>Game Over!</h1>
         <p>Thanks for playing</p>
-        {player.timeline.length == 10 ? (
+        {playerRank === 1 ? (
           <div>
-            You won! Congratulation
+            Congratulations {player.username}, you won this game!
           </div>
         ) : (
           <div>
-            You lose
+            Sorry, you did not win this game.
           </div>
         )}
+        <h2 style={{fontSize: "30px", marginTop:"20px"}}>Final Rankings</h2>
+        <Table
+          dataSource={sortedPlayersWithRank}
+          columns={columns}
+          rowKey="userId"
+        />
       </Card>
 
     </div>
