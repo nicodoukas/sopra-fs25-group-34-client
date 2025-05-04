@@ -138,32 +138,48 @@ const UserProfile: React.FC = () => {
         {contextHolder}
         <Header />
         <div className="card-container">
-          <h2>Profile of {displayedUser.username}</h2>
-          <div className="green-card">
-            <p>
-              <strong>Username:</strong> {displayedUser.username}
-            </p>
-            <p>
-              <strong>Birthday:</strong> {displayedUser.birthday
-                ? String(displayedUser.birthday).split("T")[0]
-                : "N/A"}
-            </p>
-            <p>
-              <strong>Creationdate:</strong> {displayedUser.creation_date
-                ? String(displayedUser.creation_date).split("T")[0]
-                : "N/A"}
-            </p>
-            <p>
+          <h2 className="profile-title">Your Profile</h2>
+          <div className="green-card profile-card">
+            <div className="profile-header">
+              <div className="username">
+                <strong>Username:</strong> {displayedUser.username}
+              </div>
+              <div className="profile-picture-placeholder">
+                Profile Picture
+              </div>
+            </div>
+            <div className="profile-field">
+              <strong>Description:</strong>{" "}
+              {displayedUser.description || <i>To be implemented.</i>}
+            </div>
+            <div className="profile-field">
+              <strong>Birthday:</strong>{" "}
+              {displayedUser.birthday
+                  ? String(displayedUser.birthday).split("T")[0]
+                  : "N/A"}
+            </div>
+            <div className="profile-field">
+              <strong>Account Created:</strong>{" "}
+              {displayedUser.creation_date
+                  ? String(displayedUser.creation_date).split("T")[0]
+                  : "N/A"}
+            </div>
+            <div className="profile-field">
               <strong>Status:</strong> {displayedUser.status}
-            </p>
-            <Space style={{ marginTop: 10 }}>
-              {/* TODO: is one of these options primary and the others secondary or are all equal? */}
-              <Button type="primary" onClick={handleGoBack}>Back</Button>
-              <Button type="primary" onClick={handleLogout}>
+            </div>
+            <div className="profile-buttons">
+              <Button type="default" onClick={handleGoBack}>
+                Back
+              </Button>
+              <Button type="primary" danger onClick={handleLogout}>
                 Logout
               </Button>
-              <Button type="primary" onClick={handleEdit}>Edit</Button>
-            </Space>
+              <Button type="primary"
+                      style={{backgroundColor: "var(--primary-light)", borderColor: "var(--primary-light)"}}
+                      onClick={handleEdit}>
+                Edit Profile
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -175,48 +191,53 @@ const UserProfile: React.FC = () => {
       {contextHolder}
       <Header />
       <div className="card-container">
-        <h2>Profile of {displayedUser.username}</h2>
-        <div className="green-card">
-          <p>
-            <strong>Username:</strong> {displayedUser.username}
-          </p>
-          <p>
-            <strong>Birthday:</strong> {displayedUser.birthday
-              ? String(displayedUser.birthday).split("T")[0]
-              : "N/A"}
-          </p>
-          <p>
-            <strong>Creationdate:</strong> {displayedUser.creation_date
-              ? String(displayedUser.creation_date).split("T")[0]
-              : "N/A"}
-          </p>
-          <p>
+        <h2 className="profile-title">Profile of {displayedUser.username}</h2>
+        <div className="green-card profile-card">
+          <div className="profile-header">
+            <div className="username">
+              <strong>Username:</strong> {displayedUser.username}
+            </div>
+            <div className="profile-picture-placeholder">
+              Profile Picture
+            </div>
+          </div>
+          <div className="profile-field">
+            <strong>Description:</strong>{" "}
+            {displayedUser.description || <i>To be implemented.</i>}
+          </div>
+          <div className="profile-field">
+            <strong>Birthday:</strong>{" "}
+            {displayedUser.birthday
+                ? String(displayedUser.birthday).split("T")[0]
+                : "N/A"}
+          </div>
+          <div className="profile-field">
+            <strong>Account Created:</strong>{" "}
+            {displayedUser.creation_date
+                ? String(displayedUser.creation_date).split("T")[0]
+                : "N/A"}
+          </div>
+          <div className="profile-field">
             <strong>Status:</strong> {displayedUser.status}
-          </p>
-          <Space style={{ marginTop: 10 }}>
-            <Button type="primary" onClick={handleGoBack}>Back</Button>
-            {
-              //Check if the current user's ID is in the friends list of the user of this profile
-              //TODO: check localStorage usage
-              (displayedUser.friends?.includes(
-                  Number(sessionStorage.getItem("id")),
-                ))
-                ? (
-                  <Button type="primary" onClick={handleRemoveFriend}>
-                    Remove Friend
-                  </Button>
-                )
-                : (displayedUser.friendrequests?.includes(
-                    Number(sessionStorage.getItem("id")),
-                  ))
-                ? <p>pending friendrequest...</p>
-                : (
-                  <Button type="primary" onClick={handleAddFriend}>
-                    Add Friend
-                  </Button>
-                )
-            }
-          </Space>
+          </div>
+          <div className="profile-buttons">
+            <Button type="default" onClick={handleGoBack}>
+              Back
+            </Button>
+            {displayedUser.friends?.includes(Number(sessionStorage.getItem("id"))) ? (
+              <Button type="primary" danger onClick={handleRemoveFriend}>
+                Remove Friend
+              </Button>
+            ) : displayedUser.friendrequests?.includes(Number(sessionStorage.getItem("id"))) ? (
+              <p style={{ marginTop: 8, fontStyle: "italic" }}>
+                Pending friend request...
+              </p>
+            ) : (
+              <Button type="primary" onClick={handleAddFriend}>
+                Add Friend
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>
