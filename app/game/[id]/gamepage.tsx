@@ -13,9 +13,10 @@ import PlayButton from "./playButton";
 import Timeline from "./timeline";
 import ExitButton from "./exitGame";
 import Challenge from "./challenge";
+import ChallengeAccepted from "./challengeAccepted";
 
 import "@ant-design/v5-patch-for-react-19";
-import { message } from "antd";
+import { Button, message } from "antd";
 
 import { connectWebSocket } from "@/websocket/websocketService";
 import { Client } from "@stomp/stompjs";
@@ -73,16 +74,20 @@ const GamePage = (
       setStartChallenge(true);
     }
     if (parsedMessage.event_type === "challenge-accepted") {
+      /* TODO: this does not yet seem to get triggered */
+      console.log("in websocket if if if");
       const challengerId = parsedMessage.data;
+      setStartChallenge(false);
       setChallengeTaken(true);
-      if (challengerId.toString() === sessionStorage.getItem("id")){
-        messageAPI.success("You were the first to challenge")
+      if (challengerId.toString() === sessionStorage.getItem("id")) {
+        messageAPI.success("You were the first to challenge");
       }
     }
-    if (parsedMessage.event_type === "challenge-denied"){
+    if (parsedMessage.event_type === "challenge-denied") {
       const challengerId = parsedMessage.data;
-      if (challengerId.toString() === sessionStorage.getItem("id")){
-        messageAPI.warning("Someone was faster to challenge")
+      setStartChallenge(false);
+      if (challengerId.toString() === sessionStorage.getItem("id")) {
+        messageAPI.warning("Someone was faster to challenge");
       }
     }
   };
@@ -126,6 +131,17 @@ const GamePage = (
   const challengeHandeled = () => {
     setStartChallenge(false);
     //TODO: add websockets to start new round
+  };
+
+  const simulateAcceptingChallenge = () => {
+    setStartChallenge(false);
+    setChallengeTaken(true);
+  };
+
+  const handleChallengerPlacement = (placmentIndex: number) => {
+    //TODO: call API service to set challengers placement
+    //then trigger evaluation
+    setChallengeTaken(false);
   };
 
   const handleGuess = async (values: GuessProps) => {
@@ -262,21 +278,41 @@ const GamePage = (
         onGameEnd={onGameEnd}
       />
       {contextHolder}
+      {/* TODO: do not show challenge page for active player */}
       {startChallenge
         ? (
-          <Challenge
+          <>
+            <Challenge
+              activePlayersTimeline={game.currentRound.activePlayer.timeline}
+              songCard={songCard}
+              gameId={gameId}
+              gameName={game?.gameName || "{gameName}"}
+              activePlayerName={game.currentRound?.activePlayer?.username}
+              activePlayerPlacement={game.currentRound.activePlayerPlacement}
+              challengeHandeled={challengeHandeled}
+              stompClient={stompClient}
+            />
+            <Button onClick={simulateAcceptingChallenge}>
+              SimulateAcceptingChallenge
+            </Button>
+          </>
+        )
+        : <></>}
+      {challengeTaken
+        ? (
+          <ChallengeAccepted
+            gameName={game?.gameName || "{gameName}"}
+            activePlayerName={game.currentRound?.activePlayer?.username}
             activePlayersTimeline={game.currentRound.activePlayer.timeline}
             songCard={songCard}
             gameId={gameId}
-            gameName={game?.gameName || "{gameName}"}
-            activePlayerName={game.currentRound?.activePlayer?.username}
             activePlayerPlacement={game.currentRound.activePlayerPlacement}
-            challengeHandeled={challengeHandeled}
-            challengeTaken={challengeTaken}
-            stompClient = {stompClient}
+            handleChallengerPlacement={handleChallengerPlacement}
           />
         )
-        : (
+        : <></>}
+      {!startChallenge && !challengeTaken
+        ? (
           <>
             <div className="beige-card" style={{ textAlign: "center" }}>
               <h2 style={{ fontSize: "1.5rem", marginBottom: "0px" }}>
@@ -308,7 +344,8 @@ const GamePage = (
             </div>
             <Guess guessed={guessed} onHandleGuess={handleGuess}></Guess>
           </>
-        )}
+        )
+        : <></>}
       <ExitButton
         playerId={player.userId}
         hostId={game.host?.userId ?? null}

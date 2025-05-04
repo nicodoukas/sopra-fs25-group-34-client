@@ -104,6 +104,8 @@ const Timeline: React.FC<Props> = (
     */
   };
 
+  //TODO: look that challenger cannot place at same position as activePlayer
+
   return (
     <div>
       {contextHolder}
@@ -150,7 +152,7 @@ const Timeline: React.FC<Props> = (
                         </div>
                       )
                   )}
-
+                  {/* TODO: this does not yet work if the placement is behind the last card */}
                   {!isPlacementMode && (
                     placement == index
                       ? (

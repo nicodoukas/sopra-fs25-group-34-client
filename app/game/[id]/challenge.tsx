@@ -13,8 +13,7 @@ interface Props {
   activePlayerName: string | null;
   activePlayerPlacement: number;
   challengeHandeled: () => void;
-  challengeTaken: boolean;
-  stompClient: Client| null;
+  stompClient: Client | null;
 }
 //TODO: maybe I can pass the whole active player
 
@@ -26,24 +25,24 @@ const Challenge: React.FC<Props> = ({
   activePlayerName,
   activePlayerPlacement,
   challengeHandeled,
-  challengeTaken,
-  stompClient
+  stompClient,
 }) => {
-
   const randomMethod = function (index: number) {
     //the can only throw the confirmPlacement method, when isPlacementMode=true
     //but i stil need to catch it
   };
 
   const handleChallengeAccepted = async () => {
+    console.log("in handleChallengeAccepted of challenge.tsx");
     if (stompClient?.connected) {
-        stompClient.publish({
-          destination: "/app/challenge/accept",
-          body: JSON.stringify({
-            gameId,
-            userId: sessionStorage.getItem("id"),
-          }),
-        });
+      console.log("in if stompClient");
+      stompClient.publish({
+        destination: "/app/challenge/accept",
+        body: JSON.stringify({
+          gameId,
+          userId: sessionStorage.getItem("id"),
+        }),
+      });
     }
   };
 
@@ -69,11 +68,9 @@ const Challenge: React.FC<Props> = ({
         confirmPlacement={randomMethod}
         activePlayerPlacement={activePlayerPlacement}
       />
-      {!challengeTaken && (
-        <Button type="primary" onClick={handleChallengeAccepted}>
+      <Button type="primary" onClick={handleChallengeAccepted}>
         Challenge
-        </Button>
-      )}
+      </Button>
       <Button type="primary" onClick={handleChallengeDeclined}>
         Don't challenge
       </Button>
