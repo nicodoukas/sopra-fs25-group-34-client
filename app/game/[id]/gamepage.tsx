@@ -50,6 +50,7 @@ const GamePage = (
   const [audioUnlocked, setAudioUnlocked] = useState(false);
   const [playerIsLeaving, setPlayerIsLeaving] = useState(false);
   const [startChallenge, setStartChallenge] = useState<boolean>(false);
+  const [challengeTaken, setChallengeTaken] = useState<boolean>(false);
 
   const handleWebSocketMessage = (message: string) => {
     const parsedMessage = JSON.parse(message);
@@ -70,6 +71,19 @@ const GamePage = (
     }
     if (parsedMessage.event_type === "start-challenge") {
       setStartChallenge(true);
+    }
+    if (parsedMessage.event_type === "challenge-accepted") {
+      const challengerId = parsedMessage.data;
+      setChallengeTaken(true);
+      if (challengerId.toString() === sessionStorage.getItem("id")){
+        messageAPI.success("You were the first to challenge")
+      }
+    }
+    if (parsedMessage.event_type === "challenge-denied"){
+      const challengerId = parsedMessage.data;
+      if (challengerId.toString() === sessionStorage.getItem("id")){
+        messageAPI.warning("Someone was faster to challenge")
+      }
     }
   };
 
@@ -99,7 +113,7 @@ const GamePage = (
     // as long as i do it just like that, the correct placement Number is
     // only passed to the challenge component for the active player
     game.currentRound.activePlayerPlacement = index;
-    setStartChallenge(true);
+    //setStartChallenge(true);
 
     if (stompClient?.connected) {
       (stompClient as Client).publish({
@@ -258,6 +272,8 @@ const GamePage = (
             activePlayerName={game.currentRound?.activePlayer?.username}
             activePlayerPlacement={game.currentRound.activePlayerPlacement}
             challengeHandeled={challengeHandeled}
+            challengeTaken={challengeTaken}
+            stompClient = {stompClient}
           />
         )
         : (

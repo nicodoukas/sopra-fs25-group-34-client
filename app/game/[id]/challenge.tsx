@@ -3,6 +3,7 @@ import { SongCard } from "@/types/songcard";
 import Timeline from "./timeline";
 
 import { Button } from "antd";
+import { Client } from "@stomp/stompjs";
 
 interface Props {
   activePlayersTimeline: SongCard[];
@@ -12,6 +13,8 @@ interface Props {
   activePlayerName: string | null;
   activePlayerPlacement: number;
   challengeHandeled: () => void;
+  challengeTaken: boolean;
+  stompClient: Client| null;
 }
 //TODO: maybe I can pass the whole active player
 
@@ -23,6 +26,8 @@ const Challenge: React.FC<Props> = ({
   activePlayerName,
   activePlayerPlacement,
   challengeHandeled,
+  challengeTaken,
+  stompClient
 }) => {
 
   const randomMethod = function (index: number) {
@@ -31,8 +36,15 @@ const Challenge: React.FC<Props> = ({
   };
 
   const handleChallengeAccepted = async () => {
-    //TODO: change some state to accepted and add HTML for the
-    //challenger placement page
+    if (stompClient?.connected) {
+        stompClient.publish({
+          destination: "/app/challenge/accept",
+          body: JSON.stringify({
+            gameId,
+            userId: sessionStorage.getItem("id"),
+          }),
+        });
+    }
   };
 
   const handleChallengeDeclined = async () => {
@@ -57,9 +69,11 @@ const Challenge: React.FC<Props> = ({
         confirmPlacement={randomMethod}
         activePlayerPlacement={activePlayerPlacement}
       />
-      <Button type="primary" onClick={handleChallengeAccepted}>
+      {!challengeTaken && (
+        <Button type="primary" onClick={handleChallengeAccepted}>
         Challenge
-      </Button>
+        </Button>
+      )}
       <Button type="primary" onClick={handleChallengeDeclined}>
         Don't challenge
       </Button>
