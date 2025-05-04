@@ -18,6 +18,7 @@ import { Client } from "@stomp/stompjs";
 
 import styles from "./gamePage.module.css";
 import "@/styles/game.css";
+import { Router, useRouter } from "next/router";
 
 const { Title, Text } = Typography;
 
@@ -26,7 +27,7 @@ interface GuessProps {
   guessedArtist: string;
 }
 
-const GamePage = ({ onGameEnd }: { onGameEnd: () => void }) => {
+const GamePage = ({ onGameEnd, onStartChallenge }: { onGameEnd: () => void; onStartChallenge: () => void; }) => {
   const [messageAPI, contextHolder] = message.useMessage();
   const apiService = useApi();
   const params = useParams();
@@ -55,6 +56,9 @@ const GamePage = ({ onGameEnd }: { onGameEnd: () => void }) => {
       setPlacement(null);
       setIsPlaying(false);
       setTriggerUseEffect((prev) => prev + 1);
+    }
+    if (parsedMessage.event_type === "start-challenge"){
+      onStartChallenge();
     }
   };
 
@@ -124,11 +128,10 @@ const GamePage = ({ onGameEnd }: { onGameEnd: () => void }) => {
         messageAPI.warning("Wrong placement.");
       }
     }
-    //startNewRound
-    console.log("Sending start-new-round message...");
+    //startchallenge
     if (stompClient?.connected) {
       (stompClient as Client).publish({
-        destination: "/app/startNewRound",
+        destination: "/app/startchallenge",
         body: gameId ?? "",
       });
     }
