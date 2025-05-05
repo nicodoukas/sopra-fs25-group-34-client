@@ -38,10 +38,9 @@ const EndScreen = () => {
 
   const handleWebSocketMessage = (message: string) => {
     const parsedMessage = JSON.parse(message);
-    if (parsedMessage.eventType === "delete-game"){
+    if (parsedMessage.event_type === "back-to-lobby"){
       router.push(`/lobby/${gameId}`);
     }
-
   };
 
   const deleteGame = async () => {
@@ -49,7 +48,7 @@ const EndScreen = () => {
       await apiService.delete(`/games/${gameId}/${player.userId}`)
       if (stompClient?.connected) {
         (stompClient as Client).publish({
-          destination: "/app/deleteGame",
+          destination: "/app/backToLobby",
           body: gameId ?? "",
         });
       }
