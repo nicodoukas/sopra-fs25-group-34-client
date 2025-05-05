@@ -8,7 +8,8 @@ import {Player} from "@/types/player";
 import {useParams, useRouter} from "next/navigation";
 import {Client} from "@stomp/stompjs";
 import {connectWebSocket} from "@/websocket/websocketService";
-import RankingList from "./rankingList"
+import RankingList from "./rankingList";
+import Firework from "./fireworks";
 
 const EndScreen = () => {
   const [game, setGame] = useState<Game>({} as Game);
@@ -101,51 +102,56 @@ const EndScreen = () => {
   const playerRank = sortedPlayersWithRank.find((p) => p.userId === player.userId)?.rank;
 
   return (
-    <div
-      style={{
-        padding: 40,
-        textAlign: "center",
-        color: "black",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center"
-      }}
-    >
-      {contextHolder}
-
-      <Card
+    <>
+      {playerRank === 1 && (
+        <Firework></Firework>
+      )}
+      <div
         style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          backgroundColor: "#e5e1ca",
-          alignItems: "center",
-          paddingTop: "20px",
+          padding: 40,
           textAlign: "center",
-          borderRadius: "16px",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-          width: "500px",
+          color: "black",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center"
         }}
       >
-        <h1>Game Over!</h1>
-        <p>Thanks for playing</p>
-        {playerRank === 1 ? (
-          <div>
-            Congratulations {player.username}, you won this game!
-          </div>
-        ) : (
-          <div>
-            Sorry, you did not win this game.
-          </div>
-        )}
-        <h2 style={{fontSize: "30px", marginTop:"20px"}}>Final Rankings</h2>
-        <RankingList players={game.players} playerId={player.userId}/>
-        {player.userId === game.host?.userId && (
-          <Button onClick={deleteGame}>Back to Lobby</Button>
-        )}
-      </Card>
+        {contextHolder}
+        <Card
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            backgroundColor: "#e5e1ca",
+            alignItems: "center",
+            paddingTop: "20px",
+            textAlign: "center",
+            borderRadius: "16px",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+            width: "500px",
+          }}
+        >
+          <h1>Game Over!</h1>
+          <p>Thanks for playing</p>
+          {playerRank === 1 ? (
+            <div>
+              Congratulations {player.username}, you won this game!
+            </div>
+          ) : (
+            <div>
+              Sorry, you did not win this game.
+            </div>
+          )}
+          <h2 style={{fontSize: "30px", marginTop: "20px"}}>Final Rankings</h2>
+          <RankingList players={game.players} playerId={player.userId}/>
+          {player.userId === game.host?.userId && (
+            <Button onClick={deleteGame}>Back to Lobby</Button>
+          )}
+        </Card>
 
-    </div>
+      </div>
+    </>
+
   );
 };
 export default EndScreen;

@@ -1,0 +1,80 @@
+.fireworkbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh ;
+  pointer-events: none;
+  z-index: 3;
+}
+
+@keyframes fireworks {
+  0%{
+    transform: translateY(100vh);
+    opacity: 1;
+  }
+  50%{
+    width: 10px;
+    height: 10px;
+    opacity: 1;
+  }
+  75%{
+    opacity: 1;
+  }
+  100%{
+    width: 250px;
+    height: 250px;
+    opacity: 0;
+  }
+}
+
+
+.fireworks, .fireworks2, .fireworks3 {
+  background-image: radial-gradient(red, transparent),
+  radial-gradient(yellow, transparent),
+  radial-gradient(rgb(255, 0, 149), transparent),
+  radial-gradient(rgb(153, 0, 255), transparent),
+  radial-gradient(rgb(255, 0, 149), transparent),
+  radial-gradient(rgb(255, 0, 170), transparent),
+  radial-gradient(rgb(0, 255, 170), transparent),
+  radial-gradient(rgb(153, 0, 255), transparent),
+  radial-gradient(rgb(255, 0, 149), transparent),
+  radial-gradient(rgb(0, 174, 255), transparent),
+  radial-gradient(rgb(0, 255, 170), transparent),
+  radial-gradient(rgb(153, 0, 255), transparent),
+  radial-gradient(rgb(0, 255, 170), transparent),
+  radial-gradient(rgb(153, 0, 255), transparent),
+  radial-gradient(rgb(255, 0, 149), transparent),
+  radial-gradient(rgb(200, 255, 0), transparent),
+  radial-gradient(rgb(0, 255, 170), transparent),
+  radial-gradient(rgb(0, 140, 255), transparent),
+  radial-gradient(rgb(255, 217, 0), transparent),
+  radial-gradient(rgb(0, 140, 255), transparent),
+  radial-gradient(red, transparent),
+  radial-gradient(rgb(166, 255, 0), transparent),
+  radial-gradient(rgb(166, 255, 0), transparent),
+  radial-gradient(rgb(255, 0, 149), transparent);
+  background-position: 95% 30%, 50% 0, 100% 10%, 20% 10%, 50% 50%, 30% 30%,
+  0 50%, 80% 25%, 50% 30%, 80% 50%, 100% 60%, 80% 80%, 20% 85%, 0 25%,
+  55% 65%, 85% 0, 50% 100%, 70% 90%, 10% 70%, 70% 70%, 30% 70%, 20% 40%,
+  40% 90%, 90% 90%;
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  top: 20%;
+  left: 60%;
+  background-size: 10px 10px;
+  background-repeat: no-repeat;
+  transform: translate(-50%, -50%);
+  animation: fireworks 3s infinite;
+}
+
+.fireworks2 {
+  top: 30%;
+  left: 30%;
+}
+
+.fireworks3 {
+  top: 70%;
+  left: 70%;
+}
