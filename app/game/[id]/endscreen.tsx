@@ -1,6 +1,6 @@
 "use client";
 
-import {Card, Table, TableProps, Button, message} from "antd";
+import {Card, Button, message} from "antd";
 import React, {useEffect, useState} from "react";
 import {useApi} from "@/hooks/useApi";
 import {Game} from "@/types/game";
@@ -8,24 +8,8 @@ import {Player} from "@/types/player";
 import {useParams, useRouter} from "next/navigation";
 import {Client} from "@stomp/stompjs";
 import {connectWebSocket} from "@/websocket/websocketService";
+import RankingList from "./rankingList"
 
-const columns: TableProps["columns"] = [
-  {
-    title: "Rank",
-    dataIndex: "rank",
-    key: "rank",
-  },
-  {
-    title: "Player",
-    dataIndex: "username",
-    key: "username",
-  },
-  {
-    title: "#Cards",
-    dataIndex: "cards",
-    key: "cards",
-  },
-];
 const EndScreen = () => {
   const [game, setGame] = useState<Game>({} as Game);
   const [messageAPI, contextHolder] = message.useMessage();
@@ -155,11 +139,7 @@ const EndScreen = () => {
           </div>
         )}
         <h2 style={{fontSize: "30px", marginTop:"20px"}}>Final Rankings</h2>
-        <Table
-          dataSource={sortedPlayersWithRank}
-          columns={columns}
-          rowKey="userId"
-        />
+        <RankingList players={game.players} playerId={player.userId}/>
         {player.userId === game.host?.userId && (
           <Button onClick={deleteGame}>Back to Lobby</Button>
         )}

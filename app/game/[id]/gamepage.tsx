@@ -23,6 +23,7 @@ import { Client } from "@stomp/stompjs";
 
 import styles from "./gamePage.module.css";
 import "@/styles/game.css";
+import RankingList from "@/game/[id]/rankingList";
 
 interface GuessProps {
   guessedTitle: string;
@@ -314,6 +315,7 @@ const GamePage = (
       {!startChallenge && !challengeTaken
         ? (
           <>
+            <RankingList players={game.players} playerId={player.userId}/>
             <div className="beige-card" style={{ textAlign: "center" }}>
               <h2 style={{ fontSize: "1.5rem", marginBottom: "0px" }}>
                 {game?.gameName || "{gameName}"}
