@@ -145,7 +145,7 @@ const UserProfile: React.FC = () => {
                 <strong>Username:</strong> {displayedUser.username}
               </div>
               <div className="profile-picture">
-                <img src={displayedUser.profilePicture.url} alt="profile picture"/>
+                <img src={displayedUser.profilePicture?.url} alt="profile picture"/>
               </div>
             </div>
             <div className="profile-field">
