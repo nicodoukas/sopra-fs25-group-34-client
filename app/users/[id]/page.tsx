@@ -8,7 +8,7 @@ import { User } from "@/types/user";
 import Header from "@/components/header";
 
 import "@ant-design/v5-patch-for-react-19";
-import { Button, message, Space } from "antd";
+import { Button, message} from "antd";
 
 const UserProfile: React.FC = () => {
   const [messageAPI, contextHolder] = message.useMessage();
@@ -144,8 +144,8 @@ const UserProfile: React.FC = () => {
               <div className="username">
                 <strong>Username:</strong> {displayedUser.username}
               </div>
-              <div className="profile-picture-placeholder">
-                Profile Picture
+              <div className="profile-picture">
+                <img src={displayedUser.profilePicture.url} alt="profile picture"/>
               </div>
             </div>
             <div className="profile-field">
