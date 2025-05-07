@@ -4,14 +4,18 @@ import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import { User } from "@/types/user";
+import { ProfilePicture} from "@/types/profilePicture";
 import Header from "@/components/header";
 
 import "@ant-design/v5-patch-for-react-19";
-import { Button, Form, Input, Space } from "antd";
+import { Button, Form, Input, Dropdown} from "antd";
+import {EditOutlined} from "@ant-design/icons";
 
 interface FormFieldProps {
-  username: string;
-  birthday: string;
+  username?: string;
+  birthday?: string;
+  profilePicture?: ProfilePicture;
+  description?: string;
 }
 
 const EditUserProfile: React.FC = () => {
@@ -21,6 +25,8 @@ const EditUserProfile: React.FC = () => {
   const displayedUsersId = params.id;
 
   const [user, setUser] = useState<User>({} as User);
+  const [profilePictures, setProfilePictures] = useState<ProfilePicture[]>([]);
+  const [selectedProfilePicture, setSelectedProfilePicture] = useState<ProfilePicture>({} as ProfilePicture);
   const [form] = Form.useForm();
 
   const handleGoBack = () => {
@@ -30,6 +36,10 @@ const EditUserProfile: React.FC = () => {
   const handleSave = async (values: FormFieldProps) => {
     try {
       const updatedValues = { ...values };
+
+      if (selectedProfilePicture && Object.keys(selectedProfilePicture).length > 0) { //only if changed
+        updatedValues.profilePicture = selectedProfilePicture;
+      }
       if (updatedValues.username === user.username) {
         delete updatedValues.username; // Just a quick change to not get an error when not changing username
       }
@@ -46,6 +56,19 @@ const EditUserProfile: React.FC = () => {
       }
     }
   };
+
+  const items = profilePictures.map((pic) => ({
+    key: pic.id,
+    label: (
+      <div style={{display: 'flex', alignItems: 'center', justifyContent:"center",padding:4}} onClick={() =>{setSelectedProfilePicture(pic)}}>
+        <img
+          src={pic.url}
+          alt={"pic"}
+          style={{width: 80, height: 80, borderRadius: '50%', objectFit: 'cover'}}
+        />
+      </div>
+    ),
+  }));
 
   useEffect(() => {
     const StorageId = sessionStorage.getItem("id");
@@ -69,6 +92,7 @@ const EditUserProfile: React.FC = () => {
           birthday: user.birthday ? String(user.birthday).split("T")[0] : "",
           description: user.description || "",
         });
+        setSelectedProfilePicture(user.profilePicture);
       } catch (error) {
         if (error instanceof Error) {
           alert(
@@ -81,7 +105,25 @@ const EditUserProfile: React.FC = () => {
       }
     };
 
+    const fetchProfilePictures = async () => {
+      try {
+        const profilePictures = await apiService.get<ProfilePicture[]>("/profilePictures")
+        setProfilePictures(profilePictures)
+      }
+      catch (error) {
+        if (error instanceof Error) {
+          alert(
+            `Something went wrong while fetching the profile pictures:\n${error.message}`,
+          );
+          console.error(error);
+        } else {
+          console.error("An unknown error occurred while fetching the profile pictures.");
+        }
+      }
+    }
+
     fetchUser();
+    fetchProfilePictures();
   }, [apiService, displayedUsersId, router, form]);
 
   return (
@@ -96,6 +138,14 @@ const EditUserProfile: React.FC = () => {
             onFinish={handleSave}
             layout="vertical"
           >
+            <div className={"profile-picture"} style={{position:"relative", marginBottom:"10px"}}>
+              <img src={selectedProfilePicture && Object.keys(selectedProfilePicture).length > 0 ? selectedProfilePicture.url : user.profilePicture?.url} alt="profile picture"/>
+              <Dropdown menu={{ items }} trigger={['click']} placement="bottomLeft" overlayClassName="custom-dropdown">
+                <div className={"pencil"}>
+                  <EditOutlined/>
+                </div>
+              </Dropdown>
+            </div>
             <div className="profile-edit-field">
               <strong>Old Username:</strong> {user.username}
             </div>
@@ -119,7 +169,7 @@ const EditUserProfile: React.FC = () => {
               <Input placeholder="YYYY-MM-DD" />
             </Form.Item>
             <div className="profile-edit-field">
-              <strong>Old Description:</strong> {user.description || "To be implemented."}
+              <strong>Old Description:</strong> {user.description || "N/A"}
             </div>
             <Form.Item
               name="description"
