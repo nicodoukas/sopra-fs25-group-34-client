@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Table, TableProps} from "antd";
 import {Player} from "@/types/player";
 
@@ -22,12 +22,22 @@ const RankingList: React.FC<Props> = ({players, playerId}) => {
       dataIndex: "username",
       key: "username",
       render: (text, record) => (
-        <span style={{
-          color: record.userId === playerId ? "orange" : "inherit",
-          fontWeight: record.userId === playerId ? "bold" : "normal",
+        <div style={{display: "flex", flexDirection: "row"}}>
+          <div className="profile-picture" style={{
+            width: 30,
+            height: 30,
+            marginRight: "15px",
+            position: "relative"
           }}>
-        {text}
-      </span>
+            <img src={record.profilePicture?.url} alt="profile picture"/>
+          </div>
+          <span style={{
+            color: record.userId === playerId ? "orange" : "inherit",
+            fontWeight: record.userId === playerId ? "bold" : "normal",
+          }}>
+            {text}
+          </span>
+        </div>
       ),
     },
     {
