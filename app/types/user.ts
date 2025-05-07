@@ -1,3 +1,5 @@
+import {ProfilePicture} from "./profilePicture";
+
 export interface User {
   id: string | null;
   username: string | null;
@@ -9,4 +11,6 @@ export interface User {
   friendrequests: number[];
   openLobbyInvitations: number[];
   lobbyId: string | null;
+  profilePicture: ProfilePicture;
+  description: string | null;
 }
