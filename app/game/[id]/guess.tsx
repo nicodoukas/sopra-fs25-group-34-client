@@ -15,6 +15,11 @@ interface Props {
 const Guess: React.FC<Props> = ({ guessed, onHandleGuess }) => {
   const [form] = Form.useForm<FormFieldProps>();
 
+  const handleFinish = async (values: FormFieldProps) => {
+    await onHandleGuess(values);
+    form.resetFields();
+  }
+
   return (
     <div>
       <div className="beige-card">
@@ -26,7 +31,7 @@ const Guess: React.FC<Props> = ({ guessed, onHandleGuess }) => {
             form={form}
             name="login"
             size="large"
-            onFinish={onHandleGuess}
+            onFinish={handleFinish}
             layout="vertical"
           >
             <Form.Item
