@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import { Game } from "@/types/game";
@@ -64,6 +64,7 @@ const GamePage = (
       setAudioState(true);
       setIsPlaying(false);
       setTriggerUseEffect((prev) => prev + 1);
+      setStartChallenge(false);
     }
     if (parsedMessage.event_type == "update-game") {
       setTriggerUseEffect((prev) => prev + 1);
@@ -222,6 +223,16 @@ const GamePage = (
     }
   };
 
+  //returns true if correct, false otherwise
+  const checkCardPlacementCorrect = async (songCard:SongCard, timeline:SongCard[], placement:number) => {
+    const year = songCard?.year;
+    let yearBefore = -1;
+    let yearAfter = 3000;
+    if (placement > 0) {yearBefore = timeline[placement - 1].year}
+    if (placement < timeline.length) {yearAfter = timeline[placement].year}
+    return (yearBefore <= year && yearAfter >= year);
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -284,14 +295,14 @@ const GamePage = (
         ? (
           <>
             <Challenge
-              activePlayersTimeline={game.currentRound.activePlayer.timeline}
+              activePlayer={game.currentRound.activePlayer}
               songCard={songCard}
               gameId={gameId}
               gameName={game?.gameName || "{gameName}"}
-              activePlayerName={game.currentRound?.activePlayer?.username}
               activePlayerPlacement={game.currentRound.activePlayerPlacement}
               challengeHandeled={challengeHandeled}
               stompClient={stompClient}
+              checkCardPlacementCorrect={checkCardPlacementCorrect}
             />
             <Button onClick={simulateAcceptingChallenge}>
               SimulateAcceptingChallenge
