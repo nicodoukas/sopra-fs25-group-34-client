@@ -16,6 +16,7 @@ interface Props {
   isPlacementMode: boolean;
   confirmPlacement: (index: number) => void;
   activePlayerPlacement: number | null;
+  challenge: boolean | null;
 }
 
 //TODO: delete Props I do not need
@@ -29,12 +30,18 @@ const Timeline: React.FC<Props> = (
     isPlacementMode,
     confirmPlacement,
     activePlayerPlacement,
+    challenge,
   },
 ) => {
   const [placement, setPlacement] = useState<number | null>(null); //position of placement of SongCard
   const [isFlipped, setIsFlipped] = useState<number | null>(null); //index of flipped SongCard
   const [messageAPI, contextHolder] = message.useMessage();
   const apiService = useApi();
+  const [challengeRunning, setChallengeRunning] = useState(false);
+
+  useEffect(() => {
+    if (challenge){setChallengeRunning(true);}
+  }, []);
 
   useEffect(() => {
     if (activePlayerPlacement != null) {
@@ -110,14 +117,16 @@ const Timeline: React.FC<Props> = (
     <div>
       {contextHolder}
       <div>
-        <div className="songCardContainer">
-          {placement == null &&
-            isPlacementMode && (
-            <div className="songCard">
-              <Text strong style={{ fontSize: "30px" }}>?</Text>
-            </div>
-          )}
-        </div>
+        { !challengeRunning && (
+          <div className="songCardContainer">
+            {placement == null &&
+              isPlacementMode && (
+                <div className="songCard">
+                  <Text strong style={{fontSize: "30px"}}>?</Text>
+                </div>
+              )}
+          </div>
+        )}
         <Title level={4} style={{ textAlign: "center" }}>
           {title}
         </Title>

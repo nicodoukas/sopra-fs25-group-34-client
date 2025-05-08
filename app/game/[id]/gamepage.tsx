@@ -353,6 +353,7 @@ const GamePage = (
                   game.currentRound?.activePlayer?.userId}
                 confirmPlacement={setActivePlayerPlacementAndStartChallengePhase}
                 activePlayerPlacement={null}
+                challenge={false}
               />
             </div>
             <Guess guessed={guessed} onHandleGuess={handleGuess}></Guess>

@@ -6,6 +6,7 @@ import { Button, message } from "antd";
 import { Client } from "@stomp/stompjs";
 import {Player} from "@/types/player";
 import {useApi} from "@/hooks/useApi";
+import Timer from "@/game/[id]/timer";
 
 interface Props {
   activePlayer: Player;
@@ -114,13 +115,12 @@ const Challenge: React.FC<Props> = ({
   };
 
   return (
-    <div className="beige-card" style={{display:"flex", justifyContent:"center", alignItems:"center", flexDirection:"column"}}>
+    <div className="beige-card"
+         style={{display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column"}}>
       {contextHolder}
-      <h2 style={{ fontSize: "1.5rem", marginBottom: "0px" }}>{gameName}</h2>
+      <h2 style={{fontSize: "1.5rem", marginBottom: "0px"}}>{gameName}</h2>
       <h3>Challenge phase</h3>
-      <p style={{fontWeight: "bold", marginTop: "1rem"}}>
-        Time left to challenge: {timeLeft} seconds
-      </p>
+      <Timer timeLeft={timeLeft}></Timer>
       <Timeline
         title={activePlayer.username + "'s placement:"}
         timeline={activePlayer.timeline}
@@ -130,12 +130,13 @@ const Challenge: React.FC<Props> = ({
         isPlacementMode={false}
         confirmPlacement={randomMethod}
         activePlayerPlacement={activePlayerPlacement}
+        challenge={true}
       />
       <div>
         <Button type="primary" onClick={handleChallengeAccepted}>
           Challenge
         </Button>
-        <Button type="primary" onClick={handleChallengeDeclined}>
+        <Button type="primary">
           Don't challenge
         </Button>
       </div>
