@@ -5,7 +5,7 @@ import {Player} from "@/types/player";
 
 interface Props {
   players: Player[];
-  playerId: String | null;
+  playerId: string | null;
 }
 
 const RankingList: React.FC<Props> = ({players, playerId}) => {

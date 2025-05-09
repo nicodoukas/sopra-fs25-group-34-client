@@ -143,6 +143,7 @@ const GamePage = (
   const handleChallengerPlacement = (placmentIndex: number) => {
     //TODO: call API service to set challengers placement
     //then trigger evaluation
+    console.log(placmentIndex); //just for build
     setChallengeTaken(false);
   };
 
@@ -287,7 +288,6 @@ const GamePage = (
       <GameHeader
         player={player}
         onBuyCard={handleBuyCard}
-        onGameEnd={onGameEnd}
       />
       {contextHolder}
       {/* TODO: do not show challenge page for active player */}
@@ -331,7 +331,7 @@ const GamePage = (
               <h2 style={{ fontSize: "1.5rem", marginBottom: "0px" }}>
                 {game?.gameName || "{gameName}"}
               </h2>
-              <h3>{game.currentRound.activePlayer.username}'s turn</h3>
+              <h3>{game.currentRound.activePlayer.username}&#39;s turn</h3>
               <PlayButton
                 songUrl={songCard?.songURL}
                 playerId={player.userId}

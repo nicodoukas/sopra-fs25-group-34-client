@@ -56,6 +56,7 @@ const Challenge: React.FC<Props> = ({
   const randomMethod = function (index: number) {
     //the can only throw the confirmPlacement method, when isPlacementMode=true
     //but i stil need to catch it
+    console.log(index);//just s.t index is used for build
   };
 
   const handleChallengeAccepted = async () => {
@@ -137,7 +138,7 @@ const Challenge: React.FC<Props> = ({
           Challenge
         </Button>
         <Button type="primary">
-          Don't challenge
+          Don&#39;t challenge
         </Button>
       </div>
 

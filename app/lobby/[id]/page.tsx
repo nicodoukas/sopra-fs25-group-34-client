@@ -152,6 +152,7 @@ const LobbyPage: () => void = () => {
       }
 
     } catch (error) {
+      console.error("Failed to delete/leave the lobby:", error)
       alert("Something went wrong while deleting/leaving the lobby.");
     }
     console.log("Lobby deleted/left successfully");

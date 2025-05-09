@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useApi } from "@/hooks/useApi";
 import { SongCard } from "@/types/songcard";
 
 import "@ant-design/v5-patch-for-react-19";
-import { Button, message, Typography } from "antd";
+import { Button, Typography } from "antd";
 
 const { Title, Text } = Typography;
 
@@ -24,8 +23,6 @@ const Timeline: React.FC<Props> = (
   {
     title,
     timeline,
-    songCard,
-    gameId,
     isPlaying,
     isPlacementMode,
     confirmPlacement,
@@ -35,8 +32,6 @@ const Timeline: React.FC<Props> = (
 ) => {
   const [placement, setPlacement] = useState<number | null>(null); //position of placement of SongCard
   const [isFlipped, setIsFlipped] = useState<number | null>(null); //index of flipped SongCard
-  const [messageAPI, contextHolder] = message.useMessage();
-  const apiService = useApi();
   const [challengeRunning, setChallengeRunning] = useState(false);
 
   useEffect(() => {
@@ -115,7 +110,6 @@ const Timeline: React.FC<Props> = (
 
   return (
     <div>
-      {contextHolder}
       <div>
         { !challengeRunning && (
           <div className="songCardContainer">

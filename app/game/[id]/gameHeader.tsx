@@ -8,10 +8,9 @@ import styles from "./gameHeader.module.css";
 interface Props {
   player: Player;
   onBuyCard: () => void;
-  onGameEnd: () => void;
 }
 
-export default function GameHeader({ player, onBuyCard, onGameEnd }: Props) {
+export default function GameHeader({ player, onBuyCard }: Props) {
   const router = useRouter();
 
   return (
