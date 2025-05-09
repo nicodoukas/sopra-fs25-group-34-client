@@ -39,6 +39,7 @@ const ChallengeAccepted: React.FC<Props> = ({
         isPlacementMode={true}
         confirmPlacement={confirmPlacement}
         activePlayerPlacement={activePlayerPlacement}
+        challenge={true}
       />
     </div>
   );
