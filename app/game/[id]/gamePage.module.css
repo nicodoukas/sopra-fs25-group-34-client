@@ -1,0 +1,13 @@
+.gameContainer {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 80px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.exitGameContainer {
+  position: absolute;
+  right: 5%;
+  bottom: 10%;
+}

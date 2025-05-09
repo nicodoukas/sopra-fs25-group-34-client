@@ -20,6 +20,19 @@ const columns: TableProps<User>["columns"] = [
     title: "Username",
     dataIndex: "username",
     key: "username",
+    render: (text, record) => (
+      <div style={{display: "flex", flexDirection: "row"}}>
+        <div className="profile-picture" style={{
+          width: 30,
+          height: 30,
+          marginRight: "15px",
+          position: "relative"
+        }}>
+          <img src={record.profilePicture?.url} alt="profile picture"/>
+        </div>
+        <span>{text}</span>
+      </div>
+    ),
   },
 ];
 
@@ -44,7 +57,19 @@ const LobbyPage: () => void = () => {
       dataIndex: "username",
       key: "username",
       render: (text, record) => (
-        <a onClick={() => router.push(`/users/${record.id}`)}>{text}</a>
+        <div style={{display: "flex", flexDirection: "row"}}>
+          <div className="profile-picture" style={{
+            width: 30,
+            height: 30,
+            marginRight: "15px",
+            position: "relative"
+          }}>
+            <img src={record.profilePicture?.url} alt="profile picture"/>
+          </div>
+          <a onClick={() => router.push(`/users/${record.id}`)}>{text}</a>
+        </div>
+
+
       ),
     },
     {
@@ -56,11 +81,18 @@ const LobbyPage: () => void = () => {
     },
   ];
 
-  const handleWebSocketMessage = (message: string) => {
+  const handleWebSocketMessage = async (message: string) => {
     const parsedMessage = JSON.parse(message);
     console.log("Websocket message handled");
     if (parsedMessage.event_type === "start-game") {
       router.push(`/game/${lobbyId}`);
+    }
+    if (parsedMessage.event_type === "delete-lobby"){
+      sessionStorage.setItem("infoMessage", "Lobby was deleted by host");
+      router.push("/overview");
+    }
+    if (parsedMessage.event_type === "update-lobby"){
+      await fetchLobby();
     }
   };
 
@@ -87,33 +119,72 @@ const LobbyPage: () => void = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchLobby = async () => {
-      //TODO: check if hook can be used instead
-      const StorageId = sessionStorage.getItem("id");
-      try {
-        //get User data of current logged in user
-        const currentUser = await apiService.get<User>(`/users/${StorageId}`);
-        setUser(currentUser);
+  const deleteLobby = async () => {
+    try {
+      //Delete Lobby / leave Lobby
+      if (id === lobby.host?.id) {
+        console.log("host deletes lobby");
+        await apiService.delete(`/lobbies/${lobbyId}/${id}`);
 
-        //get Lobby data
-        const currentLobby = await apiService.get<Lobby>(`/lobbies/${lobbyId}`);
-        setLobby(currentLobby);
-      } catch (error) {
-        if (error instanceof Error) {
-          alert(
-            `Something went wrong while fetching the lobby:\n${error.message}`,
-          );
-          console.log(error);
-        } else {
-          console.error("An unknown error occurred while fetching the lobby.");
+        //websocket for deleting lobby
+        console.log("stompClient:", stompClient?.connected);
+        if (stompClient?.connected) {
+          (stompClient as Client).publish({
+            destination: "/app/delete",
+            body: lobbyId ?? "",
+          });
         }
       }
-    };
+      else {
+        console.log("user leaves lobby");
+        await apiService.delete(`/lobbies/${lobbyId}/${id}`);
+
+        //websocket for updating users in lobby
+        console.log("stompClient:", stompClient?.connected);
+        if (stompClient?.connected) {
+          (stompClient as Client).publish({
+            destination: "/app/updatelobby",
+            body: lobbyId ?? "",
+          });
+        }
+        //user is now navigated back to overview
+        router.push("/overview");
+      }
+
+    } catch (error) {
+      alert("Something went wrong while deleting/leaving the lobby.");
+    }
+    console.log("Lobby deleted/left successfully");
+  };
+
+  const fetchLobby = async () => {
+    //TODO: check if hook can be used instead
+    const StorageId = sessionStorage.getItem("id");
+    try {
+      //get User data of current logged in user
+      const currentUser = await apiService.get<User>(`/users/${StorageId}`);
+      setUser(currentUser);
+
+      //get Lobby data
+      const currentLobby = await apiService.get<Lobby>(`/lobbies/${lobbyId}`);
+      setLobby(currentLobby);
+    } catch (error) {
+      if (error instanceof Error) {
+        alert(
+          `Something went wrong while fetching the lobby:\n${error.message}`,
+        );
+        console.log(error);
+      } else {
+        console.error("An unknown error occurred while fetching the lobby.");
+      }
+    }
+  };
+
+  useEffect(() => {
     fetchLobby();
   }, [apiService, router, lobbyId]);
 
-  // effect to load users friends, trigered as soon as user is set
+  // effect to load users friends, triggered as soon as user is set
   useEffect(() => {
     const fetchFriends = async () => {
       if (user && user.friends?.length > 0) {
@@ -238,7 +309,8 @@ const LobbyPage: () => void = () => {
           </Card>
         </div>
       </Card>
-      {id === lobby.host?.id && (
+      {id === lobby.host?.id ? (
+      <>
         <Button
           style={{
             position: "absolute",
@@ -249,6 +321,23 @@ const LobbyPage: () => void = () => {
         >
           Start Game
         </Button>
+        <Button style={{
+          position: "absolute",
+          right: "2%",
+          top:"90%",
+        }}
+        onClick={deleteLobby}
+        >
+        Delete Lobby</Button>
+      </>
+      ) : (
+      <Button style={{
+        position:"absolute",
+        right: "2%",
+        top: "90%",
+      }}
+      onClick={deleteLobby}
+      >Leave Lobby</Button>
       )}
     </div>
   );

@@ -17,7 +17,7 @@ export default function InviteAction({ user, lobby, messageAPI }: Props) {
   const apiService = useApi();
   const [pending, setPending] = useState(false);
 
-  const isMember = lobby.members.some((member) => member.id === user.id);
+  const isMember = lobby.members?.some((member) => member.id === user.id);
 
   if (isMember) {
     return <p>already joined lobby</p>;

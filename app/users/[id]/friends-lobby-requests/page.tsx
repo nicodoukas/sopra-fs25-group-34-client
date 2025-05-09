@@ -133,7 +133,7 @@ const FriendsLobbyRequest: React.FC = () => {
   useEffect(() => {
     const StorageId = sessionStorage.getItem("id");
     if (!StorageId || StorageId != id) {
-      router.push("/users");
+      router.push("/overview");
       return;
     }
 
@@ -198,15 +198,23 @@ const FriendsLobbyRequest: React.FC = () => {
       <Header />
       <div className="card-container">
         <h2>Your friend requests and lobby invites</h2>
-        <div className="green-card">
+        <div className="green-card" style={{maxWidth:"550px"}}>
           {/* This code shows friend requests if any */}
           {friendrequests.length > 0
             ? (
               friendrequests.map((friend) => (
-                <div key={friend.id}>
+                <div key={friend.id} style={{display: "flex", alignItems: "center"}}>
+                  <div className="profile-picture" style={{
+                    width: 30,
+                    height: 30,
+                    marginRight:"8px",
+                    position:"relative"
+                  }}>
+                    <img src={friend.profilePicture?.url} alt="profile picture"/>
+                  </div>
                   <strong
                     onClick={() => router.push(`/users/${friend.id}`)}
-                    style={{ cursor: "pointer", display: "block" }}
+                    style={{ cursor: "pointer", display: "block", marginRight:"8px" }}
                   >
                     {friend.username} wants to be your friend
                   </strong>

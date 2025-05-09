@@ -15,6 +15,19 @@ const columns: TableProps<User>["columns"] = [
     title: "Username",
     dataIndex: "username",
     key: "username",
+    render: (text, record) => (
+      <div style={{display: "flex", flexDirection:"row"}}>
+        <div className="profile-picture" style={{
+          width: 30,
+          height: 30,
+          marginRight: "15px",
+          position: "relative"
+        }}>
+          <img src={record.profilePicture?.url} alt="profile picture"/>
+        </div>
+        <span>{text}</span>
+      </div>
+    ),
   },
 ];
 
