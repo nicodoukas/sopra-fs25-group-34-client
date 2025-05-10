@@ -40,7 +40,7 @@ const Timeline: React.FC<Props> = (
   const [challengeRunning, setChallengeRunning] = useState(false);
 
   useEffect(() => {
-    if (challenge){setChallengeRunning(true);}
+    if (challenge) setChallengeRunning(true);
   }, []);
 
   useEffect(() => {
@@ -117,14 +117,14 @@ const Timeline: React.FC<Props> = (
     <div>
       {contextHolder}
       <div>
-        { !challengeRunning && (
+        {!challengeRunning && (
           <div className="songCardContainer">
             {placement == null &&
               isPlacementMode && (
-                <div className="songCard">
-                  <Text strong style={{fontSize: "30px"}}>?</Text>
-                </div>
-              )}
+              <div className="songCard">
+                <Text strong style={{ fontSize: "30px" }}>?</Text>
+              </div>
+            )}
           </div>
         )}
         <Title level={4} style={{ textAlign: "center" }}>
@@ -230,6 +230,17 @@ const Timeline: React.FC<Props> = (
                       </div>
                     )
                 )}
+                {!isPlacementMode && (placement == timeline?.length
+                  ? (
+                    <div className="flipContainer">
+                      <div className="songCard">
+                        <Text strong style={{ fontSize: "30px" }}>
+                          ?
+                        </Text>
+                      </div>
+                    </div>
+                  )
+                  : <></>)}
               </div>
             </div>
           )

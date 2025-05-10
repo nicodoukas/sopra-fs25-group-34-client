@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import { Game } from "@/types/game";
@@ -73,6 +73,7 @@ const GamePage = (
       onGameEnd();
     }
     if (parsedMessage.event_type === "start-challenge") {
+      setGame(parsedMessage.data);
       setStartChallenge(true);
     }
     if (parsedMessage.event_type === "challenge-accepted") {
@@ -113,21 +114,14 @@ const GamePage = (
     };
   };
 
-  const setActivePlayerPlacementAndStartChallengePhase = async (
-    index: number,
-  ) => {
-    const updatedGame = await apiService.put<Game>(
-      `/games/${gameId}/placement`,
-      {placement: index,
-       player: "activePlayer"
-      }
-    )
-    setGame(updatedGame);
-
+  const setActivePlayerPlacementAndStartChallengePhase = (index: number) => {
     if (stompClient?.connected) {
       (stompClient as Client).publish({
         destination: "/app/startchallenge",
-        body: gameId ?? "",
+        body: JSON.stringify({
+          gameId,
+          placement: index,
+        }),
       });
     }
   };
@@ -135,11 +129,6 @@ const GamePage = (
   const challengeHandeled = () => {
     setStartChallenge(false);
     //TODO: add websockets to start new round
-  };
-
-  const simulateAcceptingChallenge = () => {
-    setStartChallenge(false);
-    setChallengeTaken(true);
   };
 
   const handleChallengerPlacement = (placmentIndex: number) => {
@@ -226,14 +215,18 @@ const GamePage = (
   };
 
   //returns true if correct, false otherwise
-  const checkCardPlacementCorrect = async (songCard:SongCard, timeline:SongCard[], placement:number) => {
+  const checkCardPlacementCorrect = async (
+    songCard: SongCard,
+    timeline: SongCard[],
+    placement: number,
+  ) => {
     const year = songCard?.year;
     let yearBefore = -1;
     let yearAfter = 3000;
-    if (placement > 0) {yearBefore = timeline[placement - 1].year}
-    if (placement < timeline.length) {yearAfter = timeline[placement].year}
+    if (placement > 0) yearBefore = timeline[placement - 1].year;
+    if (placement < timeline.length) yearAfter = timeline[placement].year;
     return (yearBefore <= year && yearAfter >= year);
-  }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -295,21 +288,23 @@ const GamePage = (
       {/* TODO: do not show challenge page for active player */}
       {startChallenge
         ? (
-          <>
-            <Challenge
-              activePlayer={game.currentRound.activePlayer}
-              songCard={songCard}
-              gameId={gameId}
-              gameName={game?.gameName || "{gameName}"}
-              activePlayerPlacement={game.currentRound.activePlayerPlacement}
-              challengeHandeled={challengeHandeled}
-              stompClient={stompClient}
-              checkCardPlacementCorrect={checkCardPlacementCorrect}
-            />
-            <Button onClick={simulateAcceptingChallenge}>
-              SimulateAcceptingChallenge
-            </Button>
-          </>
+          player.userId === game.currentRound.activePlayer.userId
+            ? <p>The other players can now challenge your placement</p>
+            : (
+              <>
+                <Challenge
+                  activePlayer={game.currentRound.activePlayer}
+                  songCard={songCard}
+                  gameId={gameId}
+                  gameName={game?.gameName || "{gameName}"}
+                  activePlayerPlacement={game.currentRound
+                    .activePlayerPlacement}
+                  challengeHandeled={challengeHandeled}
+                  stompClient={stompClient}
+                  checkCardPlacementCorrect={checkCardPlacementCorrect}
+                />
+              </>
+            )
         )
         : <></>}
       {challengeTaken
@@ -328,7 +323,7 @@ const GamePage = (
       {!startChallenge && !challengeTaken
         ? (
           <>
-            <RankingList players={game.players} playerId={player.userId}/>
+            <RankingList players={game.players} playerId={player.userId} />
             <div className="beige-card" style={{ textAlign: "center" }}>
               <h2 style={{ fontSize: "1.5rem", marginBottom: "0px" }}>
                 {game?.gameName || "{gameName}"}
