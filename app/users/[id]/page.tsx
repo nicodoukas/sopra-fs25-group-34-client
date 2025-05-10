@@ -150,7 +150,7 @@ const UserProfile: React.FC = () => {
             </div>
             <div className="profile-field">
               <strong>Description:</strong>{" "}
-              {displayedUser.description || <i>To be implemented.</i>}
+              {displayedUser.description || <i>...</i>}
             </div>
             <div className="profile-field">
               <strong>Birthday:</strong>{" "}
@@ -203,7 +203,7 @@ const UserProfile: React.FC = () => {
           </div>
           <div className="profile-field">
             <strong>Description:</strong>{" "}
-            {displayedUser.description || <i>To be implemented.</i>}
+            {displayedUser.description || <i>...</i>}
           </div>
           <div className="profile-field">
             <strong>Birthday:</strong>{" "}
