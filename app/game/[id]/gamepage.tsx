@@ -116,11 +116,13 @@ const GamePage = (
   const setActivePlayerPlacementAndStartChallengePhase = async (
     index: number,
   ) => {
-    //TODO: i need to put this with the api service once it is implemented
-    // as long as i do it just like that, the correct placement Number is
-    // only passed to the challenge component for the active player
-    game.currentRound.activePlayerPlacement = index;
-    //setStartChallenge(true);
+    const updatedGame = await apiService.put<Game>(
+      `/games/${gameId}/placement`,
+      {placement: index,
+       player: "activePlayer"
+      }
+    )
+    setGame(updatedGame);
 
     if (stompClient?.connected) {
       (stompClient as Client).publish({
