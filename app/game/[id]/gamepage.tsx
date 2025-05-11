@@ -133,12 +133,6 @@ const GamePage = (
     }
   };
 
-  const challengeHandeled = () => {
-    setStartChallenge(false);
-    //TODO: Set this in the websocket message above
-    setRoundOver(true);
-    //TODO: add websockets to start new round
-  };
 
   const handleChallengerPlacement = (placmentIndex: number) => {
     //TODO: call API service to set challengers placement
@@ -308,6 +302,7 @@ const GamePage = (
                   activePlayerPlacement={game.currentRound
                     .activePlayerPlacement}
                   stompClient={stompClient}
+                  userId={player.userId}
                   checkCardPlacementCorrect={checkCardPlacementCorrect}
                 />
               </>
