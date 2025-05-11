@@ -72,43 +72,6 @@ const Timeline: React.FC<Props> = (
     if (placement != null) {
       confirmPlacement(placement);
     }
-
-    /*     const year = songCard?.year;
-    let yearBefore = -1;
-    let yearAfter = 3000;
-    if (
-      placement != null &&
-      year != null
-    ) {
-      if (placement > 0) yearBefore = timeline[placement - 1].year;
-      if (placement < timeline.length) {
-        yearAfter = timeline[placement].year;
-      }
-      if (yearBefore <= year && yearAfter >= year) {
-        messageAPI.success("Congratulations, your placement is correct!");
-
-        //actually place the songCard into the timeline
-        const userId = sessionStorage.getItem("id");
-        const body = {
-          "songCard": songCard,
-          "position": placement,
-        };
-        try {
-          await apiService.put(`/games/${gameId}/${userId}`, body);
-        } catch (error) {
-          if (error instanceof Error) {
-            alert(`Something went wrong during the guess:\n${error.message}`);
-            console.error(error);
-          } else {
-            console.error("An unknown error occurred during guess.");
-          }
-        }
-      } else {
-        messageAPI.warning("Wrong placement.");
-      }
-    }
-    placementConfirmed();
-    */
   };
 
   //TODO: look that challenger cannot place at same position as activePlayer
@@ -146,11 +109,13 @@ const Timeline: React.FC<Props> = (
                           </div>
                         </div>
                       )
-                      : (
+                      : (!(index == activePlayerPlacement &&
+                        challengeRunning) && (
                         <div className="addButtonContainer">
                           <div
                             className="addButton"
-                            onClick={() => addCard(index)}
+                            onClick={() =>
+                              addCard(index)}
                           >
                             <img
                               src="/img/plus.png"
@@ -159,9 +124,8 @@ const Timeline: React.FC<Props> = (
                             />
                           </div>
                         </div>
-                      )
+                      ))
                   )}
-                  {/* TODO: this does not yet work if the placement is behind the last card */}
                   {!isPlacementMode && (
                     placement == index
                       ? (
@@ -178,8 +142,7 @@ const Timeline: React.FC<Props> = (
 
                   <div
                     key={index}
-                    onClick={() =>
-                      flipCard(index)}
+                    onClick={() => flipCard(index)}
                     className="flipContainer"
                   >
                     <div
@@ -215,7 +178,8 @@ const Timeline: React.FC<Props> = (
                         </div>
                       </div>
                     )
-                    : (
+                    : (!(challengeRunning &&
+                      timeline.length === activePlayerPlacement) && (
                       <div className="addButtonContainer">
                         <div
                           className="addButton"
@@ -228,7 +192,7 @@ const Timeline: React.FC<Props> = (
                           />
                         </div>
                       </div>
-                    )
+                    ))
                 )}
                 {!isPlacementMode && (placement == timeline?.length
                   ? (

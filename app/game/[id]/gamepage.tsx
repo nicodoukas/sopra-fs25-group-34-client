@@ -18,7 +18,7 @@ import EndRound from "./endRound";
 
 
 import "@ant-design/v5-patch-for-react-19";
-import { Button, message } from "antd";
+import { message } from "antd";
 
 import { connectWebSocket } from "@/websocket/websocketService";
 import { Client } from "@stomp/stompjs";
@@ -81,7 +81,9 @@ const GamePage = (
       setStartChallenge(true);
     }
     if (parsedMessage.event_type === "challenge-accepted") {
-      const challengerId = parsedMessage.data;
+      console.log("in websocket if if if");
+      setGame(parsedMessage.data);
+      const challengerId = parsedMessage.data.currentRound.challenger.userId;
       setStartChallenge(false);
       setChallengeTaken(true);
       if (challengerId.toString() === sessionStorage.getItem("id")) {
@@ -289,7 +291,6 @@ const GamePage = (
         onGameEnd={onGameEnd}
       />
       {contextHolder}
-      {/* TODO: do not show challenge page for active player */}
       {startChallenge
         ? (
           player.userId === game.currentRound.activePlayer.userId
@@ -303,7 +304,6 @@ const GamePage = (
                   gameName={game?.gameName || "{gameName}"}
                   activePlayerPlacement={game.currentRound
                     .activePlayerPlacement}
-                  challengeHandeled={challengeHandeled}
                   stompClient={stompClient}
                   checkCardPlacementCorrect={checkCardPlacementCorrect}
                 />
@@ -311,19 +311,28 @@ const GamePage = (
             )
         )
         : <></>}
-      {challengeTaken
-        ? (
-          <ChallengeAccepted
-            gameName={game?.gameName || "{gameName}"}
-            activePlayerName={game.currentRound?.activePlayer?.username}
-            activePlayersTimeline={game.currentRound.activePlayer.timeline}
-            songCard={songCard}
-            gameId={gameId}
-            activePlayerPlacement={game.currentRound.activePlayerPlacement}
-            handleChallengerPlacement={handleChallengerPlacement}
-          />
-        )
-        : <></>}
+      {challengeTaken && (
+        player.userId === game.currentRound.activePlayer.userId
+          ? <p>The other players can now challenge your placement</p>
+          : player.userId === game.currentRound.challenger?.userId
+          ? (
+            <ChallengeAccepted
+              gameName={game?.gameName || "{gameName}"}
+              activePlayerName={game.currentRound?.activePlayer?.username}
+              activePlayersTimeline={game.currentRound.activePlayer.timeline}
+              songCard={songCard}
+              gameId={gameId}
+              activePlayerPlacement={game.currentRound.activePlayerPlacement}
+              handleChallengerPlacement={handleChallengerPlacement}
+            />
+          )
+          : (
+            <p>
+              {game.currentRound.challenger?.username}{" "}
+              accepted the challenge and is now placing the card
+            </p>
+          )
+      )}
       {!startChallenge && !challengeTaken && !roundOver
         ? (
           <>
