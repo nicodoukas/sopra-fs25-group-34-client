@@ -2,17 +2,15 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+
 import { useApi } from "@/hooks/useApi";
 import Header from "@/components/header";
-
-import "@ant-design/v5-patch-for-react-19";
-import { Button, message, Space } from "antd";
-
 import { User } from "@/types/user";
 import { Lobby } from "@/types/lobby";
 
+import { Button, message, Space } from "antd";
+
 const FriendsLobbyRequest: React.FC = () => {
-  const [messageAPI, contextHolder] = message.useMessage();
   const router = useRouter();
   const apiService = useApi();
   const params = useParams();
@@ -35,17 +33,17 @@ const FriendsLobbyRequest: React.FC = () => {
         ResponseBody,
       );
       setUser(updatedUser);
-      messageAPI.success(`Friend request accepted`);
+      message.success(`Friend request accepted`);
     } catch (error) {
       if (error instanceof Error) {
-        alert(
+        message.error(
           `Something went wrong while accepting friend request:\n${error.message}`,
         );
-        console.error(error);
       } else {
-        console.error(
+        message.error(
           "An unknown error occurred while accepting friend request.",
         );
+        console.error(error);
       }
     }
   };
@@ -63,17 +61,17 @@ const FriendsLobbyRequest: React.FC = () => {
         ResponseBody,
       );
       setUser(updatedUser);
-      messageAPI.success(`Friend request declined`);
+      message.success(`Friend request declined`);
     } catch (error) {
       if (error instanceof Error) {
-        alert(
+        message.error(
           `Something went wrong while declining friend request:\n${error.message}`,
         );
-        console.error(error);
       } else {
-        console.error(
+        message.error(
           "An unknown error occurred while declining friend request.",
         );
+        console.error(error);
       }
     }
   };
@@ -87,18 +85,18 @@ const FriendsLobbyRequest: React.FC = () => {
         "accepted": true,
       };
       await apiService.post<Lobby>(`/lobbies/${lobbyId}/users`, ResponseBody);
-      messageAPI.success("Lobby invite accepted");
+      message.success("Lobby invite accepted");
       router.push(`/lobby/${lobbyId}`);
     } catch (error) {
       if (error instanceof Error) {
-        alert(
+        message.error(
           `Something went wrong while accepting lobby inivite:\n${error.message}`,
         );
-        console.error(error);
       } else {
-        console.error(
+        message.error(
           "An unknown error occurred while accepting lobby invite.",
         );
+        console.error(error);
       }
     }
   };
@@ -115,17 +113,17 @@ const FriendsLobbyRequest: React.FC = () => {
       //refetch current user so that invite is not shown anymore
       const currentUser = await apiService.get<User>(`/users/${user.id}`);
       setUser(currentUser);
-      messageAPI.success("Lobby invite declined");
+      message.success("Lobby invite declined");
     } catch (error) {
       if (error instanceof Error) {
-        alert(
+        message.error(
           `Something went wrong while declining lobby inivite:\n${error.message}`,
         );
-        console.error(error);
       } else {
-        console.error(
+        message.error(
           "An unknown error occurred while declining lobby invite.",
         );
+        console.error(error);
       }
     }
   };
@@ -143,13 +141,13 @@ const FriendsLobbyRequest: React.FC = () => {
         setUser(currentUser);
       } catch (error) {
         if (error instanceof Error) {
-          alert(
-            `Something went wrong while fetching the user:\n${error.message}`,
+          message.error(
+            `Something went wrong while loading the user:\n${error.message}`,
           );
-          console.error(error);
         } else {
-          console.error("An unknown error occurred while fetching the user.");
+          message.error("An unknown error occurred while loading the user.");
         }
+        console.error(error);
       }
     };
 
@@ -177,14 +175,14 @@ const FriendsLobbyRequest: React.FC = () => {
         setLobbyInvites(lobbyInvitesTemp);
       } catch (error) {
         if (error instanceof Error) {
-          alert(
-            `Something went wrong while fetching friend requests or lobby invites:\n${error.message}`,
+          message.error(
+            `Something went wrong while loading friend requests and lobby invites:\n${error.message}`,
+          );
+        } else {
+          message.error(
+            "An unknown error occurred while loading friend requests and lobby invites.",
           );
           console.error(error);
-        } else {
-          console.error(
-            "An unknown error occurred while fetching friend requests or lobby invites.",
-          );
         }
       }
     };
@@ -194,27 +192,39 @@ const FriendsLobbyRequest: React.FC = () => {
 
   return (
     <div>
-      {contextHolder}
       <Header />
       <div className="card-container">
         <h2>Your friend requests and lobby invites</h2>
-        <div className="green-card" style={{maxWidth:"550px"}}>
+        <div className="green-card" style={{ maxWidth: "550px" }}>
           {/* This code shows friend requests if any */}
           {friendrequests.length > 0
             ? (
               friendrequests.map((friend) => (
-                <div key={friend.id} style={{display: "flex", alignItems: "center"}}>
-                  <div className="profile-picture" style={{
-                    width: 30,
-                    height: 30,
-                    marginRight:"8px",
-                    position:"relative"
-                  }}>
-                    <img src={friend.profilePicture?.url} alt="profile picture"/>
+                <div
+                  key={friend.id}
+                  style={{ display: "flex", alignItems: "center" }}
+                >
+                  <div
+                    className="profile-picture"
+                    style={{
+                      width: 30,
+                      height: 30,
+                      marginRight: "8px",
+                      position: "relative",
+                    }}
+                  >
+                    <img
+                      src={friend.profilePicture?.url}
+                      alt="profile picture"
+                    />
                   </div>
                   <strong
                     onClick={() => router.push(`/users/${friend.id}`)}
-                    style={{ cursor: "pointer", display: "block", marginRight:"8px" }}
+                    style={{
+                      cursor: "pointer",
+                      display: "block",
+                      marginRight: "8px",
+                    }}
                   >
                     {friend.username} wants to be your friend
                   </strong>

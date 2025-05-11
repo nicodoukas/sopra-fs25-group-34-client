@@ -7,8 +7,6 @@ interface Props {
   gameName: string;
   activePlayerName: string | null;
   activePlayersTimeline: SongCard[];
-  songCard: SongCard | null;
-  gameId: string;
   activePlayerPlacement: number;
   handleChallengerPlacement: (index: number) => void;
 }
@@ -17,12 +15,10 @@ const ChallengeAccepted: React.FC<Props> = ({
   gameName,
   activePlayerName,
   activePlayersTimeline,
-  songCard,
-  gameId,
   activePlayerPlacement,
   handleChallengerPlacement,
 }) => {
-  const confirmPlacement = async (index: number) => {
+  const confirmPlacement = (index: number) => {
     handleChallengerPlacement(index);
   };
   return (
@@ -33,8 +29,6 @@ const ChallengeAccepted: React.FC<Props> = ({
         title={"where would you place the song in " + activePlayerName +
           "'s timeline?"}
         timeline={activePlayersTimeline}
-        songCard={songCard}
-        gameId={gameId}
         isPlaying={false}
         isPlacementMode={true}
         confirmPlacement={confirmPlacement}

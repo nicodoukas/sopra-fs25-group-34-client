@@ -1,19 +1,17 @@
 import { useState } from "react";
+
 import { useApi } from "@/hooks/useApi";
 import { Lobby } from "@/types/lobby";
 import { User } from "@/types/user";
 
-import "@ant-design/v5-patch-for-react-19";
-import { Button } from "antd";
-import { MessageInstance } from "antd/es/message/interface";
+import { Button, message } from "antd";
 
 interface Props {
   user: User;
   lobby: Lobby;
-  messageAPI: MessageInstance;
 }
 
-export default function InviteAction({ user, lobby, messageAPI }: Props) {
+export default function InviteAction({ user, lobby }: Props) {
   const apiService = useApi();
   const [pending, setPending] = useState(false);
 
@@ -31,9 +29,9 @@ export default function InviteAction({ user, lobby, messageAPI }: Props) {
     try {
       setPending(true);
       await apiService.post(`/lobbies/invite/${user.id}`, lobby.lobbyId);
-      messageAPI.success(`Lobby invite sent to ${user.username}`);
+      message.success(`Lobby invite sent to ${user.username}`);
     } catch (error) {
-      alert(`Failed to invite ${user.username}.`);
+      message.error(`Failed to invite ${user.username}.`);
       console.error("Invite error:", error);
       setPending(false);
     }

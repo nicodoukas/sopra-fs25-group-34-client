@@ -2,13 +2,14 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+
 import { useApi } from "@/hooks/useApi";
 import useSessionStorage from "@/hooks/useSessionStorage";
+import { User } from "@/types/user";
 
 import { SearchOutlined } from "@ant-design/icons";
-import { Button, Input, Space } from "antd";
+import { Button, Input, message, Space } from "antd";
 
-import { User } from "@/types/user";
 import styles from "./header.module.css";
 
 export default function Header() {
@@ -26,7 +27,7 @@ export default function Header() {
 
   const handleSearch = async (): Promise<void> => {
     if (!searchUsername.trim()) {
-      alert("Enter a username to search for.");
+      message.error("Please enter a username to search for.");
       return;
     }
 
@@ -37,15 +38,20 @@ export default function Header() {
       if (user && user.id) {
         router.push(`/users/${user.id}`);
       } else {
-        alert(`No user with username ${searchUsername} exists.`);
+        message.error(
+          `No user with username ${searchUsername} exists. Please recheck your spelling.`,
+        );
       }
     } catch (error) {
       if (error instanceof Error) {
-        alert(`No user with username ${searchUsername} exists`);
-        console.error(error);
+        message.error(
+          `No user with username ${searchUsername} exists. Please recheck your spelling.`,
+        );
       } else {
+        message.error("An unknown error occured, please try again later.");
         console.error("An unknown error occurred while searching the user");
       }
+      console.error(error);
     }
   };
 
@@ -59,6 +65,7 @@ export default function Header() {
           value={searchUsername}
           onChange={(e) => setSearchUsername(e.target.value)}
           className={styles.searchInput}
+          onPressEnter={handleSearch}
         />
         <Button onClick={handleSearch} icon={<SearchOutlined />} />
       </Space>

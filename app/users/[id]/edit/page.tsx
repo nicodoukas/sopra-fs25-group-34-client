@@ -2,14 +2,14 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+
 import { useApi } from "@/hooks/useApi";
 import { User } from "@/types/user";
-import { ProfilePicture} from "@/types/profilePicture";
+import { ProfilePicture } from "@/types/profilePicture";
 import Header from "@/components/header";
 
-import "@ant-design/v5-patch-for-react-19";
-import { Button, Form, Input, Dropdown} from "antd";
-import {EditOutlined} from "@ant-design/icons";
+import { Button, Dropdown, Form, Input, message } from "antd";
+import { EditOutlined } from "@ant-design/icons";
 
 interface FormFieldProps {
   username?: string;
@@ -26,7 +26,9 @@ const EditUserProfile: React.FC = () => {
 
   const [user, setUser] = useState<User>({} as User);
   const [profilePictures, setProfilePictures] = useState<ProfilePicture[]>([]);
-  const [selectedProfilePicture, setSelectedProfilePicture] = useState<ProfilePicture>({} as ProfilePicture);
+  const [selectedProfilePicture, setSelectedProfilePicture] = useState<
+    ProfilePicture
+  >({} as ProfilePicture);
   const [form] = Form.useForm();
 
   const handleGoBack = () => {
@@ -37,7 +39,9 @@ const EditUserProfile: React.FC = () => {
     try {
       const updatedValues = { ...values };
 
-      if (selectedProfilePicture && Object.keys(selectedProfilePicture).length > 0) { //only if changed
+      if (
+        selectedProfilePicture && Object.keys(selectedProfilePicture).length > 0
+      ) { //only if changed
         updatedValues.profilePicture = selectedProfilePicture;
       }
       if (updatedValues.username === user.username) {
@@ -47,24 +51,39 @@ const EditUserProfile: React.FC = () => {
       router.push(`/users/${displayedUsersId}`);
     } catch (error) {
       if (error instanceof Error) {
-        alert(
+        message.error(
           `Something went wrong while updating the user:\n${error.message}`,
         );
-        console.error(error);
       } else {
-        console.error("An unknown error occurred while updating the user.");
+        message.error("An unknown error occurred while updating the user.");
       }
+      console.error(error);
     }
   };
 
   const items = profilePictures.map((pic) => ({
     key: pic.id,
     label: (
-      <div style={{display: 'flex', alignItems: 'center', justifyContent:"center",padding:4}} onClick={() =>{setSelectedProfilePicture(pic)}}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 4,
+        }}
+        onClick={() => {
+          setSelectedProfilePicture(pic);
+        }}
+      >
         <img
           src={pic.url}
           alt={"pic"}
-          style={{width: 80, height: 80, borderRadius: '50%', objectFit: 'cover'}}
+          style={{
+            width: 80,
+            height: 80,
+            borderRadius: "50%",
+            objectFit: "cover",
+          }}
         />
       </div>
     ),
@@ -95,32 +114,35 @@ const EditUserProfile: React.FC = () => {
         setSelectedProfilePicture(user.profilePicture);
       } catch (error) {
         if (error instanceof Error) {
-          alert(
-            `Something went wrong while fetching the user:\n${error.message}`,
+          message.error(
+            `Something went wrong while loading the user:\n${error.message}`,
           );
-          console.error(error);
         } else {
-          console.error("An unknown error occurred while fetching the user.");
+          message.error("An unknown error occurred while loading the user.");
         }
+        console.error(error);
       }
     };
 
     const fetchProfilePictures = async () => {
       try {
-        const profilePictures = await apiService.get<ProfilePicture[]>("/profilePictures")
-        setProfilePictures(profilePictures)
-      }
-      catch (error) {
+        const profilePictures = await apiService.get<ProfilePicture[]>(
+          "/profilePictures",
+        );
+        setProfilePictures(profilePictures);
+      } catch (error) {
         if (error instanceof Error) {
-          alert(
-            `Something went wrong while fetching the profile pictures:\n${error.message}`,
+          message.error(
+            `Something went wrong while loading the profile pictures:\n${error.message}`,
           );
-          console.error(error);
         } else {
-          console.error("An unknown error occurred while fetching the profile pictures.");
+          message.error(
+            "An unknown error occurred while loading the profile pictures.",
+          );
         }
+        console.error(error);
       }
-    }
+    };
 
     fetchUser();
     fetchProfilePictures();
@@ -138,11 +160,25 @@ const EditUserProfile: React.FC = () => {
             onFinish={handleSave}
             layout="vertical"
           >
-            <div className={"profile-picture"} style={{position:"relative", marginBottom:"10px"}}>
-              <img src={selectedProfilePicture && Object.keys(selectedProfilePicture).length > 0 ? selectedProfilePicture.url : user.profilePicture?.url} alt="profile picture"/>
-              <Dropdown menu={{ items }} trigger={['click']} placement="bottomLeft" overlayClassName="custom-dropdown">
+            <div
+              className={"profile-picture"}
+              style={{ position: "relative", marginBottom: "10px" }}
+            >
+              <img
+                src={selectedProfilePicture &&
+                    Object.keys(selectedProfilePicture).length > 0
+                  ? selectedProfilePicture.url
+                  : user.profilePicture?.url}
+                alt="profile picture"
+              />
+              <Dropdown
+                menu={{ items }}
+                trigger={["click"]}
+                placement="bottomLeft"
+                overlayClassName="custom-dropdown"
+              >
                 <div className={"pencil"}>
-                  <EditOutlined/>
+                  <EditOutlined />
                 </div>
               </Dropdown>
             </div>
@@ -157,14 +193,15 @@ const EditUserProfile: React.FC = () => {
               <Input />
             </Form.Item>
             <div className="profile-edit-field">
-              <strong>Old Birthday:</strong> {user.birthday
-                ? String(user.birthday).split("T")[0]
-                : "N/A"}
+              <strong>Old Birthday:</strong>{" "}
+              {user.birthday ? String(user.birthday).split("T")[0] : "N/A"}
             </div>
             <Form.Item
               name="birthday"
               label={<strong>New Birthday:</strong>}
-              initialValue={user.birthday ? String(user.birthday).split("T")[0] : ""}
+              initialValue={user.birthday
+                ? String(user.birthday).split("T")[0]
+                : ""}
             >
               <Input placeholder="YYYY-MM-DD" />
             </Form.Item>

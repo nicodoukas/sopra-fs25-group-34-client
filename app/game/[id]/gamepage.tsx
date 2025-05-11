@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+
 import { useApi } from "@/hooks/useApi";
 import { Game } from "@/types/game";
 import { Player } from "@/types/player";
@@ -15,9 +16,8 @@ import ExitButton from "./exitGame";
 import Challenge from "./challenge";
 import ChallengeAccepted from "./challengeAccepted";
 import EndRound from "./endRound";
+import RankingList from "@/game/[id]/rankingList";
 
-
-import "@ant-design/v5-patch-for-react-19";
 import { message } from "antd";
 
 import { connectWebSocket } from "@/websocket/websocketService";
@@ -25,7 +25,6 @@ import { Client } from "@stomp/stompjs";
 
 import styles from "./gamePage.module.css";
 import "@/styles/game.css";
-import RankingList from "@/game/[id]/rankingList";
 
 interface GuessProps {
   guessedTitle: string;
@@ -37,7 +36,6 @@ const GamePage = (
     onGameEnd: () => void;
   },
 ) => {
-  const [messageAPI, contextHolder] = message.useMessage();
   const apiService = useApi();
   const router = useRouter();
   const params = useParams();
@@ -57,8 +55,8 @@ const GamePage = (
   const [challengeTaken, setChallengeTaken] = useState<boolean>(false);
   const [roundOver, setRoundOver] = useState<boolean>(false);
 
-  const handleWebSocketMessage = (message: string) => {
-    const parsedMessage = JSON.parse(message);
+  const handleWebSocketMessage = (websocket_Message: string) => {
+    const parsedMessage = JSON.parse(websocket_Message);
     if (parsedMessage.event_type === "play-song") {
       playAudio();
     }
@@ -81,20 +79,19 @@ const GamePage = (
       setStartChallenge(true);
     }
     if (parsedMessage.event_type === "challenge-accepted") {
-      console.log("in websocket if if if");
       setGame(parsedMessage.data);
       const challengerId = parsedMessage.data.currentRound.challenger.userId;
       setStartChallenge(false);
       setChallengeTaken(true);
       if (challengerId.toString() === sessionStorage.getItem("id")) {
-        messageAPI.success("You were the first to challenge");
+        message.success("You were the first to challenge");
       }
     }
     if (parsedMessage.event_type === "challenge-denied") {
       const challengerId = parsedMessage.data;
       setStartChallenge(false);
       if (challengerId.toString() === sessionStorage.getItem("id")) {
-        messageAPI.warning("Someone was faster to challenge");
+        message.warning("Someone was faster to challenge");
       }
     }
     if (parsedMessage.event_type === "end-round"){
@@ -113,7 +110,7 @@ const GamePage = (
     setIsPlaying(true);
     const audio = new Audio(gameRef.current?.currentRound.songCard?.songURL);
     audio.volume = 0.8;
-    audio.play();
+    await audio.play();
 
     audio.onended = () => {
       setAudioState(false);
@@ -133,8 +130,7 @@ const GamePage = (
     }
   };
 
-
-  const handleChallengerPlacement = (placmentIndex: number) => {
+  const handleChallengerPlacement = (_placmentIndex: number) => {
     //TODO: call API service to set challengers placement
     //then trigger evaluation
     setChallengeTaken(false);
@@ -153,21 +149,25 @@ const GamePage = (
       );
       if (correct) {
         setGuessed(true);
-        messageAPI.success("Congratulation, you guessed correct!");
+        message.success("Congratulation, you guessed correct!");
         const updatedPlayer = await apiService.get<Player>(
           `/games/${gameId}/${userId}`,
         );
         setPlayer(updatedPlayer);
       } else {
-        messageAPI.warning("Guess incorrect, try again.");
+        message.warning("Guess incorrect, try again.");
       }
     } catch (error) {
       if (error instanceof Error) {
-        alert(`Something went wrong during the guess:\n${error.message}`);
-        console.error(error);
+        message.error(
+          `Something went wrong during the guess:\n${error.message}`,
+        );
       } else {
-        console.error("An unknown error occurred during guess.");
+        message.error(
+          "An unknown error occurred during the guess. Please try again later.",
+        );
       }
+      console.error(error);
     }
   };
 
@@ -178,13 +178,14 @@ const GamePage = (
         player.userId,
       );
       setPlayer(updatedPlayer);
-      messageAPI.success("SongCard purchased and added to your timeline!");
+      message.success("SongCard purchased and added to your timeline!");
     } catch (error) {
       if (error instanceof Error) {
-        messageAPI.error(`Error: ${error.message}`);
+        message.error(`Error: ${error.message}`);
       } else {
-        messageAPI.error("Unknown error while buying a SongCard.");
+        message.error("Unknown error while buying a SongCard.");
       }
+      console.error(error);
     }
   };
 
@@ -210,10 +211,11 @@ const GamePage = (
       }
     } catch (error) {
       if (error instanceof Error) {
-        messageAPI.error(`Error: ${error.message}`);
+        message.error(`Error: ${error.message}`);
       } else {
-        messageAPI.error("Unknown error while leaving the game.");
+        message.error("Unknown error while leaving the game.");
       }
+      console.error(error);
     }
   };
 
@@ -236,7 +238,6 @@ const GamePage = (
       try {
         const gameData = await apiService.get<Game>(`/games/${gameId}`);
         setGame(gameData);
-        console.log("This is the game: ", gameData);
         setSongCard(gameData.currentRound?.songCard);
         const userId = sessionStorage.getItem("id");
         if (!playerIsLeaving) {
@@ -244,10 +245,9 @@ const GamePage = (
             `/games/${gameId}/${userId}`,
           );
           setPlayer(playerData);
-          console.log("This is the player: ", playerData);
         }
       } catch (error) {
-        alert("Failed to fetch game or player data.");
+        message.error("Failed to fetch game or player data.");
         console.error("Error fetching data:", error);
       }
     };
@@ -287,7 +287,6 @@ const GamePage = (
         onBuyCard={handleBuyCard}
         onGameEnd={onGameEnd}
       />
-      {contextHolder}
       {startChallenge
         ? (
           player.userId === game.currentRound.activePlayer.userId
@@ -318,8 +317,6 @@ const GamePage = (
               gameName={game?.gameName || "{gameName}"}
               activePlayerName={game.currentRound?.activePlayer?.username}
               activePlayersTimeline={game.currentRound.activePlayer.timeline}
-              songCard={songCard}
-              gameId={gameId}
               activePlayerPlacement={game.currentRound.activePlayerPlacement}
               handleChallengerPlacement={handleChallengerPlacement}
             />
@@ -354,8 +351,6 @@ const GamePage = (
               <Timeline
                 title="Your Timeline"
                 timeline={player.timeline}
-                songCard={songCard}
-                gameId={gameId}
                 isPlaying={isPlaying}
                 isPlacementMode={player.userId ==
                   game.currentRound?.activePlayer?.userId}
@@ -371,9 +366,9 @@ const GamePage = (
       {roundOver
         ? (
           <EndRound
-          songCard={songCard}
-          stompClient={stompClient}
-          gameId = {gameId}
+            songCard={songCard}
+            stompClient={stompClient}
+            gameId={gameId}
           />
         )
         : <></>}

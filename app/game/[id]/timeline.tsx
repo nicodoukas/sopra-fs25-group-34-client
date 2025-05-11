@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useApi } from "@/hooks/useApi";
+
 import { SongCard } from "@/types/songcard";
 
-import "@ant-design/v5-patch-for-react-19";
-import { Button, message, Typography } from "antd";
+import { Button, Typography } from "antd";
 
 const { Title, Text } = Typography;
 
 interface Props {
   title: string;
   timeline: SongCard[];
-  songCard: SongCard | null;
-  gameId: string;
   isPlaying: boolean;
   isPlacementMode: boolean;
   confirmPlacement: (index: number) => void;
@@ -19,13 +16,10 @@ interface Props {
   challenge: boolean | null;
 }
 
-//TODO: delete Props I do not need
 const Timeline: React.FC<Props> = (
   {
     title,
     timeline,
-    songCard,
-    gameId,
     isPlaying,
     isPlacementMode,
     confirmPlacement,
@@ -35,8 +29,6 @@ const Timeline: React.FC<Props> = (
 ) => {
   const [placement, setPlacement] = useState<number | null>(null); //position of placement of SongCard
   const [isFlipped, setIsFlipped] = useState<number | null>(null); //index of flipped SongCard
-  const [messageAPI, contextHolder] = message.useMessage();
-  const apiService = useApi();
   const [challengeRunning, setChallengeRunning] = useState(false);
 
   useEffect(() => {
@@ -45,9 +37,6 @@ const Timeline: React.FC<Props> = (
 
   useEffect(() => {
     if (activePlayerPlacement != null) {
-      console.log(
-        "in use Effect with active PlayerPlacement " + activePlayerPlacement,
-      );
       setPlacement(activePlayerPlacement);
     }
   }, [activePlayerPlacement]);
@@ -64,21 +53,14 @@ const Timeline: React.FC<Props> = (
     setIsFlipped(index);
   };
 
-  const handleConfirmPlacement = async (): Promise<void> => {
-    //TODO: this does not need to check if placement is correct,
-    //that will happen only AFTER Challenge phase
-    //but code left here (commented out) to be copied to correct place
-
+  const handleConfirmPlacement = () => {
     if (placement != null) {
       confirmPlacement(placement);
     }
   };
 
-  //TODO: look that challenger cannot place at same position as activePlayer
-
   return (
     <div>
-      {contextHolder}
       <div>
         {!challengeRunning && (
           <div className="songCardContainer">

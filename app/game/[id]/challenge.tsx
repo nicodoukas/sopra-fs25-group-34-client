@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
+
+import { useApi } from "@/hooks/useApi";
 import { SongCard } from "@/types/songcard";
+import { Player } from "@/types/player";
 import Timeline from "./timeline";
+import Timer from "@/game/[id]/timer";
 
 import { Button, message } from "antd";
+
 import { Client } from "@stomp/stompjs";
-import { Player } from "@/types/player";
-import { useApi } from "@/hooks/useApi";
-import Timer from "@/game/[id]/timer";
 
 interface Props {
   activePlayer: Player;
@@ -33,7 +35,6 @@ const Challenge: React.FC<Props> = ({
   userId,
   checkCardPlacementCorrect,
 }) => {
-  const [messageAPI, contextHolder] = message.useMessage();
   const apiService = useApi();
   const [timeLeft, setTimeLeft] = useState(30);
 
@@ -61,7 +62,7 @@ const Challenge: React.FC<Props> = ({
     // true, but I still need to list the event in the component and call some method
   };
 
-  const handleChallengeAccepted = async () => {
+  const handleChallengeAccepted = () => {
     if (stompClient?.connected) {
       stompClient.publish({
         destination: "/app/challenge/accept",
@@ -102,7 +103,7 @@ const Challenge: React.FC<Props> = ({
         placement,
       )
     ) {
-      messageAPI.success("Congratulation your placement is correct!");
+      message.success("Congratulation your placement is correct!");
       const body = {
         "songCard": songCard,
         "position": placement,
@@ -112,22 +113,22 @@ const Challenge: React.FC<Props> = ({
         await apiService.put(`/games/${gameId}/${activePlayer.userId}`, body);
       } catch (error) {
         if (error instanceof Error) {
-          alert(
+          message.error(
             `Something went wrong during the inserting of the songCard into timeline of ${activePlayer.username}:\n${error.message}`,
           );
-          console.error(error);
         } else {
-          console.error(
+          message.error(
             `An unknown error occurred during the inserting of the songCard into timeline of ${activePlayer.username}.`,
           );
+          console.error(error);
         }
       }
     } //incorrect placement
     else {
-      messageAPI.info("Wrong placement");
+      message.info("Wrong placement");
     }
 
-    //(Start new Round) possibly call 
+    //(Start new Round) possibly call
     if (stompClient?.connected) {
       (stompClient as Client).publish({
         destination: "/app/userDeclinesChallenge",
@@ -149,15 +150,12 @@ const Challenge: React.FC<Props> = ({
         flexDirection: "column",
       }}
     >
-      {contextHolder}
       <h2 style={{ fontSize: "1.5rem", marginBottom: "0px" }}>{gameName}</h2>
       <h3>Challenge phase</h3>
       <Timer timeLeft={timeLeft}></Timer>
       <Timeline
         title={activePlayer.username + "'s placement:"}
         timeline={activePlayer.timeline}
-        songCard={songCard}
-        gameId={gameId}
         isPlaying={false}
         isPlacementMode={false}
         confirmPlacement={_confirmPlacement}
