@@ -101,7 +101,8 @@ const Challenge: React.FC<Props> = ({
     else {
       messageAPI.info("Wrong placement");
     }
-    //Start new Round
+
+    //(Start new Round) possibly call 
     if (stompClient?.connected) {
       (stompClient as Client).publish({
         destination: "/app/startNewRound",

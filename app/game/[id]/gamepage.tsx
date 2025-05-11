@@ -14,6 +14,8 @@ import Timeline from "./timeline";
 import ExitButton from "./exitGame";
 import Challenge from "./challenge";
 import ChallengeAccepted from "./challengeAccepted";
+import EndRound from "./endRound";
+
 
 import "@ant-design/v5-patch-for-react-19";
 import { Button, message } from "antd";
@@ -53,6 +55,7 @@ const GamePage = (
   const [playerIsLeaving, setPlayerIsLeaving] = useState(false);
   const [startChallenge, setStartChallenge] = useState<boolean>(false);
   const [challengeTaken, setChallengeTaken] = useState<boolean>(false);
+  const [roundOver, setRoundOver] = useState<boolean>(false);
 
   const handleWebSocketMessage = (message: string) => {
     const parsedMessage = JSON.parse(message);
@@ -60,6 +63,7 @@ const GamePage = (
       playAudio();
     }
     if (parsedMessage.event_type === "start-new-round") {
+      setRoundOver(false);
       setGuessed(false);
       setAudioState(true);
       setIsPlaying(false);
@@ -77,8 +81,6 @@ const GamePage = (
       setStartChallenge(true);
     }
     if (parsedMessage.event_type === "challenge-accepted") {
-      /* TODO: this does not yet seem to get triggered */
-      console.log("in websocket if if if");
       const challengerId = parsedMessage.data;
       setStartChallenge(false);
       setChallengeTaken(true);
@@ -128,6 +130,8 @@ const GamePage = (
 
   const challengeHandeled = () => {
     setStartChallenge(false);
+    //TODO: Set this in the websocket message above
+    setRoundOver(true);
     //TODO: add websockets to start new round
   };
 
@@ -320,7 +324,7 @@ const GamePage = (
           />
         )
         : <></>}
-      {!startChallenge && !challengeTaken
+      {!startChallenge && !challengeTaken && !roundOver
         ? (
           <>
             <RankingList players={game.players} playerId={player.userId} />
@@ -355,6 +359,15 @@ const GamePage = (
             </div>
             <Guess guessed={guessed} onHandleGuess={handleGuess}></Guess>
           </>
+        )
+        : <></>}
+      {roundOver
+        ? (
+          <EndRound
+          songCard={songCard}
+          stompClient={stompClient}
+          gameId = {gameId}
+          />
         )
         : <></>}
       <ExitButton
