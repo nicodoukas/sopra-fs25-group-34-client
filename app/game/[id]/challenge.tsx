@@ -114,6 +114,18 @@ const Challenge: React.FC<Props> = ({
     challengeHandeled();
   };
 
+  const declineChallenge = async () => {
+    if (stompClient?.connected) {
+      (stompClient as Client).publish({
+        destination: "/app/userDeclinesChallenge",
+        body: JSON.stringify({
+          gameId,
+          userId: sessionStorage.getItem("id"),
+        }),
+      });
+    }
+  }
+
   return (
     <div className="beige-card"
          style={{display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column"}}>
@@ -136,7 +148,7 @@ const Challenge: React.FC<Props> = ({
         <Button type="primary" onClick={handleChallengeAccepted}>
           Challenge
         </Button>
-        <Button type="primary">
+        <Button type="primary" onClick={declineChallenge}>
           Don't challenge
         </Button>
       </div>
