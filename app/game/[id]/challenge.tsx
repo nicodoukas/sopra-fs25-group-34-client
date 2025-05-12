@@ -74,15 +74,6 @@ const Challenge: React.FC<Props> = ({
     }
   };
 
-  const handleChallengeDeclined = async () => {
-    //TODO: I think Julia is handling this according to discord messages after "Söll ich die liste wo speicheret welli player challenge declined im server speichere oder eifach im client?"
-    handleCheckPlacementActivePlayer_StartNewRound(
-      activePlayer,
-      activePlayerPlacement,
-    );
-  };
-
-
   const handleTimerForChallengeRanOut = async () => {
     handleCheckPlacementActivePlayer_StartNewRound(
       activePlayer,
