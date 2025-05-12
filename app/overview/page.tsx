@@ -1,11 +1,11 @@
 "use client";
 
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
+
 import useSessionStorage from "@/hooks/useSessionStorage";
 import Header from "@/components/header";
 
-import "@ant-design/v5-patch-for-react-19";
 import { Button, message } from "antd";
 
 import styles from "@/styles/page.module.css";
@@ -17,6 +17,7 @@ const Overview: React.FC = () => {
     value: id,
   } = useSessionStorage<string>("id", "");
 
+  //TODO: what is this? when where why is this info message set??
   useEffect(() => {
     const info = sessionStorage.getItem("infoMessage");
     if (info) {

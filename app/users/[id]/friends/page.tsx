@@ -2,12 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+
 import { useApi } from "@/hooks/useApi";
 import { User } from "@/types/user";
 import Header from "@/components/header";
 
-import "@ant-design/v5-patch-for-react-19";
-import { Button, Table } from "antd";
+import { Button, message, Table } from "antd";
 import type { TableProps } from "antd";
 
 const columns: TableProps<User>["columns"] = [
@@ -16,14 +16,17 @@ const columns: TableProps<User>["columns"] = [
     dataIndex: "username",
     key: "username",
     render: (text, record) => (
-      <div style={{display: "flex", flexDirection:"row"}}>
-        <div className="profile-picture" style={{
-          width: 30,
-          height: 30,
-          marginRight: "15px",
-          position: "relative"
-        }}>
-          <img src={record.profilePicture?.url} alt="profile picture"/>
+      <div style={{ display: "flex", flexDirection: "row" }}>
+        <div
+          className="profile-picture"
+          style={{
+            width: 30,
+            height: 30,
+            marginRight: "15px",
+            position: "relative",
+          }}
+        >
+          <img src={record.profilePicture?.url} alt="profile picture" />
         </div>
         <span>{text}</span>
       </div>
@@ -61,13 +64,13 @@ const FriendList: React.FC = () => {
         setFriends(friends);
       } catch (error) {
         if (error instanceof Error) {
-          alert(
-            `Something went wrong while fetching a user:\n${error.message}`,
+          message.error(
+            `Something went wrong while loading a user:\n${error.message}`,
           );
-          console.error(error);
         } else {
-          console.error("An unknown error occurred while fetching a user.");
+          message.error("An unknown error occurred while loading a user.");
         }
+        console.error(error);
       }
     };
 

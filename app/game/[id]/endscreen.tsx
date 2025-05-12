@@ -1,19 +1,21 @@
 "use client";
 
-import {Card, Button, message} from "antd";
-import React, {useEffect, useState} from "react";
-import {useApi} from "@/hooks/useApi";
-import {Game} from "@/types/game";
-import {Player} from "@/types/player";
-import {useParams, useRouter} from "next/navigation";
-import {Client} from "@stomp/stompjs";
-import {connectWebSocket} from "@/websocket/websocketService";
+import React, { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+
+import { useApi } from "@/hooks/useApi";
+import { Game } from "@/types/game";
+import { Player } from "@/types/player";
 import RankingList from "./rankingList";
 import Firework from "./fireworks";
 
+import { Button, Card, message } from "antd";
+
+import { connectWebSocket } from "@/websocket/websocketService";
+import { Client } from "@stomp/stompjs";
+
 const EndScreen = () => {
   const [game, setGame] = useState<Game>({} as Game);
-  const [messageAPI, contextHolder] = message.useMessage();
   const apiService = useApi();
   const router = useRouter();
   const params = useParams();
@@ -23,14 +25,14 @@ const EndScreen = () => {
 
   const handleWebSocketMessage = (message: string) => {
     const parsedMessage = JSON.parse(message);
-    if (parsedMessage.event_type === "back-to-lobby"){
+    if (parsedMessage.event_type === "back-to-lobby") {
       router.push(`/lobby/${gameId}`);
     }
   };
 
   const deleteGame = async () => {
     try {
-      await apiService.delete(`/games/${gameId}/${player.userId}`)
+      await apiService.delete(`/games/${gameId}/${player.userId}`);
       if (stompClient?.connected) {
         (stompClient as Client).publish({
           destination: "/app/backToLobby",
@@ -39,10 +41,11 @@ const EndScreen = () => {
       }
     } catch (error) {
       if (error instanceof Error) {
-        messageAPI.error(`Error: ${error.message}`);
+        message.error(`Error: ${error.message}`);
       } else {
-        messageAPI.error("Unknown error while deleting game.");
+        message.error("Unknown error while deleting game.");
       }
+      console.error(error);
     }
   };
 
@@ -51,19 +54,17 @@ const EndScreen = () => {
       try {
         const gameData = await apiService.get<Game>(`/games/${gameId}`);
         setGame(gameData);
-        console.log("This is the game: ", gameData);
-
         const userId = sessionStorage.getItem("id");
-        const playerData = await apiService.get<Player>(`/games/${gameId}/${userId}`);
+        const playerData = await apiService.get<Player>(
+          `/games/${gameId}/${userId}`,
+        );
         setPlayer(playerData);
-        console.log("This is the player: ", playerData);
       } catch (error) {
-        alert("Failed to fetch game or player data.");
+        message.error("Failed to fetch game or player data.");
         console.error("Error fetching data:", error);
       }
     };
     fetchData();
-
   }, [apiService, gameId]);
 
   useEffect(() => {
@@ -76,7 +77,7 @@ const EndScreen = () => {
   }, []);
 
   if (!player?.timeline || !game) {
-    return <div style={{color: "white"}}>Loading...</div>;
+    return <div style={{ color: "white" }}>Loading...</div>;
   }
 
   const sortedPlayers = game.players
@@ -88,24 +89,23 @@ const EndScreen = () => {
     .sort((a, b) => b.cards - a.cards);
 
   let currentRank = 1;
-  const sortedPlayersWithRank = sortedPlayers.map((player,index, array) => {
-    if (index > 0 && player.cards === array[index -1].cards) {
+  const sortedPlayersWithRank = sortedPlayers.map((player, index, array) => {
+    if (index > 0 && player.cards === array[index - 1].cards) {
       player.rank = array[index - 1].rank;
-    }
-    else {
+    } else {
       player.rank = currentRank;
       currentRank += 1;
     }
     return player;
   });
 
-  const playerRank = sortedPlayersWithRank.find((p) => p.userId === player.userId)?.rank;
+  const playerRank = sortedPlayersWithRank.find((p) =>
+    p.userId === player.userId
+  )?.rank;
 
   return (
     <>
-      {playerRank === 1 && (
-        <Firework></Firework>
-      )}
+      {playerRank === 1 && <Firework></Firework>}
       <div
         style={{
           padding: 40,
@@ -113,10 +113,9 @@ const EndScreen = () => {
           color: "black",
           display: "flex",
           justifyContent: "center",
-          alignItems: "center"
+          alignItems: "center",
         }}
       >
-        {contextHolder}
         <Card
           style={{
             display: "flex",
@@ -133,25 +132,27 @@ const EndScreen = () => {
         >
           <h1>Game Over!</h1>
           <p>Thanks for playing</p>
-          {playerRank === 1 ? (
-            <div>
-              Congratulations {player.username}, you won this game!
-            </div>
-          ) : (
-            <div>
-              Sorry, you did not win this game.
-            </div>
-          )}
-          <h2 style={{fontSize: "30px", marginTop: "20px"}}>Final Rankings</h2>
-          <RankingList players={game.players} playerId={player.userId}/>
+          {playerRank === 1
+            ? (
+              <div>
+                Congratulations {player.username}, you won this game!
+              </div>
+            )
+            : (
+              <div>
+                Sorry, you did not win this game.
+              </div>
+            )}
+          <h2 style={{ fontSize: "30px", marginTop: "20px" }}>
+            Final Rankings
+          </h2>
+          <RankingList players={game.players} playerId={player.userId} />
           {player.userId === game.host?.userId && (
             <Button onClick={deleteGame}>Back to Lobby</Button>
           )}
         </Card>
-
       </div>
     </>
-
   );
 };
 export default EndScreen;

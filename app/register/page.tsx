@@ -7,8 +7,7 @@ import { useApi } from "@/hooks/useApi";
 import useSessionStorage from "@/hooks/useSessionStorage";
 import { User } from "@/types/user";
 
-import "@ant-design/v5-patch-for-react-19";
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, message } from "antd";
 
 interface FormFieldProps {
   username: string;
@@ -51,11 +50,21 @@ const Register: React.FC = () => {
       router.push("/overview");
     } catch (error) {
       if (error instanceof Error) {
-        alert(`Something went wrong during the login:\n${error.message}`);
-        console.error(error);
+        if (
+          error.message.includes(
+            "409: The username provided is not unique. Therefore, the user could not be created!",
+          )
+        ) {
+          message.error(
+            "The username provided is not unique. Please use another username.",
+          );
+        } else {
+          message.error(error.message);
+        }
       } else {
-        console.error("An unknown error occurred during login.");
+        message.error("An unknown error occured during registration");
       }
+      console.error(error);
     }
   };
 

@@ -2,14 +2,14 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+
 import { useApi } from "@/hooks/useApi";
 import useSessionStorage from "@/hooks/useSessionStorage";
-import Header from "@/components/header";
-
-import { Button, Form, Input } from "antd";
-
 import { Lobby } from "@/types/lobby";
 import { User } from "@/types/user";
+import Header from "@/components/header";
+
+import { Button, Form, Input, message } from "antd";
 
 interface FormFieldProps {
   lobbyName: string;
@@ -35,31 +35,31 @@ const CreateLobby: React.FC = () => {
       router.push(`/lobby/${currentLobby.lobbyId}`);
     } catch (error) {
       if (error instanceof Error) {
-        alert(
+        message.error(
           `Something went wrong while creating the lobby:\n${error.message}`,
         );
-        console.error(error);
       } else {
-        console.error("An unknown error occurred while creating the lobby.");
+        message.error("An unknown error occurred while creating the lobby.");
       }
+      console.error(error);
     }
   };
 
   useEffect(() => {
     const fetchUser = async () => {
-      if (!id){return;}
+      if (!id) return;
       try {
         const user: User = await apiService.get<User>(`/users/${id}`);
         setUser(user);
       } catch (error) {
         if (error instanceof Error) {
-          alert(
-            `Something went wrong while fetching the user:\n${error.message}`,
+          message.error(
+            `Something went wrong while loading the user:\n${error.message}`,
           );
-          console.error(error);
         } else {
-          console.error("An unknown error occurred while fetching the user.");
+          message.error("An unknown error occurred while loading the user.");
         }
+        console.error(error);
       }
     };
 
