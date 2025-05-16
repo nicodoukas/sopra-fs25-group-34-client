@@ -6,28 +6,33 @@ interface Props{
     songCard: SongCard | null;
     stompClient: Client | null;
     gameId: string;
+    roundNr: number;
 }
 const EndRound: React.FC<Props> = ({
   songCard,
   stompClient,
   gameId,
+  roundNr,
 }) => {
     if (!songCard) {
         return <div>No song data available.</div>;
       }
     useEffect(() => {
+        console.log("This is the roundNr:", roundNr)
         const timer = setTimeout(() => {
             if (stompClient?.connected) {
               (stompClient as Client).publish({
                 destination: "/app/startNewRound",
-                body: gameId ?? "",
+                body: JSON.stringify({
+                  gameId: gameId,
+                  roundNr: roundNr,}),
               });
             }
         }, 5000);
       
         return () => clearTimeout(timer); // cleanup if component unmounts early
     
-    }, [stompClient, gameId]);
+    }, [stompClient, gameId, roundNr]);
       
     return (
     <div className="beige-card" style={{ textAlign: "center", padding: "2rem" }}>

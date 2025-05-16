@@ -287,7 +287,7 @@ const GamePage = (
         onBuyCard={handleBuyCard}
         onGameEnd={onGameEnd}
       />
-      {startChallenge
+      {startChallenge && !roundOver
         ? (
           player.userId === game.currentRound.activePlayer.userId
             ? <p>The other players can now challenge your placement</p>
@@ -308,7 +308,7 @@ const GamePage = (
             )
         )
         : <></>}
-        {challengeTaken && (
+        {challengeTaken && !roundOver && (
           player.userId === game.currentRound.activePlayer.userId
           ? <p>The other players can now challenge your placement</p>
           : player.userId === game.currentRound.challenger?.userId
@@ -369,6 +369,7 @@ const GamePage = (
             songCard={songCard}
             stompClient={stompClient}
             gameId={gameId}
+            roundNr={game.currentRound?.roundNr}
           />
         )
         : <></>}
