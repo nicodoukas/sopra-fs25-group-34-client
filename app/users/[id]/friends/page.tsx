@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { useApi } from "@/hooks/useApi";
 import { User } from "@/types/user";
+import withAuth from "@/utils/withAuth";
 import Header from "@/components/header";
 
 import { Button, message, Table } from "antd";
@@ -40,14 +41,6 @@ const FriendList: React.FC = () => {
   const [friends, setFriends] = useState<User[] | null>(null);
 
   useEffect(() => {
-    //TODO: when i replace this to use the useLocalStorage Hook it always trigers
-    //also, when i replace it below in the fetchFreinds
-    const StorageId = sessionStorage.getItem("id");
-    if (!StorageId) {
-      router.push("/");
-      return;
-    }
-
     const fetchFriends = async () => {
       try {
         const user: User = await apiService.get<User>(
@@ -113,4 +106,4 @@ const FriendList: React.FC = () => {
   );
 };
 
-export default FriendList;
+export default withAuth(FriendList);

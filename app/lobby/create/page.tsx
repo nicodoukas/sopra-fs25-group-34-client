@@ -7,6 +7,7 @@ import { useApi } from "@/hooks/useApi";
 import useSessionStorage from "@/hooks/useSessionStorage";
 import { Lobby } from "@/types/lobby";
 import { User } from "@/types/user";
+import withAuth from "@/utils/withAuth";
 import Header from "@/components/header";
 
 import { Button, Form, Input, message } from "antd";
@@ -100,4 +101,4 @@ const CreateLobby: React.FC = () => {
   );
 };
 
-export default CreateLobby;
+export default withAuth(CreateLobby);

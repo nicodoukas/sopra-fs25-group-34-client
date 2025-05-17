@@ -7,6 +7,7 @@ import { useApi } from "@/hooks/useApi";
 import useSessionStorage from "@/hooks/useSessionStorage";
 import { User } from "@/types/user";
 import { Lobby } from "@/types/lobby";
+import withAuth from "@/utils/withAuth";
 import Header from "@/components/header";
 import InviteAction from "@/components/InviteAction";
 
@@ -39,7 +40,7 @@ const columns: TableProps<User>["columns"] = [
   },
 ];
 
-const LobbyPage: () => void = () => {
+const LobbyPage: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
   const params = useParams();
@@ -78,8 +79,6 @@ const LobbyPage: () => void = () => {
             {text}
           </a>
         </div>
-
-
       ),
     },
     {
@@ -351,4 +350,4 @@ const LobbyPage: () => void = () => {
   );
 };
 
-export default LobbyPage;
+export default withAuth(LobbyPage);

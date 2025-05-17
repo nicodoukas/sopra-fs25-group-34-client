@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useSessionStorage from "@/hooks/useSessionStorage";
 import { User } from "@/types/user";
+import withAuth from "@/utils/withAuth";
 import Header from "@/components/header";
 
 import { Button, message } from "antd";
@@ -17,10 +18,6 @@ const UserProfile: React.FC = () => {
   const diplayedUsersId = params.id;
 
   const [displayedUser, setDisplayedUser] = useState<User>({} as User);
-
-  const {
-    clear: clearToken,
-  } = useSessionStorage<string>("token", "");
 
   const {
     value: loggedInUsersId,
@@ -45,7 +42,6 @@ const UserProfile: React.FC = () => {
       console.error(error);
     }
 
-    clearToken();
     clearId();
     clearUsername();
 
@@ -104,13 +100,6 @@ const UserProfile: React.FC = () => {
   };
 
   useEffect(() => {
-    //TODO: here again we have the case, that this does not work when using the hook
-    const StorageId = sessionStorage.getItem("id");
-    if (!StorageId) {
-      router.push("/");
-      return;
-    }
-
     const fetchUser = async () => {
       try {
         const user: User = await apiService.get<User>(
@@ -258,4 +247,4 @@ const UserProfile: React.FC = () => {
   );
 };
 
-export default UserProfile;
+export default withAuth(UserProfile);

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
 import "@ant-design/v5-patch-for-react-19";
-import { ConfigProvider, theme } from "antd";
+import { App as AntdApp, ConfigProvider, theme } from "antd";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 
 import "@/styles/globals.css";
@@ -74,12 +74,14 @@ export default function RootLayout({
           }}
         >
           <AntdRegistry>
-            <div className="content-container">
-              <main>
-                {children}
-              </main>
-              <footer>Hitster by Group 34 SoPra FS25</footer>
-            </div>
+            <AntdApp>
+              <div className="content-container">
+                <main>
+                  {children}
+                </main>
+                <footer>Hitster by Group 34 SoPra FS25</footer>
+              </div>
+            </AntdApp>
           </AntdRegistry>
         </ConfigProvider>
       </body>

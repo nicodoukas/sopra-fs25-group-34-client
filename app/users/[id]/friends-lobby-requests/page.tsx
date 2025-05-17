@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 
 import { useApi } from "@/hooks/useApi";
 import Header from "@/components/header";
+import withAuth from "@/utils/withAuth";
 import { User } from "@/types/user";
 import { Lobby } from "@/types/lobby";
 
@@ -130,7 +131,7 @@ const FriendsLobbyRequest: React.FC = () => {
 
   useEffect(() => {
     const StorageId = sessionStorage.getItem("id");
-    if (!StorageId || StorageId != id) {
+    if (StorageId != id) {
       router.push("/overview");
       return;
     }
@@ -285,4 +286,4 @@ const FriendsLobbyRequest: React.FC = () => {
   );
 };
 
-export default FriendsLobbyRequest;
+export default withAuth(FriendsLobbyRequest);

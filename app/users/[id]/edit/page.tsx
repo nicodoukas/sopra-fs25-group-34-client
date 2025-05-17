@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import { User } from "@/types/user";
 import { ProfilePicture } from "@/types/profilePicture";
+import withAuth from "@/utils/withAuth";
 import Header from "@/components/header";
 
 import { Button, Dropdown, Form, Input, message } from "antd";
@@ -91,10 +92,6 @@ const EditUserProfile: React.FC = () => {
 
   useEffect(() => {
     const StorageId = sessionStorage.getItem("id");
-    if (!StorageId) {
-      router.push("/");
-      return;
-    }
     if (StorageId != displayedUsersId) {
       router.back();
       return;
@@ -226,4 +223,4 @@ const EditUserProfile: React.FC = () => {
   );
 };
 
-export default EditUserProfile;
+export default withAuth(EditUserProfile);
