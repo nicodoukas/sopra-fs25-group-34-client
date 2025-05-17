@@ -2,16 +2,15 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+
 import { useApi } from "@/hooks/useApi";
 import useSessionStorage from "@/hooks/useSessionStorage";
 import { User } from "@/types/user";
 import Header from "@/components/header";
 
-import "@ant-design/v5-patch-for-react-19";
-import { Button, message} from "antd";
+import { Button, message } from "antd";
 
 const UserProfile: React.FC = () => {
-  const [messageAPI, contextHolder] = message.useMessage();
   const router = useRouter();
   const apiService = useApi();
   const params = useParams();
@@ -37,11 +36,13 @@ const UserProfile: React.FC = () => {
       await apiService.put("/logout", loggedInUsersId);
     } catch (error) {
       if (error instanceof Error) {
-        alert(`Something went wrong during the log out:\n${error.message}`);
-        console.error(error);
+        message.error(
+          `Something went wrong during the log out:\n${error.message}`,
+        );
       } else {
-        console.error("An unknown error occurred during logout.");
+        message.error("An unknown error occurred during logout.");
       }
+      console.error(error);
     }
 
     clearToken();
@@ -64,7 +65,7 @@ const UserProfile: React.FC = () => {
       await apiService.delete(
         `/users/${loggedInUsersId}/friends/${diplayedUsersId}`,
       );
-      messageAPI.success(`${displayedUser.username} removed from friend list`);
+      message.success(`${displayedUser.username} removed from friend list`);
 
       const updatedUser: User = await apiService.get<User>(
         `/users/${diplayedUsersId}`,
@@ -72,11 +73,11 @@ const UserProfile: React.FC = () => {
       setDisplayedUser(updatedUser);
     } catch (error) {
       if (error instanceof Error) {
-        messageAPI.error("Failed to remove friend.");
-        console.error(error);
+        message.error("Failed to remove friend.");
       } else {
-        console.error("An unknown error occurred while removing friend.");
+        message.error("An unknown error occurred while removing friend.");
       }
+      console.error(error);
     }
   };
 
@@ -86,7 +87,7 @@ const UserProfile: React.FC = () => {
         `/users/${loggedInUsersId}/friendrequests`,
         diplayedUsersId,
       );
-      messageAPI.success(`Friend request sent to ${displayedUser.username}`);
+      message.success(`Friend request sent to ${displayedUser.username}`);
 
       const updatedUser: User = await apiService.get<User>(
         `/users/${diplayedUsersId}`,
@@ -94,11 +95,11 @@ const UserProfile: React.FC = () => {
       setDisplayedUser(updatedUser);
     } catch (error) {
       if (error instanceof Error) {
-        messageAPI.error("Failed to send friend request.");
-        console.error(error);
+        message.error("Failed to send friend request.");
       } else {
-        console.error("An unknown error occurred while sending friend request");
+        message.error("An unknown error occurred while sending friend request");
       }
+      console.error(error);
     }
   };
 
@@ -118,13 +119,13 @@ const UserProfile: React.FC = () => {
         setDisplayedUser(user);
       } catch (error) {
         if (error instanceof Error) {
-          alert(
-            `Something went wrong while fetching the user:\n${error.message}`,
+          message.error(
+            `Something went wrong while loading the user:\n${error.message}`,
           );
-          console.error(error);
         } else {
-          console.error("An unknown error occurred while fetching the user.");
+          message.error("An unknown error occurred while loading the user.");
         }
+        console.error(error);
       }
     };
 
@@ -135,7 +136,6 @@ const UserProfile: React.FC = () => {
   if (sessionStorage.getItem("id") === diplayedUsersId) {
     return (
       <div>
-        {contextHolder}
         <Header />
         <div className="card-container">
           <h2 className="profile-title">Your Profile</h2>
@@ -145,7 +145,10 @@ const UserProfile: React.FC = () => {
                 <strong>Username:</strong> {displayedUser.username}
               </div>
               <div className="profile-picture">
-                <img src={displayedUser.profilePicture?.url} alt="profile picture"/>
+                <img
+                  src={displayedUser.profilePicture?.url}
+                  alt="profile picture"
+                />
               </div>
             </div>
             <div className="profile-field">
@@ -153,16 +156,14 @@ const UserProfile: React.FC = () => {
               {displayedUser.description || <i>...</i>}
             </div>
             <div className="profile-field">
-              <strong>Birthday:</strong>{" "}
-              {displayedUser.birthday
-                  ? String(displayedUser.birthday).split("T")[0]
-                  : "N/A"}
+              <strong>Birthday:</strong> {displayedUser.birthday
+                ? String(displayedUser.birthday).split("T")[0]
+                : "N/A"}
             </div>
             <div className="profile-field">
-              <strong>Account Created:</strong>{" "}
-              {displayedUser.creation_date
-                  ? String(displayedUser.creation_date).split("T")[0]
-                  : "N/A"}
+              <strong>Account Created:</strong> {displayedUser.creation_date
+                ? String(displayedUser.creation_date).split("T")[0]
+                : "N/A"}
             </div>
             <div className="profile-field">
               <strong>Status:</strong> {displayedUser.status}
@@ -174,9 +175,14 @@ const UserProfile: React.FC = () => {
               <Button type="primary" danger onClick={handleLogout}>
                 Logout
               </Button>
-              <Button type="primary"
-                      style={{backgroundColor: "var(--primary-light)", borderColor: "var(--primary-light)"}}
-                      onClick={handleEdit}>
+              <Button
+                type="primary"
+                style={{
+                  backgroundColor: "var(--primary-light)",
+                  borderColor: "var(--primary-light)",
+                }}
+                onClick={handleEdit}
+              >
                 Edit Profile
               </Button>
             </div>
@@ -188,7 +194,6 @@ const UserProfile: React.FC = () => {
 
   return (
     <div>
-      {contextHolder}
       <Header />
       <div className="card-container">
         <h2 className="profile-title">Profile of {displayedUser.username}</h2>
@@ -198,7 +203,10 @@ const UserProfile: React.FC = () => {
               <strong>Username:</strong> {displayedUser.username}
             </div>
             <div className="profile-picture">
-              <img src={displayedUser.profilePicture?.url} alt="profile picture"/>
+              <img
+                src={displayedUser.profilePicture?.url}
+                alt="profile picture"
+              />
             </div>
           </div>
           <div className="profile-field">
@@ -206,16 +214,14 @@ const UserProfile: React.FC = () => {
             {displayedUser.description || <i>...</i>}
           </div>
           <div className="profile-field">
-            <strong>Birthday:</strong>{" "}
-            {displayedUser.birthday
-                ? String(displayedUser.birthday).split("T")[0]
-                : "N/A"}
+            <strong>Birthday:</strong> {displayedUser.birthday
+              ? String(displayedUser.birthday).split("T")[0]
+              : "N/A"}
           </div>
           <div className="profile-field">
-            <strong>Account Created:</strong>{" "}
-            {displayedUser.creation_date
-                ? String(displayedUser.creation_date).split("T")[0]
-                : "N/A"}
+            <strong>Account Created:</strong> {displayedUser.creation_date
+              ? String(displayedUser.creation_date).split("T")[0]
+              : "N/A"}
           </div>
           <div className="profile-field">
             <strong>Status:</strong> {displayedUser.status}
@@ -224,19 +230,27 @@ const UserProfile: React.FC = () => {
             <Button type="default" onClick={handleGoBack}>
               Back
             </Button>
-            {displayedUser.friends?.includes(Number(sessionStorage.getItem("id"))) ? (
-              <Button type="primary" danger onClick={handleRemoveFriend}>
-                Remove Friend
-              </Button>
-            ) : displayedUser.friendrequests?.includes(Number(sessionStorage.getItem("id"))) ? (
-              <p style={{ marginTop: 8, fontStyle: "italic" }}>
-                Pending friend request...
-              </p>
-            ) : (
-              <Button type="primary" onClick={handleAddFriend}>
-                Add Friend
-              </Button>
-            )}
+            {displayedUser.friends?.includes(
+                Number(sessionStorage.getItem("id")),
+              )
+              ? (
+                <Button type="primary" danger onClick={handleRemoveFriend}>
+                  Remove Friend
+                </Button>
+              )
+              : displayedUser.friendrequests?.includes(
+                  Number(sessionStorage.getItem("id")),
+                )
+              ? (
+                <p style={{ marginTop: 8, fontStyle: "italic" }}>
+                  Pending friend request...
+                </p>
+              )
+              : (
+                <Button type="primary" onClick={handleAddFriend}>
+                  Add Friend
+                </Button>
+              )}
           </div>
         </div>
       </div>

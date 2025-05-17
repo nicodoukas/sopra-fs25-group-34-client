@@ -9,8 +9,6 @@ const { Title, Text } = Typography;
 interface Props {
   title: string;
   timeline: SongCard[];
-  songCard: SongCard | null;
-  gameId: string;
   isPlaying: boolean;
   isPlacementMode: boolean;
   confirmPlacement: (index: number) => void;
@@ -18,7 +16,6 @@ interface Props {
   challenge: boolean | null;
 }
 
-//TODO: delete Props I do not need
 const Timeline: React.FC<Props> = (
   {
     title,
@@ -35,14 +32,11 @@ const Timeline: React.FC<Props> = (
   const [challengeRunning, setChallengeRunning] = useState(false);
 
   useEffect(() => {
-    if (challenge){setChallengeRunning(true);}
+    if (challenge) setChallengeRunning(true);
   }, []);
 
   useEffect(() => {
     if (activePlayerPlacement != null) {
-      console.log(
-        "in use Effect with active PlayerPlacement " + activePlayerPlacement,
-      );
       setPlacement(activePlayerPlacement);
     }
   }, [activePlayerPlacement]);
@@ -59,59 +53,16 @@ const Timeline: React.FC<Props> = (
     setIsFlipped(index);
   };
 
-  const handleConfirmPlacement = async (): Promise<void> => {
-    //TODO: this does not need to check if placement is correct,
-    //that will happen only AFTER Challenge phase
-    //but code left here (commented out) to be copied to correct place
-
+  const handleConfirmPlacement = () => {
     if (placement != null) {
       confirmPlacement(placement);
     }
-
-    /*     const year = songCard?.year;
-    let yearBefore = -1;
-    let yearAfter = 3000;
-    if (
-      placement != null &&
-      year != null
-    ) {
-      if (placement > 0) yearBefore = timeline[placement - 1].year;
-      if (placement < timeline.length) {
-        yearAfter = timeline[placement].year;
-      }
-      if (yearBefore <= year && yearAfter >= year) {
-        messageAPI.success("Congratulations, your placement is correct!");
-
-        //actually place the songCard into the timeline
-        const userId = sessionStorage.getItem("id");
-        const body = {
-          "songCard": songCard,
-          "position": placement,
-        };
-        try {
-          await apiService.put(`/games/${gameId}/${userId}`, body);
-        } catch (error) {
-          if (error instanceof Error) {
-            alert(`Something went wrong during the guess:\n${error.message}`);
-            console.error(error);
-          } else {
-            console.error("An unknown error occurred during guess.");
-          }
-        }
-      } else {
-        messageAPI.warning("Wrong placement.");
-      }
-    }
-    placementConfirmed();
-    */
   };
-
-  //TODO: look that challenger cannot place at same position as activePlayer
 
   return (
     <div>
       <div>
-        { !challengeRunning && (
+        {!challengeRunning && (
           <div className="songCardContainer">
             {placement == null &&
               isPlacementMode && (
@@ -140,11 +91,13 @@ const Timeline: React.FC<Props> = (
                           </div>
                         </div>
                       )
-                      : (
+                      : (!(index == activePlayerPlacement &&
+                        challengeRunning) && (
                         <div className="addButtonContainer">
                           <div
                             className="addButton"
-                            onClick={() => addCard(index)}
+                            onClick={() =>
+                              addCard(index)}
                           >
                             <img
                               src="/img/plus.png"
@@ -153,9 +106,8 @@ const Timeline: React.FC<Props> = (
                             />
                           </div>
                         </div>
-                      )
+                      ))
                   )}
-                  {/* TODO: this does not yet work if the placement is behind the last card */}
                   {!isPlacementMode && (
                     placement == index
                       ? (
@@ -172,8 +124,7 @@ const Timeline: React.FC<Props> = (
 
                   <div
                     key={index}
-                    onClick={() =>
-                      flipCard(index)}
+                    onClick={() => flipCard(index)}
                     className="flipContainer"
                   >
                     <div
@@ -209,7 +160,8 @@ const Timeline: React.FC<Props> = (
                         </div>
                       </div>
                     )
-                    : (
+                    : (!(challengeRunning &&
+                      timeline.length === activePlayerPlacement) && (
                       <div className="addButtonContainer">
                         <div
                           className="addButton"
@@ -222,8 +174,19 @@ const Timeline: React.FC<Props> = (
                           />
                         </div>
                       </div>
-                    )
+                    ))
                 )}
+                {!isPlacementMode && (placement == timeline?.length
+                  ? (
+                    <div className="flipContainer">
+                      <div className="songCard">
+                        <Text strong style={{ fontSize: "30px" }}>
+                          ?
+                        </Text>
+                      </div>
+                    </div>
+                  )
+                  : <></>)}
               </div>
             </div>
           )

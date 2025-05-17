@@ -2,6 +2,7 @@
 
 import React, {useEffect, useState} from "react";
 import { useRouter } from "next/navigation";
+
 import useSessionStorage from "@/hooks/useSessionStorage";
 import Header from "@/components/header";
 
@@ -16,6 +17,7 @@ const Overview: React.FC = () => {
   const [messageAPI, contextHolder] = message.useMessage();
   const { value: id } = useSessionStorage<string>("id", "");
 
+  //TODO: what is this? when where why is this info message set??
   useEffect(() => {
     const info = sessionStorage.getItem("infoMessage");
     if (info) {
@@ -43,23 +45,23 @@ const Overview: React.FC = () => {
         <div className={styles.ctas}>
           <>
             <Button
-                type="primary"
-                onClick={() => router.push(`/users/${id}/friends`)}
+              type="primary"
+              onClick={() => router.push(`/users/${id}/friends`)}
             >
               My Friend List
             </Button>
             <Button
-                type="primary"
-                onClick={() => router.push("/lobby/create")}
+              type="primary"
+              onClick={() => router.push("/lobby/create")}
             >
               Create a new Lobby
             </Button>
             <Button
-                type="primary"
-                onClick={() =>
-                    router.push(
-                        `/users/${id}/friends-lobby-requests`,
-                    )}
+              type="primary"
+              onClick={() =>
+                router.push(
+                  `/users/${id}/friends-lobby-requests`,
+                )}
             >
               Friends & Lobby requests
             </Button>

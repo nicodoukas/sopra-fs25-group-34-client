@@ -2,12 +2,12 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
+
 import { useApi } from "@/hooks/useApi";
 import useSessionStorage from "@/hooks/useSessionStorage";
 import { User } from "@/types/user";
 
-import "@ant-design/v5-patch-for-react-19";
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, message } from "antd";
 
 interface FormFieldProps {
   username: string;
@@ -50,11 +50,13 @@ const Login: React.FC = () => {
       router.push("/overview");
     } catch (error) {
       if (error instanceof Error) {
-        alert(`Something went wrong during the login:\n${error.message}`);
-        console.error(error);
+        message.error(
+          `Something went wrong during the login:\n${error.message}`,
+        );
       } else {
-        console.error("An unknown error occurred during login.");
+        message.error("An unknown error occurred during login.");
       }
+      console.error(error);
     }
   };
 

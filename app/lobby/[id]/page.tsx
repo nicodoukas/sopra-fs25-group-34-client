@@ -2,14 +2,14 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+
 import { useApi } from "@/hooks/useApi";
 import useSessionStorage from "@/hooks/useSessionStorage";
-import Header from "@/components/header";
-import InviteAction from "@/components/InviteAction";
 import { User } from "@/types/user";
 import { Lobby } from "@/types/lobby";
+import Header from "@/components/header";
+import InviteAction from "@/components/InviteAction";
 
-import "@ant-design/v5-patch-for-react-19";
 import { Button, Card, message, Table, TableProps } from "antd";
 
 import { connectWebSocket } from "@/websocket/websocketService";
@@ -21,14 +21,17 @@ const columns: TableProps<User>["columns"] = [
     dataIndex: "username",
     key: "username",
     render: (text, record) => (
-      <div style={{display: "flex", flexDirection: "row"}}>
-        <div className="profile-picture" style={{
-          width: 30,
-          height: 30,
-          marginRight: "15px",
-          position: "relative"
-        }}>
-          <img src={record.profilePicture?.url} alt="profile picture"/>
+      <div style={{ display: "flex", flexDirection: "row" }}>
+        <div
+          className="profile-picture"
+          style={{
+            width: 30,
+            height: 30,
+            marginRight: "15px",
+            position: "relative",
+          }}
+        >
+          <img src={record.profilePicture?.url} alt="profile picture" />
         </div>
         <span>{text}</span>
       </div>
@@ -37,7 +40,6 @@ const columns: TableProps<User>["columns"] = [
 ];
 
 const LobbyPage: () => void = () => {
-  const [messageAPI, contextHolder] = message.useMessage();
   const router = useRouter();
   const apiService = useApi();
   const params = useParams();
@@ -57,16 +59,24 @@ const LobbyPage: () => void = () => {
       dataIndex: "username",
       key: "username",
       render: (text, record) => (
-        <div style={{display: "flex", flexDirection: "row"}}>
-          <div className="profile-picture" style={{
-            width: 30,
-            height: 30,
-            marginRight: "15px",
-            position: "relative"
-          }}>
-            <img src={record.profilePicture?.url} alt="profile picture"/>
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <div
+            className="profile-picture"
+            style={{
+              width: 30,
+              height: 30,
+              marginRight: "15px",
+              position: "relative",
+            }}
+          >
+            <img src={record.profilePicture?.url} alt="profile picture" />
           </div>
-          <a onClick={() => router.push(`/users/${record.id}`)}>{text}</a>
+          <a
+            onClick={() =>
+              router.push(`/users/${record.id}`)}
+          >
+            {text}
+          </a>
         </div>
 
 
@@ -75,23 +85,21 @@ const LobbyPage: () => void = () => {
     {
       title: "Invite",
       key: "action",
-      render: (_, record) => (
-        <InviteAction user={record} lobby={lobby} messageAPI={messageAPI} />
-      ),
+      render: (_, record) => <InviteAction user={record} lobby={lobby} />,
     },
   ];
 
-  const handleWebSocketMessage = async (message: string) => {
-    const parsedMessage = JSON.parse(message);
+  const handleWebSocketMessage = async (websocket_message: string) => {
+    const parsedMessage = JSON.parse(websocket_message);
     console.log("Websocket message handled");
     if (parsedMessage.event_type === "start-game") {
       router.push(`/game/${lobbyId}`);
     }
-    if (parsedMessage.event_type === "delete-lobby"){
+    if (parsedMessage.event_type === "delete-lobby") {
       sessionStorage.setItem("infoMessage", "Lobby was deleted by host");
       router.push("/overview");
     }
-    if (parsedMessage.event_type === "update-lobby"){
+    if (parsedMessage.event_type === "update-lobby") {
       await fetchLobby();
     }
   };
@@ -104,7 +112,7 @@ const LobbyPage: () => void = () => {
         apiService.put("/playing", member.id)
       );
       await Promise.all(updateStatusPromises);
-      messageAPI.success("Host has started the game");
+      message.success("Host has started the game");
       await apiService.post("/games", lobbyId);
       console.log("stompClient:", stompClient?.connected);
       if (stompClient?.connected) {
@@ -115,7 +123,7 @@ const LobbyPage: () => void = () => {
       }
     } catch (error) {
       console.error("Failed to set all users to PLAYING:", error);
-      alert("Something went wrong while starting the game.");
+      message.error("Something went wrong while starting the game.");
     }
   };
 
@@ -123,7 +131,6 @@ const LobbyPage: () => void = () => {
     try {
       //Delete Lobby / leave Lobby
       if (id === lobby.host?.id) {
-        console.log("host deletes lobby");
         await apiService.delete(`/lobbies/${lobbyId}/${id}`);
 
         //websocket for deleting lobby
@@ -134,13 +141,10 @@ const LobbyPage: () => void = () => {
             body: lobbyId ?? "",
           });
         }
-      }
-      else {
-        console.log("user leaves lobby");
+      } else {
         await apiService.delete(`/lobbies/${lobbyId}/${id}`);
 
         //websocket for updating users in lobby
-        console.log("stompClient:", stompClient?.connected);
         if (stompClient?.connected) {
           (stompClient as Client).publish({
             destination: "/app/updatelobby",
@@ -150,12 +154,10 @@ const LobbyPage: () => void = () => {
         //user is now navigated back to overview
         router.push("/overview");
       }
-
     } catch (error) {
-      console.error("Failed to delete/leave the lobby:", error)
-      alert("Something went wrong while deleting/leaving the lobby.");
+      message.error("Something went wrong while deleting/leaving the lobby.");
+      console.error(error);
     }
-    console.log("Lobby deleted/left successfully");
   };
 
   const fetchLobby = async () => {
@@ -171,13 +173,13 @@ const LobbyPage: () => void = () => {
       setLobby(currentLobby);
     } catch (error) {
       if (error instanceof Error) {
-        alert(
-          `Something went wrong while fetching the lobby:\n${error.message}`,
+        message.error(
+          `Something went wrong while loading the lobby:\n${error.message}`,
         );
-        console.log(error);
       } else {
-        console.error("An unknown error occurred while fetching the lobby.");
+        message.error("An unknown error occurred while loading the lobby.");
       }
+      console.error(error);
     }
   };
 
@@ -197,15 +199,15 @@ const LobbyPage: () => void = () => {
           setUserFriends(friendsOfUser);
         } catch (error) {
           if (error instanceof Error) {
-            alert(
-              `Something went wrong while fetching the friends:\n${error.message}`,
+            message.error(
+              `Something went wrong while loading the friends:\n${error.message}`,
             );
-            console.log(error);
           } else {
-            console.error(
-              "An unknown error occurred while fetching the friends.",
+            message.error(
+              "An unknown error occurred while loading the friends.",
             );
           }
+          console.error(error);
         }
       }
     };
@@ -213,7 +215,6 @@ const LobbyPage: () => void = () => {
   }, [user]);
 
   useEffect(() => {
-    console.log("lobbyId:", lobbyId);
     const client = connectWebSocket(handleWebSocketMessage, lobbyId);
     setStompClient(client);
 
@@ -224,7 +225,6 @@ const LobbyPage: () => void = () => {
 
   return (
     <div className={"card-container"}>
-      {contextHolder}
       <Header />
       <Card
         style={{
@@ -263,7 +263,7 @@ const LobbyPage: () => void = () => {
             className={"dashboard-container"}
             style={{ marginBottom: 50, marginRight: 50, width: "100%" }}
           >
-            <div style={{display: "flex", justifyContent: "center"}}>
+            <div style={{ display: "flex", justifyContent: "center" }}>
               {userFriends.length > 0
                 ? (
                   <Table<User>
@@ -310,36 +310,43 @@ const LobbyPage: () => void = () => {
           </Card>
         </div>
       </Card>
-      {id === lobby.host?.id ? (
-      <>
-        <Button
-          style={{
-            position: "absolute",
-            bottom: "75px",
-            left: "45%",
-          }}
-          onClick={startGame}
-        >
-          Start Game
-        </Button>
-        <Button style={{
-          position: "absolute",
-          right: "2%",
-          top:"90%",
-        }}
-        onClick={deleteLobby}
-        >
-        Delete Lobby</Button>
-      </>
-      ) : (
-      <Button style={{
-        position:"absolute",
-        right: "2%",
-        top: "90%",
-      }}
-      onClick={deleteLobby}
-      >Leave Lobby</Button>
-      )}
+      {id === lobby.host?.id
+        ? (
+          <>
+            <Button
+              style={{
+                position: "absolute",
+                bottom: "75px",
+                left: "45%",
+              }}
+              onClick={startGame}
+            >
+              Start Game
+            </Button>
+            <Button
+              style={{
+                position: "absolute",
+                right: "2%",
+                top: "90%",
+              }}
+              onClick={deleteLobby}
+            >
+              Delete Lobby
+            </Button>
+          </>
+        )
+        : (
+          <Button
+            style={{
+              position: "absolute",
+              right: "2%",
+              top: "90%",
+            }}
+            onClick={deleteLobby}
+          >
+            Leave Lobby
+          </Button>
+        )}
     </div>
   );
 };
