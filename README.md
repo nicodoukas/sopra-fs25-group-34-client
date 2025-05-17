@@ -53,10 +53,15 @@ By using Apple Music's huge library, our game stays fresh, even after many round
 
 ## High-level components
 - [Overview](https://github.com/nicodoukas/sopra-fs25-group-34-client/blob/main/app/overview/page.tsx):
+This is the entry page after logging in. From here, the user can access his profile, friend list and open invitations. They can search users, create a lobby and access the game rules.
 - [Lobby](https://github.com/nicodoukas/sopra-fs25-group-34-client/blob/main/app/lobby/%5Bid%5D/page.tsx):
+The lobby page shows all the members of the lobby and the user's friends, which they can directly invite. This page is already "connected" to websockets to ensure direct updates from a new user joining. The host can start the game from here.
 - [Game](https://github.com/nicodoukas/sopra-fs25-group-34-client/blob/main/app/game/%5Bid%5D/gamepage.tsx):
+This is the main page of our game. The entire game functionality is handled here. For every round, the active player's timeline is shown, the song can be played by pressing the play button, players can guess the title and artist, the active player can place the song into their timeline etc.
+- [Challenge](https://github.com/nicodoukas/sopra-fs25-group-34-client/blob/main/app/game/%5Bid%5D/challenge.tsx):
+This page is the second main component of the game. After the active player has confirmed their placement in a round, the challenging phase is initiated. This page is to determine the challenger. The challenger can then set his placement on the next page.
 - [WebSocketService](https://github.com/nicodoukas/sopra-fs25-group-34-client/blob/main/app/websocket/websocketService.tsx):
-- [Users/playButton? Not sure what makes sense]
+Allows for direct, simultaneous updates across multiple clients. We use it, for example, to play a song at the same time for every player, or to determine who pressed the challenge button first.
 
 ## Launch & Deployment
 If you are using Windows, you have to install WSL first.
@@ -81,8 +86,6 @@ You might need to reboot your computer for the installation, therefore, save and
    ![initialUbuntuScreen](https://github.com/user-attachments/assets/a2b1511f-943b-468e-a726-b7a9dc46ea2c)
 
 
-<br>
-<br>
 <br>
 
 ### Setup
@@ -128,9 +131,7 @@ You will work in your own branch, where you can work on your issues locally and 
 If you want to merge your contributions to the main branch, open a new merge request for other group members to check out and accept.
 
 ## User interface
-This is the landing page of our application, after logging in. 
-We wanted to keep it as simple and intuitive as possible. 
-From here, the user can access his profile, friend list and open invitations. They can search users, create a lobby and access the game rules
+Insert images here after completing development.
 
 ## Roadmap
 ### Our next 3 features to be implemented:
