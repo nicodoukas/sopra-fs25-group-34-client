@@ -288,26 +288,21 @@ const GamePage = (
         onGameEnd={onGameEnd}
       />
       {startChallenge && !roundOver
-        ? (
-          player.userId === game.currentRound.activePlayer.userId
-            ? <p>The other players can now challenge your placement</p>
-            : (
-              <>
-                <Challenge
-                  activePlayer={game.currentRound.activePlayer}
-                  songCard={songCard}
-                  gameId={gameId}
-                  gameName={game?.gameName || "{gameName}"}
-                  activePlayerPlacement={game.currentRound
-                    .activePlayerPlacement}
-                  stompClient={stompClient}
-                  userId={player.userId}
-                  checkCardPlacementCorrect={checkCardPlacementCorrect}
-                />
-              </>
-            )
-        )
-        : <></>}
+        && (
+          <>
+            <Challenge
+              activePlayer={game.currentRound.activePlayer}
+              songCard={songCard}
+              gameId={gameId}
+              gameName={game?.gameName || "{gameName}"}
+              activePlayerPlacement={game.currentRound.activePlayerPlacement}
+              stompClient={stompClient}
+              userId={player.userId}
+              checkCardPlacementCorrect={checkCardPlacementCorrect}
+              allPlayers={game.players}
+            />
+          </>
+        )}
         {challengeTaken && !roundOver && (
           player.userId === game.currentRound.activePlayer.userId
           ? <p>The other players can now challenge your placement</p>

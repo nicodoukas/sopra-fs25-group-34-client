@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 import { useApi } from "@/hooks/useApi";
 import { SongCard } from "@/types/songcard";
@@ -23,6 +23,7 @@ interface Props {
     timeline: SongCard[],
     placement: number,
   ) => Promise<boolean>;
+  allPlayers: Player[];
 }
 
 const Challenge: React.FC<Props> = ({
@@ -34,8 +35,10 @@ const Challenge: React.FC<Props> = ({
   stompClient,
   userId,
   checkCardPlacementCorrect,
+  allPlayers,
 }) => {
   const apiService = useApi();
+  const hasRun = useRef(false);
   const [timeLeft, setTimeLeft] = useState(30);
 
   //Timer
@@ -55,6 +58,14 @@ const Challenge: React.FC<Props> = ({
     }, 1000); //every second (1s = 1000ms)
 
     return () => clearInterval(countdown);
+  }, []);
+
+  //If only one player challenge is skipped
+  useEffect(() => {
+    if (!hasRun.current && allPlayers.length === 1) {
+      handleCheckPlacementActivePlayer_StartNewRound(activePlayer, activePlayerPlacement);
+      hasRun.current = true;
+    }
   }, []);
 
   const _confirmPlacement = function (_index: number) {
@@ -156,23 +167,29 @@ const Challenge: React.FC<Props> = ({
       <h2 style={{ fontSize: "1.5rem", marginBottom: "0px" }}>{gameName}</h2>
       <h3>Challenge phase</h3>
       <Timer timeLeft={timeLeft}></Timer>
-      <Timeline
-        title={activePlayer.username + "'s placement:"}
-        timeline={activePlayer.timeline}
-        isPlaying={false}
-        isPlacementMode={false}
-        confirmPlacement={_confirmPlacement}
-        activePlayerPlacement={activePlayerPlacement}
-        challenge={true}
-      />
-      <div>
-        <Button type="primary" onClick={handleChallengeAccepted}>
-          Challenge
-        </Button>
-        <Button type="primary" onClick={declineChallenge}>
-          Don't challenge
-        </Button>
-      </div>
+      {activePlayer.userId === userId ? (
+        <p style={{marginTop:"20px", marginBottom:"10px"}}>Other players can now challenge your placement.</p>
+      ) : (
+      <>
+        <Timeline
+          title={activePlayer.username + "'s placement:"}
+          timeline={activePlayer.timeline}
+          isPlaying={false}
+          isPlacementMode={false}
+          confirmPlacement={_confirmPlacement}
+          activePlayerPlacement={activePlayerPlacement}
+          challenge={true}
+        />
+        <div>
+          <Button type="primary" onClick={handleChallengeAccepted}>
+            Challenge
+          </Button>
+          <Button type="primary" onClick={declineChallenge}>
+            Don't challenge
+          </Button>
+        </div>
+      </>
+      )}
     </div>
   );
 };
