@@ -1,15 +1,18 @@
-import React, {useEffect, useState} from "react";
-import {Table, TableProps} from "antd";
-import {Player} from "@/types/player";
+import React, { useEffect, useState } from "react";
 
+import { Player } from "@/types/player";
+
+import { Table, TableProps } from "antd";
 
 interface Props {
   players: Player[];
   playerId: string | null;
 }
 
-const RankingList: React.FC<Props> = ({players, playerId}) => {
-  const [sortedPlayersWithRank, setSortedPlayersWithRank] = useState<Player[]>([]);
+const RankingList: React.FC<Props> = ({ players, playerId }) => {
+  const [sortedPlayersWithRank, setSortedPlayersWithRank] = useState<Player[]>(
+    [],
+  );
 
   const columns: TableProps["columns"] = [
     {
@@ -22,19 +25,24 @@ const RankingList: React.FC<Props> = ({players, playerId}) => {
       dataIndex: "username",
       key: "username",
       render: (text, record) => (
-        <div style={{display: "flex", flexDirection: "row"}}>
-          <div className="profile-picture" style={{
-            width: 30,
-            height: 30,
-            marginRight: "15px",
-            position: "relative"
-          }}>
-            <img src={record.profilePicture?.url} alt="profile picture"/>
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <div
+            className="profile-picture"
+            style={{
+              width: 30,
+              height: 30,
+              marginRight: "15px",
+              position: "relative",
+            }}
+          >
+            <img src={record.profilePicture?.url} alt="profile picture" />
           </div>
-          <span style={{
-            color: record.userId === playerId ? "orange" : "inherit",
-            fontWeight: record.userId === playerId ? "bold" : "normal",
-          }}>
+          <span
+            style={{
+              color: record.userId === playerId ? "orange" : "inherit",
+              fontWeight: record.userId === playerId ? "bold" : "normal",
+            }}
+          >
             {text}
           </span>
         </div>
@@ -67,17 +75,15 @@ const RankingList: React.FC<Props> = ({players, playerId}) => {
       return player;
     });
     setSortedPlayersWithRank(withRank);
-  }, [players])
+  }, [players]);
 
   return (
     <div>
-      <div className="beige-card">
-        <Table
-          dataSource={sortedPlayersWithRank}
-          columns={columns}
-          rowKey="userId"
-        />
-      </div>
+      <Table
+        dataSource={sortedPlayersWithRank}
+        columns={columns}
+        rowKey="userId"
+      />
     </div>
   );
 };

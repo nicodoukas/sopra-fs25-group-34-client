@@ -16,7 +16,6 @@ import Timeline from "./timeline";
 import Challenge from "./challenge";
 import ChallengeAccepted from "./challengeAccepted";
 import EndRound from "./endRound";
-import RankingList from "@/game/[id]/rankingList";
 
 import { message } from "antd";
 
@@ -334,6 +333,7 @@ const GamePage = (
     <div className={styles.gameContainer}>
       <GameHeader
         player={player}
+        players={game.players}
         hostId={game.host?.userId ?? null}
         onBuyCard={handleBuyCard}
         onHandleExitGame={handleExitGame}
@@ -368,7 +368,6 @@ const GamePage = (
       {!startChallenge && !challengeTaken && !roundOver
         ? (
           <>
-            <RankingList players={game.players} playerId={player.userId} />
             <div className="beige-card" style={{ textAlign: "center" }}>
               <h2 style={{ fontSize: "1.5rem", marginBottom: "0px" }}>
                 {game?.gameName || "{gameName}"}
