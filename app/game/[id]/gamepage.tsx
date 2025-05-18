@@ -48,6 +48,8 @@ const GamePage = (
   const [songCard, setSongCard] = useState<SongCard | null>({} as SongCard); // SongCard of currentRound
   const [stompClient, setStompClient] = useState<Client | null>(null);
   const gameRef = useRef<Game | null>(null);
+  const playerRef = useRef<Player | null>(null);
+  const songcardRef = useRef<SongCard | null>(null);
   const [guessed, setGuessed] = useState<boolean>(false);
   const [triggerUseEffect, setTriggerUseEffect] = useState<number>(0);
   const [audioUnlocked, setAudioUnlocked] = useState(false);
@@ -55,7 +57,7 @@ const GamePage = (
   const [startChallenge, setStartChallenge] = useState<boolean>(false);
   const [challengeTaken, setChallengeTaken] = useState<boolean>(false);
   const [roundOver, setRoundOver] = useState<boolean>(false);
-  const [isGameMemeber, setIsGameMember] = useState<boolean | null>(null);
+  const [isGameMember, setIsGameMember] = useState<boolean | null>(null);
   const hasHandledMissingGame = useRef(false);
 
   const {
@@ -72,6 +74,7 @@ const GamePage = (
       setGuessed(false);
       setAudioState(true);
       setIsPlaying(false);
+      fetchPlayer();
       setTriggerUseEffect((prev) => prev + 1);
       setStartChallenge(false);
     }
@@ -102,6 +105,7 @@ const GamePage = (
       }
     }
     if (parsedMessage.event_type === "end-round") {
+      handleCheckPlacementActivePlayerStartNewRound()
       setRoundOver(true);
     }
   };
@@ -124,6 +128,49 @@ const GamePage = (
       setIsPlaying(false);
     };
   };
+  const handleCheckPlacementActivePlayerStartNewRound = async () => {
+      const currentGame = gameRef.current;
+      const currentPlayer = playerRef.current;
+      if (!currentGame || !currentPlayer || !songcardRef.current) {
+        console.warn("Missing game or player data");
+        return;
+      }
+      if (currentGame.currentRound.activePlayer.userId !== currentPlayer.userId) return;
+      if (songCard === null) return;
+      let activePlayer = currentGame.currentRound.activePlayer
+      let placement = currentGame.currentRound.activePlayerPlacement
+      let result = await checkCardPlacementCorrect(songcardRef.current, activePlayer.timeline, placement)
+      console.log("This is the check placement:", result)
+      //correct placement
+      if (
+        result
+      ) {
+        message.success("Congratulation your placement is correct!");
+        const body = {
+          "songCard": songcardRef.current,
+          "position": placement,
+        };
+        //update player == insert songCard into timeline
+        try {
+          await apiService.put(`/games/${gameId}/${activePlayer.userId}`, body);
+          console.log("timeline gets updated")
+        } catch (error) {
+          if (error instanceof Error) {
+            message.error(
+              `Something went wrong during the inserting of the songCard into timeline of ${activePlayer.username}:\n${error.message}`,
+            );
+          } else {
+            message.error(
+              `An unknown error occurred during the inserting of the songCard into timeline of ${activePlayer.username}.`,
+            );
+            console.error(error);
+          }
+        }
+      } //incorrect placement
+      else {
+        message.info("Wrong placement");
+      }
+    };
 
   const setActivePlayerPlacementAndStartChallengePhase = (index: number) => {
     if (stompClient?.connected) {
@@ -238,6 +285,21 @@ const GamePage = (
     return (yearBefore <= year && yearAfter >= year);
   };
 
+  const fetchPlayer = async () => {
+      try {
+        const userId = sessionStorage.getItem("id");
+        if (!playerIsLeaving) {
+          const playerData = await apiService.get<Player>(
+            `/games/${gameId}/${userId}`,
+          );
+          setPlayer(playerData);
+        }
+      } catch (error) {
+        message.error("Failed to load player data.");
+        console.error("Error fetching data:", error);
+      }
+  };
+
   useEffect(() => {
     const fetchGame = async () => {
       try {
@@ -268,24 +330,10 @@ const GamePage = (
   }, [apiService, gameId, triggerUseEffect]);
 
   useEffect(() => {
-    const fetchPlayer = async () => {
-      try {
-        const userId = sessionStorage.getItem("id");
-        if (!playerIsLeaving) {
-          const playerData = await apiService.get<Player>(
-            `/games/${gameId}/${userId}`,
-          );
-          setPlayer(playerData);
-        }
-      } catch (error) {
-        message.error("Failed to load player data.");
-        console.error("Error fetching data:", error);
-      }
-    };
-    if (isGameMemeber) {
+    if (isGameMember) {
       fetchPlayer();
     }
-  }, [apiService, gameId, triggerUseEffect, isGameMemeber]);
+  }, [apiService, gameId, triggerUseEffect, isGameMember]);
 
   useEffect(() => {
     const client = connectWebSocket(handleWebSocketMessage, gameId);
@@ -299,10 +347,18 @@ const GamePage = (
   useEffect(() => {
     gameRef.current = game;
   }, [game]);
+  useEffect(() => {
+    playerRef.current = player;
+  }, [player]);
+  useEffect(() => {
+    songcardRef.current = songCard;
+  }, [songCard]);
+
+
 
   useEffect(() => {
     if (!game.players) return;
-    if (isGameMemeber != null) return;
+    if (isGameMember != null) return;
     if (game.players.some((member) => member.userId === id)) {
       setIsGameMember(true);
     } else {
@@ -314,7 +370,7 @@ const GamePage = (
     }
   }, [router, game, id]);
 
-  if (!isGameMemeber) {
+  if (!isGameMember) {
     return <div>Loading...</div>;
   }
 

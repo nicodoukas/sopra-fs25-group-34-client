@@ -18,6 +18,7 @@ const EndRound: React.FC<Props> = ({
     useEffect(() => {
         console.log("This is the roundNr:", roundNr)
         const timer = setTimeout(() => {
+            console.log("Websocket:", stompClient?.connected)
             if (stompClient?.connected) {
               (stompClient as Client).publish({
                 destination: "/app/startNewRound",
