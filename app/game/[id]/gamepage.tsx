@@ -13,7 +13,6 @@ import GameHeader from "./gameHeader";
 import Guess from "./guess";
 import PlayButton from "./playButton";
 import Timeline from "./timeline";
-import ExitButton from "./exitGame";
 import Challenge from "./challenge";
 import ChallengeAccepted from "./challengeAccepted";
 import EndRound from "./endRound";
@@ -335,7 +334,9 @@ const GamePage = (
     <div className={styles.gameContainer}>
       <GameHeader
         player={player}
+        hostId={game.host?.userId ?? null}
         onBuyCard={handleBuyCard}
+        onHandleExitGame={handleExitGame}
       />
       {startChallenge && !roundOver &&
         (
@@ -409,11 +410,6 @@ const GamePage = (
           />
         )
         : <></>}
-      <ExitButton
-        playerId={player.userId}
-        hostId={game.host?.userId ?? null}
-        handleExitGame={handleExitGame}
-      />
     </div>
   );
 };
