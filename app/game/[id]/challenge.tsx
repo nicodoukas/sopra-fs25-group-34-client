@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { useApi } from "@/hooks/useApi";
 import { SongCard } from "@/types/songcard";
 import { Player } from "@/types/player";
 import Timeline from "./timeline";
-import Timer from "@/game/[id]/timer";
+import Timer from "./timer";
 
 import { Button, message } from "antd";
 
@@ -40,6 +40,7 @@ const Challenge: React.FC<Props> = ({
   const apiService = useApi();
   const hasRun = useRef(false);
   const [timeLeft, setTimeLeft] = useState(30);
+  const [decisionMade, setDescisionMade] = useState<boolean>(false);
 
   //Timer
   useEffect(() => {
@@ -76,6 +77,7 @@ const Challenge: React.FC<Props> = ({
 
   const handleChallengeAccepted = () => {
     if (stompClient?.connected) {
+      setDescisionMade(true);
       stompClient.publish({
         destination: "/app/challenge/accept",
         body: JSON.stringify({
@@ -87,6 +89,7 @@ const Challenge: React.FC<Props> = ({
   };
   const handleDeclineChallenge = () => {
     if (stompClient?.connected) {
+      setDescisionMade(true);
       (stompClient as Client).publish({
         destination: "/app/userDeclinesChallenge",
         body: JSON.stringify({
@@ -111,29 +114,36 @@ const Challenge: React.FC<Props> = ({
       <h2 style={{ fontSize: "1.5rem", marginBottom: "0px" }}>{gameName}</h2>
       <h3>Challenge phase</h3>
       <Timer timeLeft={timeLeft}></Timer>
-      {activePlayer.userId === userId ? (
-        <p style={{marginTop:"20px", marginBottom:"10px"}}>Other players can now challenge your placement.</p>
-      ) : (
-      <>
-        <Timeline
-          title={activePlayer.username + "'s placement:"}
-          timeline={activePlayer.timeline}
-          isPlaying={false}
-          isPlacementMode={false}
-          confirmPlacement={_confirmPlacement}
-          activePlayerPlacement={activePlayerPlacement}
-          challenge={true}
-        />
-        <div>
-          <Button type="primary" onClick={handleChallengeAccepted}>
-            Challenge
-          </Button>
-          <Button type="primary" onClick={handleDeclineChallenge}>
-            Don't challenge
-          </Button>
-        </div>
-      </>
-      )}
+      {activePlayer.userId === userId
+        ? (
+          <p style={{ marginTop: "20px", marginBottom: "10px" }}>
+            Other players can now challenge your placement.
+          </p>
+        )
+        : (
+          <>
+            <Timeline
+              title={activePlayer.username + "'s placement:"}
+              timeline={activePlayer.timeline}
+              isPlaying={false}
+              isPlacementMode={false}
+              confirmPlacement={_confirmPlacement}
+              activePlayerPlacement={activePlayerPlacement}
+              challenge={true}
+            />
+
+            {decisionMade ? <></> : (
+              <div>
+                <Button type="primary" onClick={handleChallengeAccepted}>
+                  Challenge
+                </Button>
+                <Button type="primary" onClick={handleDeclineChallenge}>
+                  Don't challenge
+                </Button>
+              </div>
+            )}
+          </>
+        )}
     </div>
   );
 };

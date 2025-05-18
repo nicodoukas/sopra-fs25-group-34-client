@@ -386,7 +386,7 @@ const GamePage = (
   }
 
   return (
-    <div className={styles.gameContainer}>
+    <>
       <GameHeader
         player={player}
         players={game.players}
@@ -394,78 +394,80 @@ const GamePage = (
         onBuyCard={handleBuyCard}
         onHandleExitGame={handleExitGame}
       />
-      {startChallenge && !roundOver &&
-        (
-          <>
-            <Challenge
-              activePlayer={game.currentRound.activePlayer}
-              songCard={songCard}
-              gameId={gameId}
-              gameName={game?.gameName || "{gameName}"}
-              activePlayerPlacement={game.currentRound.activePlayerPlacement}
-              stompClient={stompClient}
-              userId={player.userId}
-              checkCardPlacementCorrect={checkCardPlacementCorrect}
-              allPlayers={game.players}
-            />
-          </>
-        )}
-      {challengeTaken && !roundOver && (
-        <ChallengeAccepted
-          gameName={game?.gameName || "{gameName}"}
-          challenger={game.currentRound?.challenger}
-          userId={player.userId}
-          activePlayerName={game.currentRound?.activePlayer?.username}
-          activePlayersTimeline={game.currentRound.activePlayer.timeline}
-          activePlayerPlacement={game.currentRound.activePlayerPlacement}
-          handleChallengerPlacement={handleChallengerPlacement}
-        />
-      )}
-      {!startChallenge && !challengeTaken && !roundOver
-        ? (
-          <>
-            <div className="beige-card" style={{ textAlign: "center" }}>
-              <h2 style={{ fontSize: "1.5rem", marginBottom: "0px" }}>
-                {game?.gameName || "{gameName}"}
-              </h2>
-              <h3>{game.currentRound.activePlayer.username}&#39;s turn</h3>
-              <PlayButton
-                songUrl={songCard?.songURL}
-                playerId={player.userId}
-                activePlayerId={game.currentRound.activePlayer.userId}
-                isPlaying={isPlaying}
-                audioState={audioState}
-                audioUnlocked={audioUnlocked}
-                handlePlayButtonClick={handlePlayButtonClick}
-                unlockAudio={unlockAudio}
-              >
-              </PlayButton>
-              <Timeline
-                title="Your Timeline"
-                timeline={player.timeline}
-                isPlaying={isPlaying}
-                isPlacementMode={player.userId ==
-                  game.currentRound?.activePlayer?.userId}
-                confirmPlacement={setActivePlayerPlacementAndStartChallengePhase}
-                activePlayerPlacement={null}
-                challenge={false}
+      <div className={styles.gameContainer}>
+        {startChallenge && !roundOver &&
+          (
+            <>
+              <Challenge
+                activePlayer={game.currentRound.activePlayer}
+                songCard={songCard}
+                gameId={gameId}
+                gameName={game?.gameName || "{gameName}"}
+                activePlayerPlacement={game.currentRound.activePlayerPlacement}
+                stompClient={stompClient}
+                userId={player.userId}
+                checkCardPlacementCorrect={checkCardPlacementCorrect}
+                allPlayers={game.players}
               />
-            </div>
-            <Guess guessed={guessed} onHandleGuess={handleGuess}></Guess>
-          </>
-        )
-        : <></>}
-      {roundOver
-        ? (
-          <EndRound
-            songCard={songCard}
-            stompClient={stompClient}
-            gameId={gameId}
-            roundNr={game.currentRound?.roundNr}
+            </>
+          )}
+        {challengeTaken && !roundOver && (
+          <ChallengeAccepted
+            gameName={game?.gameName || "{gameName}"}
+            challenger={game.currentRound?.challenger}
+            userId={player.userId}
+            activePlayerName={game.currentRound?.activePlayer?.username}
+            activePlayersTimeline={game.currentRound.activePlayer.timeline}
+            activePlayerPlacement={game.currentRound.activePlayerPlacement}
+            handleChallengerPlacement={handleChallengerPlacement}
           />
-        )
-        : <></>}
-    </div>
+        )}
+        {!startChallenge && !challengeTaken && !roundOver
+          ? (
+            <>
+              <div className="beige-card" style={{ textAlign: "center" }}>
+                <h2 style={{ fontSize: "1.5rem", marginBottom: "0px" }}>
+                  {game?.gameName || "{gameName}"}
+                </h2>
+                <h3>{game.currentRound.activePlayer.username}&#39;s turn</h3>
+                <PlayButton
+                  songUrl={songCard?.songURL}
+                  playerId={player.userId}
+                  activePlayerId={game.currentRound.activePlayer.userId}
+                  isPlaying={isPlaying}
+                  audioState={audioState}
+                  audioUnlocked={audioUnlocked}
+                  handlePlayButtonClick={handlePlayButtonClick}
+                  unlockAudio={unlockAudio}
+                >
+                </PlayButton>
+                <Timeline
+                  title="Your Timeline"
+                  timeline={player.timeline}
+                  isPlaying={isPlaying}
+                  isPlacementMode={player.userId ==
+                    game.currentRound?.activePlayer?.userId}
+                  confirmPlacement={setActivePlayerPlacementAndStartChallengePhase}
+                  activePlayerPlacement={null}
+                  challenge={false}
+                />
+              </div>
+              <Guess guessed={guessed} onHandleGuess={handleGuess}></Guess>
+            </>
+          )
+          : <></>}
+        {roundOver
+          ? (
+            <EndRound
+              songCard={songCard}
+              stompClient={stompClient}
+              gameId={gameId}
+              roundNr={game.currentRound?.roundNr}
+            />
+          )
+          : <></>}
+      </div>
+    </>
   );
 };
 
