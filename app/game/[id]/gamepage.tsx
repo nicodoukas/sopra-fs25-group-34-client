@@ -304,25 +304,16 @@ const GamePage = (
           </>
         )}
         {challengeTaken && !roundOver && (
-          player.userId === game.currentRound.activePlayer.userId
-          ? <p>The other players can now challenge your placement</p>
-          : player.userId === game.currentRound.challenger?.userId
-          ? (
-            <ChallengeAccepted
-              gameName={game?.gameName || "{gameName}"}
-              activePlayerName={game.currentRound?.activePlayer?.username}
-              activePlayersTimeline={game.currentRound.activePlayer.timeline}
-              activePlayerPlacement={game.currentRound.activePlayerPlacement}
-              handleChallengerPlacement={handleChallengerPlacement}
-            />
-          )
-          : (
-            <p>
-              {game.currentRound.challenger?.username}{" "}
-              accepted the challenge and is now placing the card
-            </p>
-          )
-      )}
+          <ChallengeAccepted
+            gameName={game?.gameName || "{gameName}"}
+            challenger={game.currentRound?.challenger}
+            userId={player.userId}
+            activePlayerName={game.currentRound?.activePlayer?.username}
+            activePlayersTimeline={game.currentRound.activePlayer.timeline}
+            activePlayerPlacement={game.currentRound.activePlayerPlacement}
+            handleChallengerPlacement={handleChallengerPlacement}
+          />
+        )}
       {!startChallenge && !challengeTaken && !roundOver
         ? (
           <>
