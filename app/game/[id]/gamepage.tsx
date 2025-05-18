@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import { useApi } from "@/hooks/useApi";
+import useSessionStorage from "@/hooks/useSessionStorage";
 import { Game } from "@/types/game";
 import { Player } from "@/types/player";
 import { SongCard } from "@/types/songcard";
@@ -54,6 +55,12 @@ const GamePage = (
   const [startChallenge, setStartChallenge] = useState<boolean>(false);
   const [challengeTaken, setChallengeTaken] = useState<boolean>(false);
   const [roundOver, setRoundOver] = useState<boolean>(false);
+  const [isGameMemeber, setIsGameMember] = useState<boolean | null>(null);
+  const hasHandledMissingGame = useRef(false);
+
+  const {
+    value: id,
+  } = useSessionStorage<string>("id", "");
 
   const handleWebSocketMessage = (websocket_Message: string) => {
     const parsedMessage = JSON.parse(websocket_Message);
@@ -232,11 +239,37 @@ const GamePage = (
   };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchGame = async () => {
       try {
         const gameData = await apiService.get<Game>(`/games/${gameId}`);
         setGame(gameData);
         setSongCard(gameData.currentRound?.songCard);
+      } catch (error) {
+        if (error instanceof Error) {
+          if (
+            error.message.includes("404: Game with ID") &&
+            !hasHandledMissingGame.current
+          ) {
+            hasHandledMissingGame.current = true;
+            setTimeout(() => {
+              message.warning(
+                "There exists no game with this id, please create a lobby to start a game.",
+              );
+            }, 200);
+            router.push("/overview");
+          }
+        } else {
+          message.error("Failed to load game data.");
+          console.error("Error fetching data:", error);
+        }
+      }
+    };
+    fetchGame();
+  }, [apiService, gameId, triggerUseEffect]);
+
+  useEffect(() => {
+    const fetchPlayer = async () => {
+      try {
         const userId = sessionStorage.getItem("id");
         if (!playerIsLeaving) {
           const playerData = await apiService.get<Player>(
@@ -245,12 +278,14 @@ const GamePage = (
           setPlayer(playerData);
         }
       } catch (error) {
-        message.error("Failed to fetch game or player data.");
+        message.error("Failed to load player data.");
         console.error("Error fetching data:", error);
       }
     };
-    fetchData();
-  }, [apiService, gameId, triggerUseEffect]);
+    if (isGameMemeber) {
+      fetchPlayer();
+    }
+  }, [apiService, gameId, triggerUseEffect, isGameMemeber]);
 
   useEffect(() => {
     const client = connectWebSocket(handleWebSocketMessage, gameId);
@@ -264,6 +299,24 @@ const GamePage = (
   useEffect(() => {
     gameRef.current = game;
   }, [game]);
+
+  useEffect(() => {
+    if (!game.players) return;
+    if (isGameMemeber != null) return;
+    if (game.players.some((member) => member.userId === id)) {
+      setIsGameMember(true);
+    } else {
+      setTimeout(() => {
+        message.info("This page is only accessible to members of the game");
+      }, 200);
+      setIsGameMember(false);
+      router.push("/overview");
+    }
+  }, [router, game, id]);
+
+  if (!isGameMemeber) {
+    return <div>Loading...</div>;
+  }
 
   const handlePlayButtonClick = () => {
     if (stompClient?.connected) {
@@ -300,17 +353,17 @@ const GamePage = (
             />
           </>
         )}
-        {challengeTaken && !roundOver && (
-          <ChallengeAccepted
-            gameName={game?.gameName || "{gameName}"}
-            challenger={game.currentRound?.challenger}
-            userId={player.userId}
-            activePlayerName={game.currentRound?.activePlayer?.username}
-            activePlayersTimeline={game.currentRound.activePlayer.timeline}
-            activePlayerPlacement={game.currentRound.activePlayerPlacement}
-            handleChallengerPlacement={handleChallengerPlacement}
-          />
-        )}
+      {challengeTaken && !roundOver && (
+        <ChallengeAccepted
+          gameName={game?.gameName || "{gameName}"}
+          challenger={game.currentRound?.challenger}
+          userId={player.userId}
+          activePlayerName={game.currentRound?.activePlayer?.username}
+          activePlayersTimeline={game.currentRound.activePlayer.timeline}
+          activePlayerPlacement={game.currentRound.activePlayerPlacement}
+          handleChallengerPlacement={handleChallengerPlacement}
+        />
+      )}
       {!startChallenge && !challengeTaken && !roundOver
         ? (
           <>

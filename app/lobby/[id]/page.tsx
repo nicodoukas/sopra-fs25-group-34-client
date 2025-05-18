@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import { useApi } from "@/hooks/useApi";
@@ -11,6 +11,7 @@ import withAuth from "@/utils/withAuth";
 import Header from "@/components/header";
 import InviteAction from "@/components/InviteAction";
 
+import "@ant-design/v5-patch-for-react-19";
 import { Button, Card, message, Table, TableProps } from "antd";
 
 import { connectWebSocket } from "@/websocket/websocketService";
@@ -49,6 +50,8 @@ const LobbyPage: React.FC = () => {
   const [user, setUser] = useState<User>({} as User);
   const [userFriends, setUserFriends] = useState<User[]>([]);
   const [stompClient, setStompClient] = useState<Client | null>(null);
+  const [isLobbyMemeber, setIsLobbyMember] = useState<boolean | null>(null);
+  const hasHandledMissingLobby = useRef(false);
 
   const {
     value: id,
@@ -90,11 +93,11 @@ const LobbyPage: React.FC = () => {
 
   const handleWebSocketMessage = async (websocket_message: string) => {
     const parsedMessage = JSON.parse(websocket_message);
-    console.log("Websocket message handled");
     if (parsedMessage.event_type === "start-game") {
       router.push(`/game/${lobbyId}`);
     }
     if (parsedMessage.event_type === "delete-lobby") {
+      //TODO: here is the infoMessage thing
       sessionStorage.setItem("infoMessage", "Lobby was deleted by host");
       router.push("/overview");
     }
@@ -103,7 +106,6 @@ const LobbyPage: React.FC = () => {
     }
   };
 
-  // this function is only gonna work for the host. To get all members to game page, websockets are needed (?)
   const startGame = async () => {
     try {
       // Send PUT request for each lobby member, setting status to PLAYING
@@ -113,7 +115,6 @@ const LobbyPage: React.FC = () => {
       await Promise.all(updateStatusPromises);
       message.success("Host has started the game");
       await apiService.post("/games", lobbyId);
-      console.log("stompClient:", stompClient?.connected);
       if (stompClient?.connected) {
         (stompClient as Client).publish({
           destination: "/app/start",
@@ -133,7 +134,6 @@ const LobbyPage: React.FC = () => {
         await apiService.delete(`/lobbies/${lobbyId}/${id}`);
 
         //websocket for deleting lobby
-        console.log("stompClient:", stompClient?.connected);
         if (stompClient?.connected) {
           (stompClient as Client).publish({
             destination: "/app/delete",
@@ -171,15 +171,41 @@ const LobbyPage: React.FC = () => {
       setLobby(currentLobby);
     } catch (error) {
       if (error instanceof Error) {
-        message.error(
-          `Something went wrong while loading the lobby:\n${error.message}`,
-        );
+        if (error.message.includes("404: Lobby with ID")) {
+          if (!hasHandledMissingLobby.current) {
+            hasHandledMissingLobby.current = true;
+            setTimeout(() => {
+              message.warning(
+                "There exists no lobby with this id, please create one.",
+              );
+            }, 200);
+            router.push("/overview");
+          }
+        } else {
+          message.error(
+            `Something went wrong while loading the lobby:\n${error.message}`,
+          );
+        }
       } else {
         message.error("An unknown error occurred while loading the lobby.");
       }
       console.error(error);
     }
   };
+
+  useEffect(() => {
+    if (!lobby.members || !id) return;
+    if (isLobbyMemeber != null) return;
+    if (lobby.members.some((member) => member.id === id)) {
+      setIsLobbyMember(true);
+    } else {
+      setTimeout(() => {
+        message.info("This page is only accessible to members of the lobby");
+      }, 200);
+      setIsLobbyMember(false);
+      router.push("/overview");
+    }
+  }, [router, lobby, id]);
 
   useEffect(() => {
     fetchLobby();
@@ -220,6 +246,10 @@ const LobbyPage: React.FC = () => {
       client?.deactivate();
     };
   }, []);
+
+  if (!isLobbyMemeber) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className={"card-container"}>
