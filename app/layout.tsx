@@ -34,7 +34,6 @@ export default function RootLayout({
         style={{
           backgroundImage: "url(/background.png)",
           backgroundPosition: "center",
-          /* TODO: check on different devices, maybe needs backgroundSize: 'cover', and backgroundRepeat: 'no-repeat' */
         }}
       >
         <div className="background-overlay" />
@@ -64,12 +63,6 @@ export default function RootLayout({
                 hoverBorderColor: "#bc6c25",
                 algorithm: false,
               },
-              /* TODO: go through these as i go through the pages and see the corresponding components */
-              /*               Message: {
-                colorText: "#283618",
-                colorBgContainer: "#FEFAE0",
-              },
-              Card: {}, */
             },
           }}
         >

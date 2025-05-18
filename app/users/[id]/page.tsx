@@ -121,7 +121,6 @@ const UserProfile: React.FC = () => {
     fetchUser();
   }, [apiService, diplayedUsersId, router]);
 
-  /* TODO: this does not work when using the hook */
   if (sessionStorage.getItem("id") === diplayedUsersId) {
     return (
       <div>

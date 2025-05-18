@@ -94,7 +94,7 @@ const GamePage = (
         message.warning("Someone was faster to challenge");
       }
     }
-    if (parsedMessage.event_type === "end-round"){
+    if (parsedMessage.event_type === "end-round") {
       setRoundOver(true);
     }
   };
@@ -131,9 +131,6 @@ const GamePage = (
   };
 
   const handleChallengerPlacement = (_placmentIndex: number) => {
-    //TODO: call API service to set challengers placement
-    //then trigger evaluation
-    console.log(_placmentIndex); //just for build
     setChallengeTaken(false);
   };
 
@@ -287,8 +284,8 @@ const GamePage = (
         player={player}
         onBuyCard={handleBuyCard}
       />
-      {startChallenge && !roundOver
-        && (
+      {startChallenge && !roundOver &&
+        (
           <>
             <Challenge
               activePlayer={game.currentRound.activePlayer}

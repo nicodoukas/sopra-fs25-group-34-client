@@ -252,11 +252,7 @@ const FriendsLobbyRequest: React.FC = () => {
             ? (
               lobbyInvites.map((lobby) => (
                 <div key={lobby.lobbyId}>
-                  <strong
-                    /* TODO: why does this push to /users? */
-                    onClick={() => router.push(`/users`)}
-                    style={{ cursor: "pointer", display: "block" }}
-                  >
+                  <strong>
                     You have been invited to lobby: {lobby.lobbyName}
                   </strong>
                   <Space style={{ marginTop: 8, marginBottom: 8 }}>

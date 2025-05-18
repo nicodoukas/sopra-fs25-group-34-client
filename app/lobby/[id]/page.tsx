@@ -160,7 +160,6 @@ const LobbyPage: React.FC = () => {
   };
 
   const fetchLobby = async () => {
-    //TODO: check if hook can be used instead
     const StorageId = sessionStorage.getItem("id");
     try {
       //get User data of current logged in user

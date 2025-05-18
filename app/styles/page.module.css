@@ -3,7 +3,6 @@
   grid-template-rows: 20px 1fr 20px;
   align-items: center;
   justify-items: center;
-  /* TODO: check on different screens if still shows footer and appears centered */
   min-height: 95vh;
   padding: 80px;
   gap: 64px;
@@ -37,21 +36,3 @@
     flex-direction: column;
   }
 }
-
-/* TODO: I would not support a dark mode, or when then only in M4
-@media (prefers-color-scheme: dark) {
-  .page {
-    --gray-rgb: 255, 255, 255;
-    --gray-alpha-200: rgba(var(--gray-rgb), 0.145);
-    --gray-alpha-100: rgba(var(--gray-rgb), 0.06);
-
-    --button-primary-hover: #ccc;
-    --button-secondary-hover: #1a1a1a;
-  }
-}
-@media (prefers-color-scheme: dark) {
-  .logo {
-    filter: invert();
-  }
-}
-  */
