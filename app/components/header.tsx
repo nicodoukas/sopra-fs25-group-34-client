@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import { useApi } from "@/hooks/useApi";
 import useSessionStorage from "@/hooks/useSessionStorage";
 import { User } from "@/types/user";
 
-import { SearchOutlined } from "@ant-design/icons";
+import { HomeOutlined, SearchOutlined } from "@ant-design/icons";
 import { Button, Input, message, Space } from "antd";
 
 import styles from "./header.module.css";
@@ -16,6 +16,7 @@ export default function Header() {
   const router = useRouter();
   const apiService = useApi();
   const [searchUsername, setSearchUsername] = useState(""); // save searched username
+  const pathname = usePathname();
 
   const {
     value: id,
@@ -69,12 +70,23 @@ export default function Header() {
         />
         <Button onClick={handleSearch} icon={<SearchOutlined />} />
       </Space>
-      <Button
-        onClick={() => router.push(`/users/${id}`)}
-        className={styles.profileButton}
-      >
-        {`My Profile (${username})`}
-      </Button>
+      <Space className={styles.buttonsBar}>
+        {(pathname != "/overview")
+          ? (
+            <Button
+              onClick={() => router.push("/overview")}
+              icon={<HomeOutlined />}
+            >
+            </Button>
+          )
+          : <></>}
+        <Button
+          onClick={() => router.push(`/users/${id}`)}
+          className={styles.profileButton}
+        >
+          {`My Profile (${username})`}
+        </Button>
+      </Space>
     </header>
   );
 }
