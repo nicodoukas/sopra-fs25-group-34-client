@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 
 import { useApi } from "@/hooks/useApi";
 import { User } from "@/types/user";
 import withAuth from "@/utils/withAuth";
 import Header from "@/components/header";
 
+import "@ant-design/v5-patch-for-react-19";
 import { Button, message, Table } from "antd";
 import type { TableProps } from "antd";
 
@@ -40,7 +41,22 @@ const FriendList: React.FC = () => {
   const apiService = useApi();
   const [friends, setFriends] = useState<User[] | null>(null);
 
+  const params = useParams();
+  const displayedUsersId = params.id;
+  const [isLogedInUser, setIsLogedInUser] = useState<boolean | null>(null);
+  const hasHandledNotLoggedInUser = useRef(false);
+
   useEffect(() => {
+    if (sessionStorage.getItem("id") != displayedUsersId) {
+      if (!hasHandledNotLoggedInUser.current) {
+        hasHandledNotLoggedInUser.current = true;
+        message.info("You can only view your own friends");
+        router.back();
+      }
+    } else {
+      setIsLogedInUser(true);
+    }
+
     const fetchFriends = async () => {
       try {
         const user: User = await apiService.get<User>(
@@ -69,6 +85,8 @@ const FriendList: React.FC = () => {
 
     fetchFriends();
   }, [apiService, router]);
+
+  if (!isLogedInUser) return <div>Loading...</div>;
 
   return (
     <div>
