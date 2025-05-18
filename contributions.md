@@ -110,6 +110,19 @@ Note: If a team member fails to show continuous progress after using their Joker
 ---
 
 ## Contributions Week 7 - 12.05 to 19.05
+
+| **Student**    | **Date** | **Link to Commit**  | **Description** | **Relevance** |
+|----------------|----------|---------------------|-----------------|---------------|
+| **monolino**   | x        | Link                | Desc            | Relevance     |
+| **monolino**   | x        | Link                | Desc            | Relevance     |
+| **nicodoukas** | x        | Link                | Desc            | Relevance     |
+| **nicodoukas** | x        | Link                | Desc            | Relevance     |
+| **AnchaXD**    | 18.5.        | https://github.com/nicodoukas/sopra-fs25-group-34-client/commit/8d392448828c4f8896cb1beb7660b2c33031f88d <br/> https://github.com/nicodoukas/sopra-fs25-group-34-client/commit/17dd204a3eafefbf250015b6d0ae791c93df7c79 <br/> https://github.com/nicodoukas/sopra-fs25-group-34-client/commit/092127a2b4e198e8496c4013b04a7e4b9a7c1c28               | Add URL Protection to pages that should be accessed only by logged in users or only by specific users as well as preventing access to users/lobbys/games that do not exist           | This is relevant to ensure the security of our application (preventing not authenticated users access) as well as ensuring users privacy (only I can view my friendslist / open requests / eddit my profile) as well as ensuring correct funtioning of the game (preventing non members from accessing lobby and game screens) and finally preventing displaying 'skelettons' of a page if corresponding user/lobby/game does not exist    |
+| **AnchaXD**    | 19.5.        | https://github.com/nicodoukas/sopra-fs25-group-34-client/commit/d7ba50aa34a20c673ad3e56932eff5c510a4f359 <br/> https://github.com/nicodoukas/sopra-fs25-group-34-client/commit/4b81807b5e1e3b6ee60ade876679c929a0a9d23a <br/> https://github.com/nicodoukas/sopra-fs25-group-34-server/commit/412ce4e6073e1e74a72ced7a495f7f9bc12a4060 <br/> https://github.com/nicodoukas/sopra-fs25-group-34-client/commit/13134ef6e2bfeccee5b0c56996a3cef1d8896e09 <br/> https://github.com/nicodoukas/sopra-fs25-group-34-client/commit/fe7d3c31a6db9c90c6eb3259993d5c6694dc13a8             | Five smaller issues/fixes that are all too small to count as one contribution: Display Ranking list as modal during game, hide accept/decline challenge buttons once player decided not to challenge, when a player leaves the game, also remove them from the corresponding lobby, delete back to lobby screen button and move leave/end game button to header, add a home button to header            | These issues / fixes all represent small inconsistencies / inconveniences that we discovered while thoroughly testing our application. Fixing them enhances the userexperience    |
+| **phikell**    | x        | Link                | Desc            | Relevance     |
+| **phikell**    | x        | Link                | Desc            | Relevance     |
+
+
 ## M4 Deadline 23.05. 23:59
 
 | **Student**    | **Date** | **Link to Commit**  | **Description** | **Relevance** |
