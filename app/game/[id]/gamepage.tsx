@@ -104,6 +104,7 @@ const GamePage = (
       fetchPlayer();
       setTriggerUseEffect((prev) => prev + 1);
       setStartChallenge(false);
+      setChallengeTaken(false);
     }
     if (parsedMessage.event_type == "update-game") {
       setTriggerUseEffect((prev) => prev + 1);
