@@ -253,9 +253,10 @@ const GamePage = (
       (stompClient as Client).publish({
         destination: "/app/userAcceptsChallenge",
         body: gameId ?? ""
-    });
+      });
+    }
     setChallengeTaken(false);
-  };
+  }
 
   const handleGuess = async (values: GuessProps) => {
     const body = {
@@ -514,7 +515,6 @@ const GamePage = (
       </div>
     </>
   );
-}
 };
 
 export default GamePage;
