@@ -83,7 +83,10 @@ const Register: React.FC = () => {
         >
           <Form.Item
             name="username"
-            rules={[{ required: true, message: "Please input your username!" }]}
+            rules={[
+              { required: true, message: "Please input your username!" },
+              { pattern: /^(?!\s*$).+/, message: "Username cannot be empty!"}
+            ]}
           >
             <Input placeholder="Username" />
           </Form.Item>

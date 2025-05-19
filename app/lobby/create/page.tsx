@@ -81,7 +81,10 @@ const CreateLobby: React.FC = () => {
         >
           <Form.Item
             name="lobbyName"
-            rules={[{ required: true, message: "Please input a lobby name!" }]}
+            rules={[
+              { required: true, message: "Please input a lobby name!" },
+              { pattern: /^(?!\s*$).+/, message: "LobbyName cannot be empty!"}
+            ]}
           >
             <Input placeholder="Lobby name" />
           </Form.Item>
