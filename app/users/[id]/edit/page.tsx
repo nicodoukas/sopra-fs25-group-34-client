@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import { useApi } from "@/hooks/useApi";
@@ -9,7 +9,6 @@ import { ProfilePicture } from "@/types/profilePicture";
 import withAuth from "@/utils/withAuth";
 import Header from "@/components/header";
 
-import "@ant-design/v5-patch-for-react-19";
 import { Button, Dropdown, Form, Input, message } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 
@@ -32,8 +31,6 @@ const EditUserProfile: React.FC = () => {
     ProfilePicture
   >({} as ProfilePicture);
   const [form] = Form.useForm();
-  const [isLogedInUser, setIsLogedInUser] = useState<boolean | null>(null);
-  const hasHandledNotLoggedInUser = useRef(false);
 
   const handleGoBack = () => {
     router.back();
@@ -96,13 +93,8 @@ const EditUserProfile: React.FC = () => {
   useEffect(() => {
     const StorageId = sessionStorage.getItem("id");
     if (StorageId != displayedUsersId) {
-      if (!hasHandledNotLoggedInUser.current) {
-        hasHandledNotLoggedInUser.current = true;
-        message.info("You can only edit your own profile.");
-        router.back();
-      }
-    } else {
-      setIsLogedInUser(true);
+      router.back();
+      return;
     }
 
     const fetchUser = async () => {
@@ -153,7 +145,6 @@ const EditUserProfile: React.FC = () => {
     fetchProfilePictures();
   }, [apiService, displayedUsersId, router, form]);
 
-  if (!isLogedInUser) return <div>Loading...</div>;
 
   return (
     <div>

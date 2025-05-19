@@ -9,11 +9,8 @@ interface Props {
   playerId: string | null;
 }
 
-const RankingList: React.FC<Props> = ({ players, playerId }) => {
-  const [sortedPlayersWithRank, setSortedPlayersWithRank] = useState<Player[]>(
-    [],
-  );
-
+const RankingList: React.FC<Props> = ({players, playerId}) => {
+  const [sortedPlayersWithRank, setSortedPlayersWithRank] = useState<Player[]>([]);
   const columns: TableProps["columns"] = [
     {
       title: "Rank",
@@ -25,17 +22,14 @@ const RankingList: React.FC<Props> = ({ players, playerId }) => {
       dataIndex: "username",
       key: "username",
       render: (text, record) => (
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <div
-            className="profile-picture"
-            style={{
-              width: 30,
-              height: 30,
-              marginRight: "15px",
-              position: "relative",
-            }}
-          >
-            <img src={record.profilePicture?.url} alt="profile picture" />
+         <div style={{display: "flex", flexDirection: "row"}}>
+          <div className="profile-picture" style={{
+            width: 30,
+            height: 30,
+            marginRight: "15px",
+            position: "relative"
+          }}>
+            <img src={record.profilePicture?.url} alt="profile picture"/>
           </div>
           <span
             style={{
@@ -75,15 +69,17 @@ const RankingList: React.FC<Props> = ({ players, playerId }) => {
       return player;
     });
     setSortedPlayersWithRank(withRank);
-  }, [players]);
+  }, [players])
 
   return (
     <div>
-      <Table
-        dataSource={sortedPlayersWithRank}
-        columns={columns}
-        rowKey="userId"
-      />
+      <div className="beige-card">
+        <Table
+          dataSource={sortedPlayersWithRank}
+          columns={columns}
+          rowKey="userId"
+        />
+      </div>
     </div>
   );
 };

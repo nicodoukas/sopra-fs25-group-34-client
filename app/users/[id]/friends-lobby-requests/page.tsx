@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import { useApi } from "@/hooks/useApi";
@@ -9,7 +9,6 @@ import withAuth from "@/utils/withAuth";
 import { User } from "@/types/user";
 import { Lobby } from "@/types/lobby";
 
-import "@ant-design/v5-patch-for-react-19";
 import { Button, message, Space } from "antd";
 
 const FriendsLobbyRequest: React.FC = () => {
@@ -21,8 +20,6 @@ const FriendsLobbyRequest: React.FC = () => {
   const [user, setUser] = useState<User>({} as User);
   const [friendrequests, setFriendrequests] = useState<User[]>([]);
   const [lobbyInvites, setLobbyInvites] = useState<Lobby[]>([]);
-  const [isLogedInUser, setIsLogedInUser] = useState<boolean | null>(null);
-  const hasHandledNotLoggedInUser = useRef(false);
 
   const handleAcceptFriendRequest = async (
     userId2: string | null,
@@ -135,13 +132,8 @@ const FriendsLobbyRequest: React.FC = () => {
   useEffect(() => {
     const StorageId = sessionStorage.getItem("id");
     if (StorageId != id) {
-      if (!hasHandledNotLoggedInUser.current) {
-        hasHandledNotLoggedInUser.current = true;
-        message.info("You can only view your own friend and lobby requests");
-        router.back();
-      }
-    } else {
-      setIsLogedInUser(true);
+      router.push("/overview");
+      return;
     }
 
     const fetchUser = async () => {
@@ -199,7 +191,6 @@ const FriendsLobbyRequest: React.FC = () => {
     fetchFriendRequestsAndLobbies();
   }, [user]);
 
-  if (!isLogedInUser) return <div>Loading...</div>;
 
   return (
     <div>

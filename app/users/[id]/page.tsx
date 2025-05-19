@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import { useApi } from "@/hooks/useApi";
@@ -9,7 +9,6 @@ import { User } from "@/types/user";
 import withAuth from "@/utils/withAuth";
 import Header from "@/components/header";
 
-import "@ant-design/v5-patch-for-react-19";
 import { Button, message } from "antd";
 
 const UserProfile: React.FC = () => {
@@ -19,8 +18,6 @@ const UserProfile: React.FC = () => {
   const diplayedUsersId = params.id;
 
   const [displayedUser, setDisplayedUser] = useState<User>({} as User);
-  const [isExistingUser, setIsExistingUser] = useState<boolean | null>(null);
-  const hasHandledMissingUser = useRef(false);
 
   const {
     value: loggedInUsersId,
@@ -109,22 +106,11 @@ const UserProfile: React.FC = () => {
           `/users/${diplayedUsersId}`,
         );
         setDisplayedUser(user);
-        setIsExistingUser(true);
       } catch (error) {
         if (error instanceof Error) {
-          if (error.message.includes("404: user not found")) {
-            if (!hasHandledMissingUser.current) {
-              hasHandledMissingUser.current = true;
-              setTimeout(() => {
-                message.info("There exists no user with this id.");
-              }, 200);
-              router.back();
-            }
-          } else {
-            message.error(
-              `Something went wrong while loading the user:\n${error.message}`,
-            );
-          }
+          message.error(
+            `Something went wrong while loading the user:\n${error.message}`,
+          );
         } else {
           message.error("An unknown error occurred while loading the user.");
         }
@@ -135,7 +121,6 @@ const UserProfile: React.FC = () => {
     fetchUser();
   }, [apiService, diplayedUsersId, router]);
 
-  if (!isExistingUser) return <div>Loading...</div>;
 
   if (sessionStorage.getItem("id") === diplayedUsersId) {
     return (
