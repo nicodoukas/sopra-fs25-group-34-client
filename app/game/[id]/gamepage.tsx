@@ -64,6 +64,35 @@ const GamePage = (
     value: id,
   } = useSessionStorage<string>("id", "");
 
+  //returns true if correct, false otherwise
+  const checkCardPlacementCorrect = async (
+    songCard: SongCard,
+    timeline: SongCard[],
+    placement: number,
+  ) => {
+    const year = songCard?.year;
+    let yearBefore = -1;
+    let yearAfter = 3000;
+    if (placement > 0) yearBefore = timeline[placement - 1].year;
+    if (placement < timeline.length) yearAfter = timeline[placement].year;
+    return (yearBefore <= year && yearAfter >= year);
+  };
+
+  const fetchPlayer = async () => {
+      try {
+        const userId = sessionStorage.getItem("id");
+        if (!playerIsLeaving) {
+          const playerData = await apiService.get<Player>(
+            `/games/${gameId}/${userId}`,
+          );
+          setPlayer(playerData);
+        }
+      } catch (error) {
+        message.error("Failed to load player data.");
+        console.error("Error fetching data:", error);
+      }
+  };
+
   const handleWebSocketMessage = (websocket_Message: string) => {
     const parsedMessage = JSON.parse(websocket_Message);
     if (parsedMessage.event_type === "play-song") {
@@ -184,7 +213,47 @@ const GamePage = (
     }
   };
 
-  const handleChallengerPlacement = (_placmentIndex: number) => {
+  const handleChallengerPlacement = async(_placmentIndex: number) => {
+    if (!gameRef.current || !songcardRef.current || !playerRef.current) {
+        console.warn("Missing game or player data");
+        return;
+      }
+    let result = await checkCardPlacementCorrect(songcardRef.current, gameRef.current.currentRound.activePlayer.timeline, _placmentIndex)
+    //correct placement
+      if (
+        result
+      ) {
+        message.success("Congratulation your placement is correct!");
+        const body = {
+          "songCard": songcardRef.current,
+          "position": _placmentIndex,
+        };
+        //update player == insert songCard into timeline
+        try {
+          await apiService.put(`/games/${gameId}/${playerRef.current.userId}`, body);
+          console.log("timeline gets updated")
+        } catch (error) {
+          if (error instanceof Error) {
+            message.error(
+              `Something went wrong during the inserting of the songCard into timeline of ${playerRef.current.username}:\n${error.message}`,
+            );
+          } else {
+            message.error(
+              `An unknown error occurred during the inserting of the songCard into timeline of ${playerRef.current.username}.`,
+            );
+            console.error(error);
+          }
+        }
+      } //incorrect placement
+      else {
+        message.info("Wrong placement");
+      }
+    // send message to websocket to show end-round screen
+    if (stompClient?.connected) {
+      (stompClient as Client).publish({
+        destination: "/app/userAcceptsChallenge",
+        body: gameId ?? ""
+    });
     setChallengeTaken(false);
   };
 
@@ -269,35 +338,6 @@ const GamePage = (
       }
       console.error(error);
     }
-  };
-
-  //returns true if correct, false otherwise
-  const checkCardPlacementCorrect = async (
-    songCard: SongCard,
-    timeline: SongCard[],
-    placement: number,
-  ) => {
-    const year = songCard?.year;
-    let yearBefore = -1;
-    let yearAfter = 3000;
-    if (placement > 0) yearBefore = timeline[placement - 1].year;
-    if (placement < timeline.length) yearAfter = timeline[placement].year;
-    return (yearBefore <= year && yearAfter >= year);
-  };
-
-  const fetchPlayer = async () => {
-      try {
-        const userId = sessionStorage.getItem("id");
-        if (!playerIsLeaving) {
-          const playerData = await apiService.get<Player>(
-            `/games/${gameId}/${userId}`,
-          );
-          setPlayer(playerData);
-        }
-      } catch (error) {
-        message.error("Failed to load player data.");
-        console.error("Error fetching data:", error);
-      }
   };
 
   useEffect(() => {
@@ -474,6 +514,7 @@ const GamePage = (
       </div>
     </>
   );
+}
 };
 
 export default GamePage;
