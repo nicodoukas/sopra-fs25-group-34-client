@@ -13,11 +13,9 @@ import GameHeader from "./gameHeader";
 import Guess from "./guess";
 import PlayButton from "./playButton";
 import Timeline from "./timeline";
-import ExitButton from "./exitGame";
 import Challenge from "./challenge";
 import ChallengeAccepted from "./challengeAccepted";
 import EndRound from "./endRound";
-import RankingList from "./rankingList";
 
 import { message } from "antd";
 
@@ -432,7 +430,10 @@ const GamePage = (
     <>
       <GameHeader
         player={player}
+        players={game.players}
+        hostId={game.host?.userId ?? null}
         onBuyCard={handleBuyCard}
+        onHandleExitGame={handleExitGame}
       />
       <div className={styles.gameContainer}>
         {startChallenge && !roundOver &&
@@ -465,7 +466,6 @@ const GamePage = (
         {!startChallenge && !challengeTaken && !roundOver
           ? (
             <>
-              <RankingList players={game.players} playerId={player.userId} />
               <div className="beige-card" style={{ textAlign: "center" }}>
                 <h2 style={{ fontSize: "1.5rem", marginBottom: "0px" }}>
                   {game?.gameName || "{gameName}"}
@@ -507,11 +507,6 @@ const GamePage = (
             />
           )
           : <></>}
-        <ExitButton
-        playerId={player.userId}
-        hostId={game.host?.userId ?? null}
-        handleExitGame={handleExitGame}
-      />
       </div>
     </>
   );

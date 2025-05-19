@@ -69,17 +69,15 @@ const RankingList: React.FC<Props> = ({players, playerId}) => {
       return player;
     });
     setSortedPlayersWithRank(withRank);
-  }, [players])
+  }, [players]);
 
   return (
     <div>
-      <div className="beige-card">
-        <Table
-          dataSource={sortedPlayersWithRank}
-          columns={columns}
-          rowKey="userId"
-        />
-      </div>
+      <Table
+        dataSource={sortedPlayersWithRank}
+        columns={columns}
+        rowKey="userId"
+      />
     </div>
   );
 };
