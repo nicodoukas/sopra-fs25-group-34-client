@@ -7,7 +7,7 @@ import { isProduction } from "@/utils/environment";
  */
 export function getApiDomain(): string {
   const prodUrl =
-    "https://backendv2-dot-sopra-fs25-group-34-server.oa.r.appspot.com";
+    "https://backendv3-dot-sopra-fs25-group-34-server.oa.r.appspot.com";
   const devUrl = "http://localhost:8080";
   return isProduction() ? prodUrl : devUrl;
 }
