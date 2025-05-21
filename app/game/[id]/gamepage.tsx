@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import { useApi } from "@/hooks/useApi";
+import useSessionStorage from "@/hooks/useSessionStorage";
 import { Game } from "@/types/game";
 import { Player } from "@/types/player";
 import { SongCard } from "@/types/songcard";
@@ -12,11 +13,9 @@ import GameHeader from "./gameHeader";
 import Guess from "./guess";
 import PlayButton from "./playButton";
 import Timeline from "./timeline";
-import ExitButton from "./exitGame";
 import Challenge from "./challenge";
 import ChallengeAccepted from "./challengeAccepted";
 import EndRound from "./endRound";
-import RankingList from "@/game/[id]/rankingList";
 
 import { message } from "antd";
 
@@ -47,6 +46,8 @@ const GamePage = (
   const [songCard, setSongCard] = useState<SongCard | null>({} as SongCard); // SongCard of currentRound
   const [stompClient, setStompClient] = useState<Client | null>(null);
   const gameRef = useRef<Game | null>(null);
+  const playerRef = useRef<Player | null>(null);
+  const songcardRef = useRef<SongCard | null>(null);
   const [guessed, setGuessed] = useState<boolean>(false);
   const [triggerUseEffect, setTriggerUseEffect] = useState<number>(0);
   const [audioUnlocked, setAudioUnlocked] = useState(false);
@@ -54,6 +55,41 @@ const GamePage = (
   const [startChallenge, setStartChallenge] = useState<boolean>(false);
   const [challengeTaken, setChallengeTaken] = useState<boolean>(false);
   const [roundOver, setRoundOver] = useState<boolean>(false);
+  const [isGameMember, setIsGameMember] = useState<boolean | null>(null);
+  const hasHandledMissingGame = useRef(false);
+
+  const {
+    value: id,
+  } = useSessionStorage<string>("id", "");
+
+  //returns true if correct, false otherwise
+  const checkCardPlacementCorrect = async (
+    songCard: SongCard,
+    timeline: SongCard[],
+    placement: number,
+  ) => {
+    const year = songCard?.year;
+    let yearBefore = -1;
+    let yearAfter = 3000;
+    if (placement > 0) yearBefore = timeline[placement - 1].year;
+    if (placement < timeline.length) yearAfter = timeline[placement].year;
+    return (yearBefore <= year && yearAfter >= year);
+  };
+
+  const fetchPlayer = async () => {
+      try {
+        const userId = sessionStorage.getItem("id");
+        if (!playerIsLeaving) {
+          const playerData = await apiService.get<Player>(
+            `/games/${gameId}/${userId}`,
+          );
+          setPlayer(playerData);
+        }
+      } catch (error) {
+        message.error("Failed to load player data.");
+        console.error("Error fetching data:", error);
+      }
+  };
 
   const handleWebSocketMessage = (websocket_Message: string) => {
     const parsedMessage = JSON.parse(websocket_Message);
@@ -65,8 +101,10 @@ const GamePage = (
       setGuessed(false);
       setAudioState(true);
       setIsPlaying(false);
+      fetchPlayer();
       setTriggerUseEffect((prev) => prev + 1);
       setStartChallenge(false);
+      setChallengeTaken(false);
     }
     if (parsedMessage.event_type == "update-game") {
       setTriggerUseEffect((prev) => prev + 1);
@@ -94,7 +132,8 @@ const GamePage = (
         message.warning("Someone was faster to challenge");
       }
     }
-    if (parsedMessage.event_type === "end-round"){
+    if (parsedMessage.event_type === "end-round") {
+      handleCheckPlacementActivePlayerStartNewRound()
       setRoundOver(true);
     }
   };
@@ -117,6 +156,49 @@ const GamePage = (
       setIsPlaying(false);
     };
   };
+  const handleCheckPlacementActivePlayerStartNewRound = async () => {
+      const currentGame = gameRef.current;
+      const currentPlayer = playerRef.current;
+      if (!currentGame || !currentPlayer || !songcardRef.current) {
+        console.warn("Missing game or player data");
+        return;
+      }
+      if (currentGame.currentRound.activePlayer.userId !== currentPlayer.userId) return;
+      if (songCard === null) return;
+      let activePlayer = currentGame.currentRound.activePlayer
+      let placement = currentGame.currentRound.activePlayerPlacement
+      let result = await checkCardPlacementCorrect(songcardRef.current, activePlayer.timeline, placement)
+      console.log("This is the check placement:", result)
+      //correct placement
+      if (
+        result
+      ) {
+        message.success("Congratulation your placement is correct!");
+        const body = {
+          "songCard": songcardRef.current,
+          "position": placement,
+        };
+        //update player == insert songCard into timeline
+        try {
+          await apiService.put(`/games/${gameId}/${activePlayer.userId}`, body);
+          console.log("timeline gets updated")
+        } catch (error) {
+          if (error instanceof Error) {
+            message.error(
+              `Something went wrong during the inserting of the songCard into timeline of ${activePlayer.username}:\n${error.message}`,
+            );
+          } else {
+            message.error(
+              `An unknown error occurred during the inserting of the songCard into timeline of ${activePlayer.username}.`,
+            );
+            console.error(error);
+          }
+        }
+      } //incorrect placement
+      else {
+        message.info("Wrong placement");
+      }
+    };
 
   const setActivePlayerPlacementAndStartChallengePhase = (index: number) => {
     if (stompClient?.connected) {
@@ -130,12 +212,50 @@ const GamePage = (
     }
   };
 
-  const handleChallengerPlacement = (_placmentIndex: number) => {
-    //TODO: call API service to set challengers placement
-    //then trigger evaluation
-    console.log(_placmentIndex); //just for build
+  const handleChallengerPlacement = async(_placmentIndex: number) => {
+    if (!gameRef.current || !songcardRef.current || !playerRef.current) {
+        console.warn("Missing game or player data");
+        return;
+      }
+    let result = await checkCardPlacementCorrect(songcardRef.current, gameRef.current.currentRound.activePlayer.timeline, _placmentIndex)
+    //correct placement
+      if (
+        result
+      ) {
+        message.success("Congratulation your placement is correct!");
+        const body = {
+          "songCard": songcardRef.current,
+          "position": _placmentIndex,
+        };
+        //update player == insert songCard into timeline
+        try {
+          await apiService.put(`/games/${gameId}/${playerRef.current.userId}`, body);
+          console.log("timeline gets updated")
+        } catch (error) {
+          if (error instanceof Error) {
+            message.error(
+              `Something went wrong during the inserting of the songCard into timeline of ${playerRef.current.username}:\n${error.message}`,
+            );
+          } else {
+            message.error(
+              `An unknown error occurred during the inserting of the songCard into timeline of ${playerRef.current.username}.`,
+            );
+            console.error(error);
+          }
+        }
+      } //incorrect placement
+      else {
+        message.info("Wrong placement");
+      }
+    // send message to websocket to show end-round screen
+    if (stompClient?.connected) {
+      (stompClient as Client).publish({
+        destination: "/app/userAcceptsChallenge",
+        body: gameId ?? ""
+      });
+    }
     setChallengeTaken(false);
-  };
+  }
 
   const handleGuess = async (values: GuessProps) => {
     const body = {
@@ -220,40 +340,40 @@ const GamePage = (
     }
   };
 
-  //returns true if correct, false otherwise
-  const checkCardPlacementCorrect = async (
-    songCard: SongCard,
-    timeline: SongCard[],
-    placement: number,
-  ) => {
-    const year = songCard?.year;
-    let yearBefore = -1;
-    let yearAfter = 3000;
-    if (placement > 0) yearBefore = timeline[placement - 1].year;
-    if (placement < timeline.length) yearAfter = timeline[placement].year;
-    return (yearBefore <= year && yearAfter >= year);
-  };
-
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchGame = async () => {
       try {
         const gameData = await apiService.get<Game>(`/games/${gameId}`);
         setGame(gameData);
         setSongCard(gameData.currentRound?.songCard);
-        const userId = sessionStorage.getItem("id");
-        if (!playerIsLeaving) {
-          const playerData = await apiService.get<Player>(
-            `/games/${gameId}/${userId}`,
-          );
-          setPlayer(playerData);
-        }
       } catch (error) {
-        message.error("Failed to fetch game or player data.");
-        console.error("Error fetching data:", error);
+        if (error instanceof Error) {
+          if (
+            error.message.includes("404: Game with ID") &&
+            !hasHandledMissingGame.current
+          ) {
+            hasHandledMissingGame.current = true;
+            setTimeout(() => {
+              message.warning(
+                "There exists no game with this id, please create a lobby to start a game.",
+              );
+            }, 200);
+            router.push("/overview");
+          }
+        } else {
+          message.error("Failed to load game data.");
+          console.error("Error fetching data:", error);
+        }
       }
     };
-    fetchData();
+    fetchGame();
   }, [apiService, gameId, triggerUseEffect]);
+
+  useEffect(() => {
+    if (isGameMember) {
+      fetchPlayer();
+    }
+  }, [apiService, gameId, triggerUseEffect, isGameMember]);
 
   useEffect(() => {
     const client = connectWebSocket(handleWebSocketMessage, gameId);
@@ -267,6 +387,32 @@ const GamePage = (
   useEffect(() => {
     gameRef.current = game;
   }, [game]);
+  useEffect(() => {
+    playerRef.current = player;
+  }, [player]);
+  useEffect(() => {
+    songcardRef.current = songCard;
+  }, [songCard]);
+
+
+
+  useEffect(() => {
+    if (!game.players) return;
+    if (isGameMember != null) return;
+    if (game.players.some((member) => member.userId === id)) {
+      setIsGameMember(true);
+    } else {
+      setTimeout(() => {
+        message.info("This page is only accessible to members of the game");
+      }, 200);
+      setIsGameMember(false);
+      router.push("/overview");
+    }
+  }, [router, game, id]);
+
+  if (!isGameMember) {
+    return <div>Loading...</div>;
+  }
 
   const handlePlayButtonClick = () => {
     if (stompClient?.connected) {
@@ -282,98 +428,88 @@ const GamePage = (
   }
 
   return (
-    <div className={styles.gameContainer}>
+    <>
       <GameHeader
         player={player}
-        onBuyCard={handleBuyCard}
-      />
-      {startChallenge && !roundOver
-        && (
-          <>
-            <Challenge
-              activePlayer={game.currentRound.activePlayer}
-              songCard={songCard}
-              gameId={gameId}
-              gameName={game?.gameName || "{gameName}"}
-              activePlayerPlacement={game.currentRound.activePlayerPlacement}
-              stompClient={stompClient}
-              userId={player.userId}
-              checkCardPlacementCorrect={checkCardPlacementCorrect}
-              allPlayers={game.players}
-            />
-          </>
-        )}
-        {challengeTaken && !roundOver && (
-          player.userId === game.currentRound.activePlayer.userId
-          ? <p>The other players can now challenge your placement</p>
-          : player.userId === game.currentRound.challenger?.userId
-          ? (
-            <ChallengeAccepted
-              gameName={game?.gameName || "{gameName}"}
-              activePlayerName={game.currentRound?.activePlayer?.username}
-              activePlayersTimeline={game.currentRound.activePlayer.timeline}
-              activePlayerPlacement={game.currentRound.activePlayerPlacement}
-              handleChallengerPlacement={handleChallengerPlacement}
-            />
-          )
-          : (
-            <p>
-              {game.currentRound.challenger?.username}{" "}
-              accepted the challenge and is now placing the card
-            </p>
-          )
-      )}
-      {!startChallenge && !challengeTaken && !roundOver
-        ? (
-          <>
-            <RankingList players={game.players} playerId={player.userId} />
-            <div className="beige-card" style={{ textAlign: "center" }}>
-              <h2 style={{ fontSize: "1.5rem", marginBottom: "0px" }}>
-                {game?.gameName || "{gameName}"}
-              </h2>
-              <h3>{game.currentRound.activePlayer.username}&#39;s turn</h3>
-              <PlayButton
-                songUrl={songCard?.songURL}
-                playerId={player.userId}
-                activePlayerId={game.currentRound.activePlayer.userId}
-                isPlaying={isPlaying}
-                audioState={audioState}
-                audioUnlocked={audioUnlocked}
-                handlePlayButtonClick={handlePlayButtonClick}
-                unlockAudio={unlockAudio}
-              >
-              </PlayButton>
-              <Timeline
-                title="Your Timeline"
-                timeline={player.timeline}
-                isPlaying={isPlaying}
-                isPlacementMode={player.userId ==
-                  game.currentRound?.activePlayer?.userId}
-                confirmPlacement={setActivePlayerPlacementAndStartChallengePhase}
-                activePlayerPlacement={null}
-                challenge={false}
-              />
-            </div>
-            <Guess guessed={guessed} onHandleGuess={handleGuess}></Guess>
-          </>
-        )
-        : <></>}
-      {roundOver
-        ? (
-          <EndRound
-            songCard={songCard}
-            stompClient={stompClient}
-            gameId={gameId}
-            roundNr={game.currentRound?.roundNr}
-          />
-        )
-        : <></>}
-      <ExitButton
-        playerId={player.userId}
+        players={game.players}
         hostId={game.host?.userId ?? null}
-        handleExitGame={handleExitGame}
+        onBuyCard={handleBuyCard}
+        onHandleExitGame={handleExitGame}
       />
-    </div>
+      <div className={styles.gameContainer}>
+        {startChallenge && !roundOver &&
+          (
+            <>
+              <Challenge
+                activePlayer={game.currentRound.activePlayer}
+                songCard={songCard}
+                gameId={gameId}
+                gameName={game?.gameName || "{gameName}"}
+                activePlayerPlacement={game.currentRound.activePlayerPlacement}
+                stompClient={stompClient}
+                userId={player.userId}
+                checkCardPlacementCorrect={checkCardPlacementCorrect}
+                allPlayers={game.players}
+              />
+            </>
+          )}
+        {challengeTaken && !roundOver && (
+          <ChallengeAccepted
+            gameName={game?.gameName || "{gameName}"}
+            challenger={game.currentRound?.challenger}
+            userId={player.userId}
+            activePlayerName={game.currentRound?.activePlayer?.username}
+            activePlayersTimeline={game.currentRound.activePlayer.timeline}
+            activePlayerPlacement={game.currentRound.activePlayerPlacement}
+            handleChallengerPlacement={handleChallengerPlacement}
+          />
+        )}
+        {!startChallenge && !challengeTaken && !roundOver
+          ? (
+            <>
+              <div className="beige-card" style={{ textAlign: "center" }}>
+                <h2 style={{ fontSize: "1.5rem", marginBottom: "0px" }}>
+                  {game?.gameName || "{gameName}"}
+                </h2>
+                <h3>{game.currentRound.activePlayer.username}&#39;s turn</h3>
+                <PlayButton
+                  songUrl={songCard?.songURL}
+                  playerId={player.userId}
+                  activePlayerId={game.currentRound.activePlayer.userId}
+                  isPlaying={isPlaying}
+                  audioState={audioState}
+                  audioUnlocked={audioUnlocked}
+                  handlePlayButtonClick={handlePlayButtonClick}
+                  unlockAudio={unlockAudio}
+                >
+                </PlayButton>
+                <Timeline
+                  title="Your Timeline"
+                  timeline={player.timeline}
+                  isPlaying={isPlaying}
+                  isPlacementMode={player.userId ==
+                    game.currentRound?.activePlayer?.userId}
+                  confirmPlacement={setActivePlayerPlacementAndStartChallengePhase}
+                  activePlayerPlacement={null}
+                  challenge={false}
+                />
+              </div>
+              <Guess guessed={guessed} onHandleGuess={handleGuess}></Guess>
+            </>
+          )
+          : <></>}
+        {roundOver
+          ? (
+            <EndRound
+              songCard={songCard}
+              stompClient={stompClient}
+              gameId={gameId}
+              roundNr={game.currentRound?.roundNr}
+            />
+          )
+          : <></>}
+      </div>
+    </>
   );
 };
 

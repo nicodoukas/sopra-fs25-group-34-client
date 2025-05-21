@@ -40,6 +40,7 @@ const Challenge: React.FC<Props> = ({
   const apiService = useApi();
   const hasRun = useRef(false);
   const [timeLeft, setTimeLeft] = useState(30);
+  const [decisionMade, setDescisionMade] = useState<boolean>(false);
 
   //Timer
   useEffect(() => {
@@ -49,7 +50,7 @@ const Challenge: React.FC<Props> = ({
         if (prev <= 1) { //only one second left
           if (!alreadyHandled) {
             alreadyHandled = true;
-            handleTimerForChallengeRanOut();
+            handleDeclineChallenge();
           }
           return 0;
         }
@@ -63,7 +64,7 @@ const Challenge: React.FC<Props> = ({
   //If only one player challenge is skipped
   useEffect(() => {
     if (!hasRun.current && allPlayers.length === 1) {
-      handleCheckPlacementActivePlayer_StartNewRound(activePlayer, activePlayerPlacement);
+      handleDeclineChallenge();
       hasRun.current = true;
     }
   }, []);
@@ -76,6 +77,7 @@ const Challenge: React.FC<Props> = ({
 
   const handleChallengeAccepted = () => {
     if (stompClient?.connected) {
+      setDescisionMade(true);
       stompClient.publish({
         destination: "/app/challenge/accept",
         body: JSON.stringify({
@@ -85,54 +87,9 @@ const Challenge: React.FC<Props> = ({
       });
     }
   };
-
-  const handleTimerForChallengeRanOut = async () => {
-    handleCheckPlacementActivePlayer_StartNewRound(
-      activePlayer,
-      activePlayerPlacement,
-    );
-  };
-
-  const handleCheckPlacementActivePlayer_StartNewRound = async (
-    activePlayer: Player,
-    placement: number,
-  ) => {
-    if (songCard === null) return;
-    //correct placement
-    if (
-      await checkCardPlacementCorrect(
-        songCard,
-        activePlayer.timeline,
-        placement,
-      )
-    ) {
-      message.success("Congratulation your placement is correct!");
-      const body = {
-        "songCard": songCard,
-        "position": placement,
-      };
-      //update player == insert songCard into timeline
-      try {
-        await apiService.put(`/games/${gameId}/${activePlayer.userId}`, body);
-      } catch (error) {
-        if (error instanceof Error) {
-          message.error(
-            `Something went wrong during the inserting of the songCard into timeline of ${activePlayer.username}:\n${error.message}`,
-          );
-        } else {
-          message.error(
-            `An unknown error occurred during the inserting of the songCard into timeline of ${activePlayer.username}.`,
-          );
-          console.error(error);
-        }
-      }
-    } //incorrect placement
-    else {
-      message.info("Wrong placement");
-    }
-
-    //(Start new Round) possibly call
+  const handleDeclineChallenge = () => {
     if (stompClient?.connected) {
+      setDescisionMade(true);
       (stompClient as Client).publish({
         destination: "/app/userDeclinesChallenge",
         body: JSON.stringify({
@@ -141,19 +98,8 @@ const Challenge: React.FC<Props> = ({
         }),
       });
     }
-  };
-
-  const declineChallenge = async () => {
-    if (stompClient?.connected) {
-      (stompClient as Client).publish({
-        destination: "/app/userDeclinesChallenge",
-        body: JSON.stringify({
-          gameId,
-          userId: sessionStorage.getItem("id"),
-        }),
-      });
-    }
   }
+
 
   return (
     <div
@@ -185,7 +131,7 @@ const Challenge: React.FC<Props> = ({
           <Button type="primary" onClick={handleChallengeAccepted}>
             Challenge
           </Button>
-          <Button type="primary" onClick={declineChallenge}>
+          <Button type="primary" onClick={handleDeclineChallenge}>
             Don&#39;t challenge
           </Button>
         </div>

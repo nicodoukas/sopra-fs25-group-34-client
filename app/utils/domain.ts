@@ -6,7 +6,8 @@ import { isProduction } from "@/utils/environment";
  * In development, it returns "http://localhost:8080".
  */
 export function getApiDomain(): string {
-  const prodUrl ="https://backendv2-dot-sopra-fs25-group-34-server.oa.r.appspot.com"; // TODO: update with your production URL as needed.
+  const prodUrl =
+    "https://backendv2-dot-sopra-fs25-group-34-server.oa.r.appspot.com";
   const devUrl = "http://localhost:8080";
   return isProduction() ? prodUrl : devUrl;
 }
