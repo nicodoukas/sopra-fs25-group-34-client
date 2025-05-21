@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { SongCard } from "@/types/songcard";
 import { Player } from "@/types/player";
@@ -94,8 +94,7 @@ const Challenge: React.FC<Props> = ({
         }),
       });
     }
-  }
-
+  };
 
   return (
     <div
@@ -110,31 +109,35 @@ const Challenge: React.FC<Props> = ({
       <h2 style={{ fontSize: "1.5rem", marginBottom: "0px" }}>{gameName}</h2>
       <h3>Challenge phase</h3>
       <Timer timeLeft={timeLeft}></Timer>
-      {activePlayer.userId === userId ? (
-        <p style={{marginTop:"20px", marginBottom:"10px"}}>Other players can now challenge your placement.</p>
-      ) : (
-      <>
-        <Timeline
-          title={activePlayer.username + "'s placement:"}
-          timeline={activePlayer.timeline}
-          isPlaying={false}
-          isPlacementMode={false}
-          confirmPlacement={_confirmPlacement}
-          activePlayerPlacement={activePlayerPlacement}
-          challenge={true}
-        />
-        { !decisionMade && (
-          <div>
-            <Button type="primary" onClick={handleChallengeAccepted}>
-              Challenge
-            </Button>
-            <Button type="primary" onClick={handleDeclineChallenge}>
-              Don&#39;t challenge
-            </Button>
-          </div>
+      {activePlayer.userId === userId
+        ? (
+          <p style={{ marginTop: "20px", marginBottom: "10px" }}>
+            Other players can now challenge your placement.
+          </p>
+        )
+        : (
+          <>
+            <Timeline
+              title={activePlayer.username + "'s placement:"}
+              timeline={activePlayer.timeline}
+              isPlaying={false}
+              isPlacementMode={false}
+              confirmPlacement={_confirmPlacement}
+              activePlayerPlacement={activePlayerPlacement}
+              challenge={true}
+            />
+            {!decisionMade && (
+              <div className="challenge-buttons-container">
+                <Button type="primary" onClick={handleChallengeAccepted}>
+                  Challenge
+                </Button>
+                <Button type="primary" onClick={handleDeclineChallenge}>
+                  Don&#39;t challenge
+                </Button>
+              </div>
+            )}
+          </>
         )}
-      </>
-      )}
     </div>
   );
 };

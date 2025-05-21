@@ -1,10 +1,14 @@
+.timeline-container {
+  overflow-x: auto;
+  max-width: calc(5 * 120px + 4 * 54px);
+}
+
 .timeline {
   display: flex;
   flex-direction: row;
-  justify-content: center;
   align-items: center;
   margin-top: 40px;
-  gap:12px;
+  gap: 12px;
 }
 
 .coins {
@@ -22,8 +26,8 @@
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  background-color: #DDA15E;
-  display:flex;
+  background-color: #dda15e;
+  display: flex;
   align-items: center;
   justify-content: center;
   font-size: 60px;
@@ -40,11 +44,10 @@
   outline: none;
 }
 
-@property --angle{
+@property --angle {
   syntax: "<angle>";
   initial-value: 0deg;
   inherits: false;
-
 }
 
 .playButton.playing::after, .playButton.playing::before {
@@ -52,9 +55,14 @@
   position: absolute;
   height: 100%;
   width: 100%;
-  background-image: conic-gradient(from var(--angle),transparent, #BC6C25, transparent 30%);
+  background-image: conic-gradient(
+    from var(--angle),
+    transparent,
+    #bc6c25,
+    transparent 30%
+  );
   top: 50%;
-  left:50%;
+  left: 50%;
   translate: -50% -50%;
   border-radius: 50%;
   z-index: -1;
@@ -64,17 +72,17 @@
 }
 
 @keyframes spin {
-  from{
-    --angle:0deg;
+  from {
+    --angle: 0deg;
   }
-  to{
-    --angle:360deg;
+  to {
+    --angle: 360deg;
   }
 }
 .playIcon {
-  width: 85%;;
+  width: 85%;
 }
-.playButtonContainer, .songCardContainer{
+.playButtonContainer, .songCardContainer {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -98,7 +106,7 @@
 .front, .back {
   position: absolute;
   width: 100%;
-  height:100%;
+  height: 100%;
   border-radius: 8px;
   backface-visibility: hidden;
   display: flex;
@@ -107,12 +115,12 @@
 }
 
 .front {
-  background-color: #DDA15E;
+  background-color: #dda15e;
   color: white;
 }
 
 .back {
-  background-color: #BC6C25;
+  background-color: #bc6c25;
   transform: rotateY(180deg);
   flex-direction: column;
   color: white;
@@ -125,7 +133,7 @@
   transform-style: preserve-3d;
   transition: transform 0.6s;
   border-radius: 8px;
-  background-color: #606C38;
+  background-color: #606c38;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -147,7 +155,7 @@
   align-items: center;
 }
 
-.addButton{
+.addButton {
   width: 30px;
   height: 30px;
   border-radius: 50%;
@@ -157,4 +165,10 @@
 }
 .plusIcon {
   width: 100%;
+}
+
+.challenge-buttons-container {
+  display: flex;
+  gap: 16px;
+  margin-top: 5px;
 }

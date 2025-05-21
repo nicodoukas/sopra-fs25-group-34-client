@@ -66,10 +66,10 @@ const Timeline: React.FC<Props> = (
           <div className="songCardContainer">
             {placement == null &&
               isPlacementMode && (
-                <div className="songCard">
-                  <Text strong style={{fontSize: "30px"}}>?</Text>
-                </div>
-              )}
+              <div className="songCard">
+                <Text strong style={{ fontSize: "30px" }}>?</Text>
+              </div>
+            )}
           </div>
         )}
         <Title level={4} style={{ textAlign: "center" }}>
@@ -77,27 +77,101 @@ const Timeline: React.FC<Props> = (
         </Title>
         {timeline && timeline.length > 0
           ? (
-            <div className="timeline">
-              {timeline.map((card: SongCard, index: number) => (
-                <React.Fragment key={index}>
+            <div className="timeline-container">
+              <div
+                className="timeline"
+                style={{
+                  justifyContent: timeline.length > 4 ? "flex-start" : "center",
+                }}
+              >
+                {timeline.map((card: SongCard, index: number) => (
+                  <React.Fragment key={index}>
+                    {isPlacementMode && (
+                      placement == index
+                        ? (
+                          <div className="flipContainer">
+                            <div className="songCard">
+                              <Text strong style={{ fontSize: "30px" }}>
+                                ?
+                              </Text>
+                            </div>
+                          </div>
+                        )
+                        : (!(index == activePlayerPlacement &&
+                          challengeRunning) && (
+                          <div className="addButtonContainer">
+                            <div
+                              className="addButton"
+                              onClick={() =>
+                                addCard(index)}
+                            >
+                              <img
+                                src="/img/plus.png"
+                                alt="add"
+                                className="plusIcon"
+                              />
+                            </div>
+                          </div>
+                        ))
+                    )}
+                    {!isPlacementMode && (
+                      placement == index
+                        ? (
+                          <div className="flipContainer">
+                            <div className="songCard">
+                              <Text strong style={{ fontSize: "30px" }}>
+                                ?
+                              </Text>
+                            </div>
+                          </div>
+                        )
+                        : <></>
+                    )}
+
+                    <div
+                      key={index}
+                      onClick={() => flipCard(index)}
+                      className="flipContainer"
+                    >
+                      <div
+                        className={`songCard ${
+                          isFlipped === index ? "flipped" : ""
+                        }`}
+                      >
+                        <div className="front">
+                          <Text strong>{card.year}</Text>
+                        </div>
+                        <div className="back">
+                          <Text
+                            strong
+                            style={{ fontSize: "14px", color: "#fefae0" }}
+                          >
+                            {card.title}
+                          </Text>
+                          <Text type="secondary" style={{ fontSize: "14px" }}>
+                            {card.artist}
+                          </Text>
+                        </div>
+                      </div>
+                    </div>
+                  </React.Fragment>
+                ))}
+                <div>
                   {isPlacementMode && (
-                    placement == index
+                    placement == timeline?.length
                       ? (
                         <div className="flipContainer">
                           <div className="songCard">
-                            <Text strong style={{ fontSize: "30px" }}>
-                              ?
-                            </Text>
+                            <Text strong style={{ fontSize: "30px" }}>?</Text>
                           </div>
                         </div>
                       )
-                      : (!(index == activePlayerPlacement &&
-                        challengeRunning) && (
+                      : (!(challengeRunning &&
+                        timeline.length === activePlayerPlacement) && (
                         <div className="addButtonContainer">
                           <div
                             className="addButton"
-                            onClick={() =>
-                              addCard(index)}
+                            onClick={() => addCard(timeline.length)}
                           >
                             <img
                               src="/img/plus.png"
@@ -108,92 +182,33 @@ const Timeline: React.FC<Props> = (
                         </div>
                       ))
                   )}
-                  {!isPlacementMode && (
-                    placement == index
-                      ? (
-                        <div className="flipContainer">
-                          <div className="songCard">
-                            <Text strong style={{ fontSize: "30px" }}>
-                              ?
-                            </Text>
-                          </div>
-                        </div>
-                      )
-                      : <></>
-                  )}
-
-                  <div
-                    key={index}
-                    onClick={() => flipCard(index)}
-                    className="flipContainer"
-                  >
-                    <div
-                      className={`songCard ${
-                        isFlipped === index ? "flipped" : ""
-                      }`}
-                    >
-                      <div className="front">
-                        <Text strong>{card.year}</Text>
-                      </div>
-                      <div className="back">
-                        <Text
-                          strong
-                          style={{ fontSize: "14px", color: "#fefae0" }}
-                        >
-                          {card.title}
-                        </Text>
-                        <Text type="secondary" style={{ fontSize: "14px" }}>
-                          {card.artist}
-                        </Text>
-                      </div>
-                    </div>
-                  </div>
-                </React.Fragment>
-              ))}
-              <div>
-                {isPlacementMode && (
-                  placement == timeline?.length
+                  {!isPlacementMode && (placement == timeline?.length
                     ? (
                       <div className="flipContainer">
                         <div className="songCard">
-                          <Text strong style={{ fontSize: "30px" }}>?</Text>
+                          <Text strong style={{ fontSize: "30px" }}>
+                            ?
+                          </Text>
                         </div>
                       </div>
                     )
-                    : (!(challengeRunning &&
-                      timeline.length === activePlayerPlacement) && (
-                      <div className="addButtonContainer">
-                        <div
-                          className="addButton"
-                          onClick={() => addCard(timeline.length)}
-                        >
-                          <img
-                            src="/img/plus.png"
-                            alt="add"
-                            className="plusIcon"
-                          />
-                        </div>
-                      </div>
-                    ))
-                )}
-                {!isPlacementMode && (placement == timeline?.length
-                  ? (
-                    <div className="flipContainer">
-                      <div className="songCard">
-                        <Text strong style={{ fontSize: "30px" }}>
-                          ?
-                        </Text>
-                      </div>
-                    </div>
-                  )
-                  : <></>)}
+                    : <></>)}
+                </div>
               </div>
             </div>
           )
           : <Text type="secondary">No songcards in timeline.</Text>}
       </div>
       {(placement != null) && (!isPlaying) && isPlacementMode && (
-        <Button onClick={handleConfirmPlacement}>Confirm</Button>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "5px",
+          }}
+        >
+          <Button onClick={handleConfirmPlacement}>Confirm</Button>
+        </div>
       )}
     </div>
   );

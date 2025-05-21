@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { SongCard } from "@/types/songcard";
 import { Client } from "@stomp/stompjs";
 
@@ -15,22 +15,20 @@ const EndRound: React.FC<Props> = ({
   roundNr,
 }) => {
 
-    useEffect(() => {
-        console.log("This is the roundNr:", roundNr)
-        const timer = setTimeout(() => {
-            if (stompClient?.connected) {
-              (stompClient as Client).publish({
-                destination: "/app/startNewRound",
-                body: JSON.stringify({
-                  gameId: gameId,
-                  roundNr: roundNr,}),
-              });
-            }
-        }, 5000);
-      
-        return () => clearTimeout(timer); // cleanup if component unmounts early
-    
-    }, [stompClient, gameId, roundNr]);
+    const handleStartNextRound = () => {
+    if (stompClient?.connected) {
+      stompClient.publish({
+        destination: "/app/startNewRound",
+        body: JSON.stringify({
+          gameId: gameId,
+          roundNr: roundNr,
+        }),
+      });
+      console.log("Start new round triggered!");
+    } else {
+      console.warn("STOMP client is not connected.");
+    }
+  };
 
   if (!songCard) {
     return <div>No song data available.</div>;
@@ -42,6 +40,12 @@ const EndRound: React.FC<Props> = ({
         <p><strong>Title:</strong> {songCard.title}</p>
         <p><strong>Artist:</strong> {songCard.artist}</p>
         <p><strong>Release Year:</strong> {songCard.year}</p>
+        <button
+        onClick={handleStartNextRound}
+        className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded mt-4"
+        >
+          Start Next Round
+        </button>
       </div>
     )
 };
