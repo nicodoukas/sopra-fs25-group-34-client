@@ -3,6 +3,7 @@ import React from "react";
 import Timeline from "./timeline";
 import { SongCard } from "@/types/songcard";
 import {Player} from "@/types/player";
+import {message } from "antd";
 
 interface Props {
   gameName: string;
@@ -24,6 +25,10 @@ const ChallengeAccepted: React.FC<Props> = ({
   handleChallengerPlacement,
 }) => {
   const confirmPlacement = (index: number) => {
+    if (index == activePlayerPlacement){
+    message.warning("You need to place the Songcard first");
+    return;
+    }
     handleChallengerPlacement(index);
   };
   return (
