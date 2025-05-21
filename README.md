@@ -97,7 +97,13 @@ You can now clone the repository. After cloning it locally on your own machine, 
    source setup.sh
    ```
 
-2. API setup (Commands to run and files to add)(Julia)
+2. To authorize API requests, one needs to create a `.env.local` file inside the [server directory](https://github.com/nicodoukas/sopra-fs25-group-34-server), which contains the developer token for the Apple Music API.<br>
+   ```env
+   DEVELOPER_TOKEN="token_here"
+   ```
+   >**Important**:  
+   > Do **not** commit this file to the repository, since it contains sensitive credentials.  
+   >To obtain the developer token, please contact one of the project developers listed in the [Authors & Acknowledgement](#authors--acknowledgement) section.
 
 3. Websocket Stuff (Commands to run and files to add)(Nico). Für beidi da eifach gliichi notation wie bi 1. mache.
 
