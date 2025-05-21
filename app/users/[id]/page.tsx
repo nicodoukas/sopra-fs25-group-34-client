@@ -21,6 +21,7 @@ const UserProfile: React.FC = () => {
   const [displayedUser, setDisplayedUser] = useState<User>({} as User);
   const [isExistingUser, setIsExistingUser] = useState<boolean | null>(null);
   const hasHandledMissingUser = useRef(false);
+  const NOT_SET_PLACEHOLDER = <i>Not set</i>;
 
   const {
     value: loggedInUsersId,
@@ -156,18 +157,18 @@ const UserProfile: React.FC = () => {
               </div>
             </div>
             <div className="profile-field">
-              <strong>Description:</strong>{" "}
-              {displayedUser.description || <i>...</i>}
-            </div>
-            <div className="profile-field">
               <strong>Birthday:</strong> {displayedUser.birthday
                 ? String(displayedUser.birthday).split("T")[0]
-                : "N/A"}
+                : NOT_SET_PLACEHOLDER}
+            </div>
+            <div className="profile-field">
+              <strong>Description:</strong>{" "}
+              {displayedUser.description || NOT_SET_PLACEHOLDER}
             </div>
             <div className="profile-field">
               <strong>Account Created:</strong> {displayedUser.creation_date
                 ? String(displayedUser.creation_date).split("T")[0]
-                : "N/A"}
+                : NOT_SET_PLACEHOLDER}
             </div>
             <div className="profile-field">
               <strong>Status:</strong> {displayedUser.status}
@@ -214,18 +215,18 @@ const UserProfile: React.FC = () => {
             </div>
           </div>
           <div className="profile-field">
-            <strong>Description:</strong>{" "}
-            {displayedUser.description || <i>...</i>}
-          </div>
-          <div className="profile-field">
             <strong>Birthday:</strong> {displayedUser.birthday
               ? String(displayedUser.birthday).split("T")[0]
-              : "N/A"}
+              : NOT_SET_PLACEHOLDER}
+          </div>
+          <div className="profile-field">
+            <strong>Description:</strong>{" "}
+            {displayedUser.description || NOT_SET_PLACEHOLDER}
           </div>
           <div className="profile-field">
             <strong>Account Created:</strong> {displayedUser.creation_date
               ? String(displayedUser.creation_date).split("T")[0]
-              : "N/A"}
+              : NOT_SET_PLACEHOLDER}
           </div>
           <div className="profile-field">
             <strong>Status:</strong> {displayedUser.status}

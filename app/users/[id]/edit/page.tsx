@@ -34,6 +34,7 @@ const EditUserProfile: React.FC = () => {
   const [form] = Form.useForm();
   const [isLogedInUser, setIsLogedInUser] = useState<boolean | null>(null);
   const hasHandledNotLoggedInUser = useRef(false);
+  const NOT_SET_PLACEHOLDER = <i>Not set</i>;
 
   const handleGoBack = () => {
     router.back();
@@ -201,7 +202,7 @@ const EditUserProfile: React.FC = () => {
             </Form.Item>
             <div className="profile-edit-field">
               <strong>Old Birthday:</strong>{" "}
-              {user.birthday ? String(user.birthday).split("T")[0] : "N/A"}
+              {user.birthday ? String(user.birthday).split("T")[0] : NOT_SET_PLACEHOLDER}
             </div>
             <Form.Item
               name="birthday"
@@ -213,14 +214,14 @@ const EditUserProfile: React.FC = () => {
               <Input placeholder="YYYY-MM-DD" />
             </Form.Item>
             <div className="profile-edit-field">
-              <strong>Old Description:</strong> {user.description || "N/A"}
+              <strong>Old Description:</strong> {user.description || NOT_SET_PLACEHOLDER}
             </div>
             <Form.Item
               name="description"
               label={<strong>New Description:</strong>}
               initialValue={user.description || ""}
             >
-              <Input.TextArea placeholder="Type the funny shi" />
+              <Input.TextArea placeholder="Introduce yourself to other users, for example by listing your favorite games." />
             </Form.Item>
             <div className="profile-buttons">
               <Button onClick={handleGoBack}>Back</Button>
