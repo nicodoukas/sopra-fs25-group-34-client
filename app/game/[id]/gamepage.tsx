@@ -165,9 +165,9 @@ const GamePage = (
       }
       if (currentGame.currentRound.activePlayer.userId !== currentPlayer.userId) return;
       if (songCard === null) return;
-      let activePlayer = currentGame.currentRound.activePlayer
-      let placement = currentGame.currentRound.activePlayerPlacement
-      let result = await checkCardPlacementCorrect(songcardRef.current, activePlayer.timeline, placement)
+      const activePlayer = currentGame.currentRound.activePlayer
+      const placement = currentGame.currentRound.activePlayerPlacement
+      const result = await checkCardPlacementCorrect(songcardRef.current, activePlayer.timeline, placement)
       console.log("This is the check placement:", result)
       //correct placement
       if (
@@ -217,7 +217,7 @@ const GamePage = (
         console.warn("Missing game or player data");
         return;
       }
-    let result = await checkCardPlacementCorrect(songcardRef.current, gameRef.current.currentRound.activePlayer.timeline, _placmentIndex)
+    const result = await checkCardPlacementCorrect(songcardRef.current, gameRef.current.currentRound.activePlayer.timeline, _placmentIndex)
     //correct placement
       if (
         result

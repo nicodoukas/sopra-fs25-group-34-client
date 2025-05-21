@@ -1,12 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 
-import { useApi } from "@/hooks/useApi";
 import { SongCard } from "@/types/songcard";
 import { Player } from "@/types/player";
 import Timeline from "./timeline";
 import Timer from "@/game/[id]/timer";
 
-import { Button, message } from "antd";
+import { Button } from "antd";
 
 import { Client } from "@stomp/stompjs";
 
@@ -28,16 +27,13 @@ interface Props {
 
 const Challenge: React.FC<Props> = ({
   activePlayer,
-  songCard,
   gameId,
   gameName,
   activePlayerPlacement,
   stompClient,
   userId,
-  checkCardPlacementCorrect,
   allPlayers,
 }) => {
-  const apiService = useApi();
   const hasRun = useRef(false);
   const [timeLeft, setTimeLeft] = useState(30);
   const [decisionMade, setDescisionMade] = useState<boolean>(false);
@@ -127,14 +123,16 @@ const Challenge: React.FC<Props> = ({
           activePlayerPlacement={activePlayerPlacement}
           challenge={true}
         />
-        <div>
-          <Button type="primary" onClick={handleChallengeAccepted}>
-            Challenge
-          </Button>
-          <Button type="primary" onClick={handleDeclineChallenge}>
-            Don&#39;t challenge
-          </Button>
-        </div>
+        { !decisionMade && (
+          <div>
+            <Button type="primary" onClick={handleChallengeAccepted}>
+              Challenge
+            </Button>
+            <Button type="primary" onClick={handleDeclineChallenge}>
+              Don&#39;t challenge
+            </Button>
+          </div>
+        )}
       </>
       )}
     </div>
