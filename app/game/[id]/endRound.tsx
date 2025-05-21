@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { SongCard } from "@/types/songcard";
 import { Client } from "@stomp/stompjs";
 
