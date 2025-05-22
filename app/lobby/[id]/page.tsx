@@ -12,7 +12,7 @@ import Header from "@/components/header";
 import InviteAction from "@/components/InviteAction";
 
 import "@ant-design/v5-patch-for-react-19";
-import { Button, Card, message, Table, TableProps } from "antd";
+import { Button, message, Table, TableProps } from "antd";
 
 import { connectWebSocket } from "@/websocket/websocketService";
 import { Client } from "@stomp/stompjs";
@@ -252,46 +252,23 @@ const LobbyPage: React.FC = () => {
   }
 
   return (
-    <div className={"card-container"}>
+    <div className={"lobby-page-container"}>
       <Header />
-      <Card
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          backgroundColor: "#e5e1ca",
-          alignItems: "center",
-          paddingTop: "20px",
-          width: "700px",
-          textAlign: "center",
-          borderRadius: "16px",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-        }}
-      >
+      <div className="beige-card">
         <h2
           style={{
             fontSize: "3rem",
-            marginBottom: "50px",
+            marginBottom: "20px",
             textAlign: "center",
             color: "#BC6C25",
           }}
         >
           {lobby.lobbyName}
         </h2>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            width: "50%",
-          }}
-        >
-          <Card
-            title="Invite Friends"
-            loading={!userFriends}
-            className={"dashboard-container"}
-            style={{ marginBottom: 50, marginRight: 50, width: "100%" }}
-          >
-            <div style={{ display: "flex", justifyContent: "center" }}>
+        <div className="side-by-side-card-container">
+          <div className="light-beige-card">
+            <h3>Invite Friends</h3>
+            <div style={{ overflowY: "auto", maxHeight: "48vh" }}>
               {userFriends.length > 0
                 ? (
                   <Table<User>
@@ -304,77 +281,63 @@ const LobbyPage: React.FC = () => {
                       justifyContent: "center",
                       alignItems: "center",
                     }}
+                    size="middle"
+                    pagination={false}
                   />
                 )
                 : <p>User has no friends</p>}
             </div>
-          </Card>
-          <Card
-            title="Players"
-            loading={!lobby}
-            className={"dashboard-container"}
-            style={{ marginBottom: 50, width: "100%" }}
-          >
-            {lobby && (lobby.members?.length > 0) && (
-              <>
-                <Table<User>
-                  columns={columns}
-                  dataSource={lobby.members}
-                  style={{
-                    minWidth: "150px",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                  rowKey="id"
-                  onRow={(row) => ({
-                    onClick: () => router.push(`/users/${row.id}`),
-                    style: { cursor: "pointer" },
-                  })}
-                >
-                </Table>
-              </>
-            )}
-          </Card>
+          </div>
+          <div className="light-beige-card">
+            <h3>Players</h3>
+            <div style={{ overflowY: "auto", maxHeight: "48vh" }}>
+              {lobby && (lobby.members?.length > 0) && (
+                <>
+                  <Table<User>
+                    columns={columns}
+                    dataSource={lobby.members}
+                    style={{
+                      minWidth: "150px",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                    rowKey="id"
+                    onRow={(row) => ({
+                      onClick: () => router.push(`/users/${row.id}`),
+                      style: { cursor: "pointer" },
+                    })}
+                    size="middle"
+                    pagination={false}
+                  >
+                  </Table>
+                </>
+              )}
+            </div>
+          </div>
         </div>
-      </Card>
-      {id === lobby.host?.id
-        ? (
-          <>
-            <Button
-              style={{
-                position: "absolute",
-                bottom: "75px",
-                left: "45%",
-              }}
-              onClick={startGame}
-            >
-              Start Game
-            </Button>
-            <Button
-              style={{
-                position: "absolute",
-                right: "2%",
-                top: "90%",
-              }}
-              onClick={deleteLobby}
-            >
-              Delete Lobby
-            </Button>
-          </>
-        )
-        : (
-          <Button
-            style={{
-              position: "absolute",
-              right: "2%",
-              top: "90%",
-            }}
-            onClick={deleteLobby}
-          >
-            Leave Lobby
-          </Button>
-        )}
+        <div
+          className="side-by-side-card-container"
+          style={{ marginTop: "15px" }}
+        >
+          {id === lobby.host?.id
+            ? (
+              <>
+                <Button onClick={startGame}>
+                  Start Game
+                </Button>
+                <Button onClick={deleteLobby}>
+                  Delete Lobby
+                </Button>
+              </>
+            )
+            : (
+              <Button onClick={deleteLobby}>
+                Leave Lobby
+              </Button>
+            )}
+        </div>
+      </div>
     </div>
   );
 };

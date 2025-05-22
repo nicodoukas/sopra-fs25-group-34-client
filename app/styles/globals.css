@@ -98,6 +98,21 @@ footer {
   min-height: 95vh;
 }
 
+.lobby-page-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 80px;
+}
+
+.side-by-side-card-container {
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  flex-direction: row;
+  max-height: 60vh;
+  gap: 32px;
+}
+
 .green-card {
   width: 100%;
   max-width: 400px;
@@ -111,6 +126,13 @@ footer {
 .beige-card {
   padding: 15px;
   background-color: var(--background-dark);
+  backdrop-filter: blur(5px);
+  border-radius: 10px;
+}
+
+.light-beige-card {
+  padding: 15px;
+  background-color: var(--background);
   backdrop-filter: blur(5px);
   border-radius: 10px;
 }
@@ -215,4 +237,10 @@ footer {
   display: flex;
   justify-content: space-between;
   padding: 0 20px;
+}
+
+.lobby-buttons-container {
+  display: flex;
+  gap: 16px;
+  margin-top: 15px;
 }
