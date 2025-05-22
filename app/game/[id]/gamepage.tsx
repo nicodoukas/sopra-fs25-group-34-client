@@ -173,7 +173,7 @@ const GamePage = (
       if (
         result
       ) {
-        message.success("Congratulation your placement is correct!");
+        message.success("Congratulations, your placement is correct!");
         const body = {
           "songCard": songcardRef.current,
           "position": placement,
@@ -222,7 +222,7 @@ const GamePage = (
       if (
         result
       ) {
-        message.success("Congratulation your placement is correct!");
+        message.success("Congratulations, your placement is correct!");
         const body = {
           "songCard": songcardRef.current,
           "position": _placmentIndex,
@@ -270,7 +270,7 @@ const GamePage = (
       );
       if (correct) {
         setGuessed(true);
-        message.success("Congratulation, you guessed correct!");
+        message.success("Congratulations, you guessed correctly!");
         const updatedPlayer = await apiService.get<Player>(
           `/games/${gameId}/${userId}`,
         );
