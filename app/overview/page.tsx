@@ -155,7 +155,7 @@ const Overview: React.FC = () => {
           it is their turn, can guess the title and artist of a song. If their
           guess is correct, they earn 1 coin, if it is incorrect, they neither
           gain nor lose anything, so it is always recommended to take a guess.
-          Since the spelling is sensitive (i.e. "Don't Fall" is correct, "Dont Fall" is incorrect),
+          Since the spelling is sensitive (i.e. &quot;Don&apos;t Fall&quot; is correct, &quot;Dont Fall&quot; is incorrect),
           players can guess as often as they want during the 30s snippet.
         </p>
         <p>
