@@ -137,7 +137,58 @@ You will work in your own branch, where you can work on your issues locally and 
 If you want to merge your contributions to the main branch, open a new merge request for other group members to check out and accept.
 
 ## User interface
-Insert images here after completing development.
+The following screenshots show the most a walkthrough of our application:
+
+<p float="left">
+  <img src="./assets/LandingPage.png" width="30%" style="margin-right: 10px;"/>
+  <img src="./assets/OverviewPage.png" width="30%" style="margin-right: 10px;"/>
+  <img src="./assets/EditProfilePage.png" width="30%"/>
+</p>
+
+<p align="center">
+  <em>Figure 1-3: Landing, Overview and Edit Profile Pages</em>
+</p>
+
+<p float="left">
+  <img src="./assets/ProfilePage.png" width="30%" style="margin-right: 10px;"/>
+  <img src="./assets/RequestsInvitesPage.png" width="30%" style="margin-right: 10px;"/>
+  <img src="./assets/FriendsPage.png" width="30%"/>
+</p>
+
+<p align="center">
+  <em>Figure 4-6: Profile, Requests & Invites and Friends Pages</em>
+</p>
+
+<p float="left">
+  <img src="./assets/LobbyPage.png" width="30%" style="margin-right: 10px;"/>
+  <img src="./assets/GamePageBeginning.png" width="30%" style="margin-right: 10px;"/>
+  <img src="./assets/ChallengePageDecide.png" width="30%"/>
+</p>
+
+<p align="center">
+  <em>Figure 7-9: Lobby, Game and Challenge Decide Pages</em>
+</p>
+
+<p float="left">
+  <img src="./assets/ChallengePagePlacement.png" width="30%" style="margin-right: 10px;"/>
+  <img src="./assets/RoundSummaryPage.png" width="30%" style="margin-right: 10px;"/>
+  <img src="./assets/GamePageMiddle.png" width="30%"/>
+</p>
+
+<p align="center">
+  <em>Figure 10-12: Challenge Placement, Round Summary and Game Pages</em>
+</p>
+
+<p float="left">
+  <img src="./assets/GamePageRanking.png" width="30%" style="margin-right: 10px;"/>
+  <img src="./assets/GamePageEnd.png" width="30%" style="margin-right: 10px;"/>
+  <img src="./assets/GameOverPage.png" width="30%"/>
+</p>
+
+<p align="center">
+  <em>Figure 13-15: Ranking, Game and Game Over Pages</em>
+</p>
+
 
 ## Roadmap
 ### Our next 3 features to be implemented:
