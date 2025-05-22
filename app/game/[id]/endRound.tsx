@@ -7,15 +7,20 @@ interface Props{
     stompClient: Client | null;
     gameId: string;
     roundNr: number;
+    playerId: string | null;
+    activePlayerId: string | null;
 }
 const EndRound: React.FC<Props> = ({
   songCard,
   stompClient,
   gameId,
   roundNr,
+  activePlayerId,
+  playerId,
 }) => {
+  const isActivePlayer = playerId === activePlayerId;
 
-    const handleStartNextRound = () => {
+  const handleStartNextRound = () => {
     if (stompClient?.connected) {
       stompClient.publish({
         destination: "/app/startNewRound",
@@ -40,12 +45,13 @@ const EndRound: React.FC<Props> = ({
         <p><strong>Title:</strong> {songCard.title}</p>
         <p><strong>Artist:</strong> {songCard.artist}</p>
         <p><strong>Release Year:</strong> {songCard.year}</p>
-        <button
+        {isActivePlayer && (<button
         onClick={handleStartNextRound}
         className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded mt-4"
         >
           Start Next Round
         </button>
+        )}
       </div>
     )
 };

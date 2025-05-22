@@ -505,6 +505,8 @@ const GamePage = (
               stompClient={stompClient}
               gameId={gameId}
               roundNr={game.currentRound?.roundNr}
+              playerId={player.userId}
+              activePlayerId={game.currentRound.activePlayer.userId}
             />
           )
           : <></>}
