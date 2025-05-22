@@ -123,7 +123,6 @@ const EndScreen = () => {
             justifyContent: "space-between",
             backgroundColor: "#e5e1ca",
             alignItems: "center",
-            paddingTop: "20px",
             textAlign: "center",
             borderRadius: "16px",
             boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
@@ -143,12 +142,20 @@ const EndScreen = () => {
                 Sorry, you did not win this game.
               </div>
             )}
-          <h2 style={{ fontSize: "30px", marginTop: "20px" }}>
+          <h2
+            style={{
+              fontSize: "30px",
+              marginTop: "20px",
+              marginBottom: "15px",
+            }}
+          >
             Final Rankings
           </h2>
           <RankingList players={game.players} playerId={player.userId} />
           {player.userId === game.host?.userId && (
-            <Button onClick={deleteGame}>Back to Lobby</Button>
+            <Button onClick={deleteGame} style={{ marginTop: "10px" }}>
+              Back to Lobby
+            </Button>
           )}
         </Card>
       </div>

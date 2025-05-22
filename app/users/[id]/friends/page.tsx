@@ -96,17 +96,23 @@ const FriendList: React.FC = () => {
         <div className="green-card">
           {(friends && friends.length >= 1)
             ? (
-              <div className="tableWrapper">
-                <Table<User>
-                  columns={columns}
-                  dataSource={friends}
-                  rowKey="id"
-                  onRow={(row) => ({
-                    onClick: () => router.push(`/users/${row.id}`),
-                    style: { cursor: "pointer" },
-                  })}
-                  bordered
-                />
+              <div
+                className="light-beige-card"
+                style={{ marginBottom: "20px" }}
+              >
+                <div style={{ overflowY: "auto", maxHeight: "48vh" }}>
+                  <Table<User>
+                    columns={columns}
+                    dataSource={friends}
+                    rowKey="id"
+                    onRow={(row) => ({
+                      onClick: () => router.push(`/users/${row.id}`),
+                      style: { cursor: "pointer" },
+                    })}
+                    size="middle"
+                    pagination={false}
+                  />
+                </div>
               </div>
             )
             : (

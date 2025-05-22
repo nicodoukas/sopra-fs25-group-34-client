@@ -293,26 +293,24 @@ const LobbyPage: React.FC = () => {
             <h3>Players</h3>
             <div style={{ overflowY: "auto", maxHeight: "48vh" }}>
               {lobby && (lobby.members?.length > 0) && (
-                <>
-                  <Table<User>
-                    columns={columns}
-                    dataSource={lobby.members}
-                    style={{
-                      minWidth: "150px",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                    rowKey="id"
-                    onRow={(row) => ({
-                      onClick: () => router.push(`/users/${row.id}`),
-                      style: { cursor: "pointer" },
-                    })}
-                    size="middle"
-                    pagination={false}
-                  >
-                  </Table>
-                </>
+                <Table<User>
+                  columns={columns}
+                  dataSource={lobby.members}
+                  style={{
+                    minWidth: "150px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  rowKey="id"
+                  onRow={(row) => ({
+                    onClick: () => router.push(`/users/${row.id}`),
+                    style: { cursor: "pointer" },
+                  })}
+                  size="middle"
+                  pagination={false}
+                >
+                </Table>
               )}
             </div>
           </div>
