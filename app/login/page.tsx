@@ -50,9 +50,25 @@ const Login: React.FC = () => {
       router.push("/overview");
     } catch (error) {
       if (error instanceof Error) {
-        message.error(
-          `Something went wrong during the login:\n${error.message}`,
-        );
+        if (
+          error.message.includes(
+            "404:",
+          )
+        ) {
+          message.error(
+            "No user found with this username, check your spelling or register as a new user.",
+          );
+        } else if (
+          error.message.includes(
+            "Invalid password",
+          )
+        ) {
+          message.error(
+            "Invalid password, please check your spelling.",
+          );
+        } else {
+          message.error(error.message);
+        }
       } else {
         message.error("An unknown error occurred during login.");
       }
