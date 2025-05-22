@@ -1,6 +1,7 @@
 import React from "react";
 import { SongCard } from "@/types/songcard";
 import { Client } from "@stomp/stompjs";
+import {Button} from "antd";
 
 interface Props{
     songCard: SongCard | null;
@@ -45,12 +46,10 @@ const EndRound: React.FC<Props> = ({
         <p><strong>Title:</strong> {songCard.title}</p>
         <p><strong>Artist:</strong> {songCard.artist}</p>
         <p><strong>Release Year:</strong> {songCard.year}</p>
-        {isActivePlayer && (<button
-        onClick={handleStartNextRound}
-        className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded mt-4"
-        >
+        {isActivePlayer && (<Button
+        onClick={handleStartNextRound} style={{marginTop:"20px"}}>
           Start Next Round
-        </button>
+        </Button>
         )}
       </div>
     )
