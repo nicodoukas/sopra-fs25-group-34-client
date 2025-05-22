@@ -2,8 +2,8 @@
 
 ## Introduction
 If you love music, then Hitster is the game for you!
-Listen to the greatest hits of the past 100 years with your friends,
-take turns arranging the songs in your timeline in chronological order,
+Listen to the greatest hits of the past 80 years with your friends,
+and take turns arranging the songs in your timeline in chronological order,
 all while taking a trip down memory lane!
 <br>
 Hitster combines the joy of listening to (mostly) great music and competing with your friends, to see who is the queen/king of music trivia.
@@ -20,12 +20,12 @@ The rules are simple:
 2. Play a snippet of a song for everyone to hear.
 3. Everyone can guess title and artist of the song to earn a coin.
 4. Place the song in the correct position in your timeline, based on its release year.
-5. Other players can challenge your placement if they think it is incorrect and place it at another
+5. Other players can challenge your placement if they think it is incorrect and place the card at another
    position.
-6. The player that placed it at the correct position, wins the card and it is placed in his own timeline.
+6. The player that placed the card at the correct position, wins the card and it is placed in their own timeline.
 7. For 3 coins, you can buy a card into your timeline. Therefore, it is advantageous to guess title and
    artist correctly.
-8. The game ends when the first player reaches 10 cards in his timeline.
+8. The game ends when the first player reaches 10 cards in their timeline.
 
 The primary goal of our Hitster application is to be fun, user-friendly
 and to emulate the experience of playing the physical table-top game, while introducing new features and enhancements.
