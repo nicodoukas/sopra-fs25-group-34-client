@@ -8,7 +8,7 @@ export const connectWebSocket = (onMessageCallback: OnMessageCallback, gameId: s
   const isLocalhost = window.location.hostname === "localhost";
   const socketUrl = isLocalhost
     ? "http://localhost:8080/ws"
-    : "https://backendv2-dot-sopra-fs25-group-34-server.oa.r.appspot.com/ws";
+    : "https://backendv3-dot-sopra-fs25-group-34-server.oa.r.appspot.com/ws";
   const client = new Client({
     webSocketFactory: () => new SockJS(socketUrl),
     connectHeaders: {
