@@ -97,8 +97,9 @@ const LobbyPage: React.FC = () => {
       router.push(`/game/${lobbyId}`);
     }
     if (parsedMessage.event_type === "delete-lobby") {
-      //TODO: here is the infoMessage thing
-      sessionStorage.setItem("infoMessage", "Lobby was deleted by host");
+      setTimeout(() => {
+        message.info("The lobby was deleted by the host.");
+      }, 200);
       router.push("/overview");
     }
     if (parsedMessage.event_type === "update-lobby") {

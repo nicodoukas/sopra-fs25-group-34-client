@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import useSessionStorage from "@/hooks/useSessionStorage";
@@ -8,24 +8,14 @@ import withAuth from "@/utils/withAuth";
 import Header from "@/components/header";
 
 import "@ant-design/v5-patch-for-react-19";
-import { Button, message, Modal } from "antd";
+import { Button, Modal } from "antd";
 
 import styles from "@/styles/page.module.css";
 
 const Overview: React.FC = () => {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [messageAPI, contextHolder] = message.useMessage();
   const { value: id } = useSessionStorage<string>("id", "");
-
-  //TODO: what is this? when where why is this info message set??
-  useEffect(() => {
-    const info = sessionStorage.getItem("infoMessage");
-    if (info) {
-      messageAPI.info(info, 5);
-      sessionStorage.removeItem("infoMessage");
-    }
-  }, []);
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -37,7 +27,6 @@ const Overview: React.FC = () => {
 
   return (
     <div className={styles.page}>
-      {contextHolder}
       <Header />
       <div className={styles.main}>
         <div className={styles.ctas}>
