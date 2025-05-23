@@ -222,7 +222,7 @@ On the client side, this includes adding a new element to the profile page that 
 - [Philip Keller](https://github.com/phikell)
 
 We would like to thank our TA, Diyar Taskiran, for his continuous support throughout the development of this project.
-Additional thanks go out to the SoPra FS25 organizing staff for making this project prossible.
+Additional thanks go out to the SoPra FS25 organizing staff for making this project possible.
 
 ## License
 [MIT License](https://github.com/nicodoukas/sopra-fs25-group-34-client/blob/main/LICENSE)
