@@ -92,7 +92,14 @@ const Register: React.FC = () => {
           </Form.Item>
           <Form.Item
             name="password"
-            rules={[{ required: true, message: "Please input your password!" }]}
+            rules={[
+              { required: true, message: "Please input your password!" },
+              { min: 6, message: "Password must be at least 6 characters!" },
+              {
+                pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
+                message: "Password must contain uppercase, lowercase, and a number!",
+              }
+            ]}
           >
             <Input type="password" placeholder="Password" />
           </Form.Item>
