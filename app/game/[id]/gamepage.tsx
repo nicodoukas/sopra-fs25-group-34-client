@@ -168,7 +168,6 @@ const GamePage = (
       const activePlayer = currentGame.currentRound.activePlayer
       const placement = currentGame.currentRound.activePlayerPlacement
       const result = await checkCardPlacementCorrect(songcardRef.current, activePlayer.timeline, placement)
-      console.log("This is the check placement:", result)
       //correct placement
       if (
         result
@@ -181,7 +180,6 @@ const GamePage = (
         //update player == insert songCard into timeline
         try {
           await apiService.put(`/games/${gameId}/${activePlayer.userId}`, body);
-          console.log("timeline gets updated")
         } catch (error) {
           if (error instanceof Error) {
             message.error(
@@ -230,7 +228,6 @@ const GamePage = (
         //update player == insert songCard into timeline
         try {
           await apiService.put(`/games/${gameId}/${playerRef.current.userId}`, body);
-          console.log("timeline gets updated")
         } catch (error) {
           if (error instanceof Error) {
             message.error(

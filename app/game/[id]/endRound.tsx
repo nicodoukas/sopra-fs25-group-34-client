@@ -30,7 +30,6 @@ const EndRound: React.FC<Props> = ({
           roundNr: roundNr,
         }),
       });
-      console.log("Start new round triggered!");
     } else {
       console.warn("STOMP client is not connected.");
     }

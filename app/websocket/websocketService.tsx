@@ -16,7 +16,6 @@ export const connectWebSocket = (onMessageCallback: OnMessageCallback, gameId: s
     onConnect: () => {
       console.log("Connected to WebSocket");
       client.subscribe(`/games/${gameId}`, (message) => {
-        console.log("Message received", message.body);
         onMessageCallback(message.body);
       });
     },
