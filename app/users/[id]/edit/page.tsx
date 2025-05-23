@@ -56,9 +56,7 @@ const EditUserProfile: React.FC = () => {
       router.push(`/users/${displayedUsersId}`);
     } catch (error) {
       if (error instanceof Error) {
-        message.error(
-          `Something went wrong while updating the user:\n${error.message}`,
-        );
+        message.error(`Something went wrong while updating the user`);
       } else {
         message.error("An unknown error occurred while updating the user.");
       }
