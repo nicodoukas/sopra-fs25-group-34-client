@@ -50,10 +50,11 @@ By using Apple Music's huge library, our game stays fresh, even after many round
 - CSS: styling
 - Vercel: handling deployment of client and hosting client
 - REST: handling communication between client and server
+- Next.js: dynamic routing
 
 ## High-level components
 - [Overview](https://github.com/nicodoukas/sopra-fs25-group-34-client/blob/main/app/overview/page.tsx):
-This is the entry page after logging in. From here, the user can access his profile, friend list and open invitations. They can search users, create a lobby and access the game rules.
+This is the entry page after logging in. From here, the user can access their profile, friend list and open invitations. They can search users, create a lobby and access the game rules.
 - [Lobby](https://github.com/nicodoukas/sopra-fs25-group-34-client/blob/main/app/lobby/%5Bid%5D/page.tsx):
 The lobby page shows all the members of the lobby and the user's friends, which they can directly invite. This page is already "connected" to websockets to ensure direct updates from a new user joining. The host can start the game from here.
 - [Game](https://github.com/nicodoukas/sopra-fs25-group-34-client/blob/main/app/game/%5Bid%5D/gamepage.tsx):
@@ -66,23 +67,23 @@ Allows for direct, simultaneous updates across multiple clients. We use it, for 
 ## Launch & Deployment
 If you are using Windows, you have to install WSL first.
 <br>
-If you are using MacOS, Linux or WSL, you can skip directly to the setup part
+If you are using MacOS, Linux or WSL, you can skip directly to the setup part.
 
 
 ### WSL installation
-You might need to reboot your computer for the installation, therefore, save and close all your other work and programs
+You might need to reboot your computer for the installation, therefore, save and close all your other work and programs.
 
 1. Download the following [powershell script](./windows.ps1)\
    ![downloadWindowsScript](https://github.com/user-attachments/assets/1ed16c0d-ed8a-42d5-a5d7-7bab1ac277ab)
 ---
-2. Open a new powershell terminal **with admin privileges** and run the following command and follow the instructions. Make sure that you open the powershell terminal at the path where you have downloaded the powershell script, otherwise the command will not work because it can not find the script. You can list currently accessible files in the powershell terminal with ```dir``` and you can use ```cd``` to navigate between directories
+2. Open a new powershell terminal **with admin privileges** and run the following command and follow the instructions. Make sure that you open the powershell terminal at the path where you have downloaded the powershell script, otherwise the command will not work because it can not find the script. You can list currently accessible files in the powershell terminal with ```dir``` and you can use ```cd``` to navigate between directories.
    ```shell
    C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -File .\windows.ps1
    ```
 ---
-3. If you experience any issues, try re-running the script a couple of times. If the installation remains unsuccessful, follow this [youtube tutorial](https://youtu.be/GIYOoMDfmkM) or ask us
+3. If you experience any issues, try re-running the script a couple of times. If the installation remains unsuccessful, follow this [youtube tutorial](https://youtu.be/GIYOoMDfmkM) or ask us.
 ---
-4. After successful installation, you can open WSL/Ubuntu. You will need to choose a username and password, although no characters will be shown on the screen when typing the password but the system recognizes your input, no worries :) After these four steps your setup should look similar to this
+4. After successful installation, you can open WSL/Ubuntu. You will need to choose a username and password, although no characters will be shown on the screen when typing the password but the system recognizes your input, no worries :) After these four steps your setup should look similar to this:
    ![initialUbuntuScreen](https://github.com/user-attachments/assets/a2b1511f-943b-468e-a726-b7a9dc46ea2c)
 
 
@@ -92,7 +93,7 @@ You might need to reboot your computer for the installation, therefore, save and
 
 You can now clone the repository. After cloning it locally on your own machine, the following steps can be taken to build the application:
 
-1. Inside the repository folder there is a bash script _setup.sh_ that will install everything you need, according to the system you are using. Run the following command and follow the instructions
+1. Inside the repository folder there is a bash script _setup.sh_ that will install everything you need, according to the system you are using. Run the following command and follow the instructions.
    ```shell
    source setup.sh
    ```
@@ -114,19 +115,19 @@ You can now clone the repository. After cloning it locally on your own machine, 
 
 ### After completing these steps, you can use the following commands:
 
-1. **Running the development server** - This will start the application in development mode, meaning that changes to the code are instantly visible live on [http://localhost:3000](http://localhost:3000) in the browser
+1. **Running the development server** - This will start the application in development mode, meaning that changes to the code are instantly visible live on [http://localhost:3000](http://localhost:3000) in the browser.
    ```bash
    deno task dev
    ```
-2. **Building a production-ready application** - This will create an optimized production build that is faster and takes up less space. It is a static build, meaning that changes to the code will only be included when the command is run again
+2. **Building a production-ready application** - This will create an optimized production build that is faster and takes up less space. It is a static build, meaning that changes to the code will only be included when the command is run again.
    ```bash
    deno task build
    ```
-3. **Running the production application** - This will start the optimized production build and display it on [http://localhost:3000](http://localhost:3000) in the browser. This command can only be run _after_ a production build has been created with the command above and will not preview live code changes
+3. **Running the production application** - This will start the optimized production build and display it on [http://localhost:3000](http://localhost:3000) in the browser. This command can only be run _after_ a production build has been created with the command above and will not preview live code changes.
    ```bash
    deno task start
    ```
-4. **Linting the entire codebase** - This command allows to check the entire codebase for mistakes, errors and warnings
+4. **Linting the entire codebase** - This command allows to check the entire codebase for mistakes, errors and warnings.
    ```bash
    deno task lint
    ```
@@ -142,7 +143,7 @@ You will work in your own branch, where you can work on your issues locally and 
 If you want to merge your contributions to the main branch, open a new merge request for other group members to check out and accept.
 
 ## User interface
-The following screenshots show the most a walkthrough of our application:
+The following screenshots provide a walkthrough of the most important features of our application:
 
 <p float="left">
   <img src="./assets/LandingPage.png" width="30%" style="margin-right: 10px;"/>
