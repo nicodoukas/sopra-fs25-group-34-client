@@ -106,8 +106,8 @@ You can now clone the repository. After cloning it locally on your own machine, 
    > Do **not** commit this file to the repository, since it contains sensitive credentials.  
    >To obtain the developer token, please contact one of the project developers listed in the [Authors & Acknowledgement](#authors--acknowledgement) section.
 
-3. To be able to setup a Websocket connection in the frontend, you need to run the following commands in your WSL terminal inside the client repository.
-   ```wsl
+3. To be able to setup a Websocket connection in the frontend, you need to run the following commands in the terminal inside the client repository.
+   ```bash
    nix develop
    npm install @stomp/stompjs sockjs-client
    ```
@@ -213,7 +213,7 @@ On the client side, this includes adding a new TSX file that displays the game h
 
 ### 3. Individual profile picture
 On the client side, this includes adding a new element to the profile page that allows file input from the users.
-Additionally, on all components where we display the username of a user, add their profile picture next to it.
+
 
 ## Authors & Acknowledgement
 - [Julia Würsch](https://github.com/monolino)
