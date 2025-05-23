@@ -105,7 +105,12 @@ You can now clone the repository. After cloning it locally on your own machine, 
    > Do **not** commit this file to the repository, since it contains sensitive credentials.  
    >To obtain the developer token, please contact one of the project developers listed in the [Authors & Acknowledgement](#authors--acknowledgement) section.
 
-3. Websocket Stuff (Commands to run and files to add)(Nico). Für beidi da eifach gliichi notation wie bi 1. mache.
+3. To be able to setup a Websocket connection in the frontend, you need to run the following commands in your WSL terminal inside the client repository.
+   ```wsl
+   nix develop
+   npm install @stomp/stompjs sockjs-client
+   ```
+   Add the --verbose flag if the second command isn't running properly
 
 ### After completing these steps, you can use the following commands:
 
